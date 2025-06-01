@@ -1,12 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import './menu.css';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './BloodGuide.css';
 
 const guideItems = [
   {
     id: 1,
     title: "Ai có thể hiến máu?",
-    icon: "/bloodguide1.jpg", // bạn thay bằng đường dẫn ảnh bạn có
+    icon: "/bloodguide1.jpg",
     content: [
       "Công dân từ 18 đến 60 tuổi",
       "Cân nặng ≥ 45kg (nữ), ≥ 50kg (nam)",
@@ -73,30 +73,62 @@ const guideItems = [
 
 export default function BloodGuide() {
   return (
-    <section className="bloodguide-section">
-      <h1 className="title">🩸 Blood Guide – Hướng Dẫn Hiến Máu</h1>
-
-      <div className="guide-list">
-        {guideItems.map(({ id, title, icon, content }) => (
-          <div key={id} className="guide-item">
-            <img src={icon} alt={title} className="guide-icon" />
-            <div className="guide-content">
-              <h2>{id}️⃣ {title}</h2>
-              <ul>
-                {content.map((line, i) => (
-                  <li key={i}>{line}</li>
-                ))}
-              </ul>
+    <>
+      <header className='header'>
+        {/* Logo */}
+        <div className='logo'>
+          <Link to="/">
+            <img src='/LogoPage.jpg' alt='Logo' />
+          </Link>
+          <div className='webname'>Hope Donor 🩸</div>
+        </div>
+        {/* Menu */}
+        <nav className='menu'>
+          <Link to='/bloodguide'>Blood Guide</Link>
+          <div className='dropdown'>
+            <Link to='/blood' className='dropbtn'>Blood ▼</Link>
+            <div className='dropdown-content'>
+              <Link to='/blood/type'>Type</Link>
+              <Link to='/blood/red-cells'>Red Cells</Link>
+              <Link to='/blood/plasma'>Plasma</Link>
+              <Link to='/blood/white-cells'>White Cells</Link>
+              <Link to='/blood/knowledge'>Blood Knowledge</Link>
             </div>
           </div>
-        ))}
-      </div>
-
-      <div className="register-cta">
-        <Link to="/register" className="register-button">
-          Đăng ký hiến máu ngay
-        </Link>
-      </div>
-    </section>
+          <Link to='/news'>News & Events</Link>
+          <Link to='/contact'>Contact</Link>
+          <Link to='/about'>About Us</Link>
+        </nav>
+        {/* Login */}
+        <div className='actions'>
+          <Link to='/login'>
+            <button className='login-btn'>👤 Login</button>
+          </Link>
+        </div>
+      </header>
+      <section className="bloodguide-section">
+        <h1 className="title">🩸 Blood Guide</h1>
+        <div className="guide-list">
+          {guideItems.map(({ id, title, icon, content }) => (
+            <div key={id} className="guide-item">
+              <img src={icon} alt={title} className="guide-icon" />
+              <div className="guide-content">
+                <h2>{id}️⃣ {title}</h2>
+                <ul>
+                  {content.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="register-cta">
+          <Link to="/register" className="register-button">
+            Đăng ký hiến máu ngay
+          </Link>
+        </div>
+      </section>
+    </>
   );
 }

@@ -3,6 +3,8 @@ import Login from './Login'
 import Home from './HomePage'
 import Register from './Register'
 import BloodGuide from'./BloodGuide'
+import News from './News'
+import Contact from './Contact'
 export default function App() {
   return (
     <Routes>
@@ -10,6 +12,8 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/bloodguide" element={<BloodGuide/>} />
+      <Route path='/news' element={<News/>}/>
+      <Route path='/contact' element={<Contact/>}/>
     </Routes>
   );
 }

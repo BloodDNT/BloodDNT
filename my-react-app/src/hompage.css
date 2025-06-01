@@ -1,9 +1,22 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body, html {
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
 .header {
- position: fixed;        
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  width: 100%;             
+  width: 100%;
   height: 130px;
   background-color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -12,45 +25,50 @@
   align-items: center;
   padding: 0 32px;
   z-index: 1000;
+  will-change: transform;
 }
-.webname{
-  position: absolute;       
-  left: 50%;               
-  transform: translateX(-50%); 
+
+.webname {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 22px;
   font-weight: bold;
   color: black;
   margin-top: -100px;
-  margin-left: -50px;
-  
+  margin-left: 0;
 }
+
 .logo {
   height: 100px;
   margin-right: 8px;
-
 }
+
 .logo img {
   height: 100%;
   width: auto;
   border-radius: 50%;
 }
 
+.menu {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  gap: 24px;
+}
+
 .menu a {
-  margin:  12px;
+  margin: 12px;
   text-decoration: none;
   color: #333;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
-.menu{
-  display: flex;
-  align-items: center; 
- margin-right: 50px;
- margin-bottom: -50px;
-  gap: 24px;  
-}
+
 .menu a:hover {
   color: #d90429;
 }
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -69,7 +87,16 @@
   min-width: 160px;
   border: 1px solid #ccc;
   z-index: 1;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .dropdown-content a {
@@ -78,15 +105,13 @@
   color: #333;
   text-decoration: none;
   border-bottom: 1px solid #eee;
+  transition: background-color 0.3s ease;
 }
 
 .dropdown-content a:hover {
   background-color: #fce4ec;
 }
 
-.dropdown:hover .dropdown-content {
-  display: block;
-}
 .actions {
   display: flex;
   align-items: center;
@@ -112,17 +137,22 @@
   padding: 6px 16px;
   border-radius: 4px;
   cursor: pointer;
-  margin-right: 150px;
+  margin-right: 20px;
+  transition: background-color 0.3s ease;
 }
 
 .login-btn:hover {
   background-color: #a4001d;
 }
+
 .body {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Tạo khoảng cách giữa các section */
+  gap: 20px;
   font-family: Arial, sans-serif;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 130px;
 }
 
 /* SECTION 1: Banner chính */
@@ -130,10 +160,9 @@
   width: 100%;
   height: 340px;
   overflow: hidden;
-  margin-top: 130px;
 }
 
-.background-11 img {
+.background-1 img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -142,34 +171,37 @@
 /* SECTION 2: Call to Action */
 .background-2 {
   width: 100%;
-    padding: 40px 20px;
+  padding: 40px 20px;
   position: relative;
 }
+
 .background-2-container {
   display: flex;
   align-items: stretch;
-  gap: 40px;
- max-width: 1400px;
+  gap: 20px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 20px; 
+  padding: 0 20px;
 }
 
 .background-2 img {
-  width: 70%;
+  width: 100%;
+  max-width: 60%;
   height: auto;
   object-fit: cover;
   border-radius: 12px;
-  margin-left: -100px;           
+  margin-left: 0;
 }
-.right-content {
-  width: 35%;
-  text-align: left;
-  background-color: #e63253; 
-  padding: 20px;            
-  border-radius: 8px;       
-  color: white;  
-  margin-left: -30px;           
 
+.right-content {
+  width: 100%;
+  max-width: 40%;
+  text-align: left;
+  background-color: #e63253;
+  padding: 20px;
+  border-radius: 8px;
+  color: white;
+  margin-left: 0;
 }
 
 .right-content .content1 {
@@ -187,8 +219,8 @@
 .right-content .content3 {
   font-size: 16px;
   color: #0f0f0f;
-
 }
+
 .btn-donate {
   background-color: white;
   color: #e63253;
@@ -198,11 +230,13 @@
   font-weight: bold;
   cursor: pointer;
   margin-top: 20px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
+
 .btn-donate:hover {
   background-color: #ff5e7a;
   color: white;
+  transform: translateY(-3px);
 }
 
 /* SECTION 3: Khám phá hiến máu */
@@ -210,8 +244,7 @@
   padding: 40px 20px;
   border-radius: 12px;
   margin-top: 40px;
-  background-color: #fff0f3; /* màu nền nhẹ toàn section */
-
+  background-color: #fff0f3;
 }
 
 .explore-donation h2 {
@@ -223,7 +256,6 @@
   z-index: 1;
 }
 
-/* Hiệu ứng nền highlight mềm mại phía sau chữ */
 .explore-donation h2::before {
   content: "";
   position: absolute;
@@ -236,7 +268,6 @@
   z-index: -1;
 }
 
-
 .articles-container {
   display: flex;
   gap: 20px;
@@ -247,13 +278,15 @@
 .article-card {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgb(230 50 83 / 0.2);
-  width: 260px;
+  border: 1px solid rgba(230, 50, 83, 0.2);
+  flex: 1 1 260px;
+  max-width: 300px;
   padding: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: transform 0.3s ease;
+  will-change: transform;
 }
 
 .article-card:hover {
@@ -291,7 +324,6 @@
 .article-card a:hover {
   text-decoration: underline;
 }
-
 
 /* SECTION 4: Footer */
 .footer {
@@ -356,23 +388,87 @@
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .header {
+    padding: 0 20px;
+  }
+  .menu {
+    margin-right: 20px;
+    gap: 16px;
+  }
+  .login-btn {
+    margin-right: 20px;
+  }
+  .webname {
+    font-size: 18px;
+  }
+  .background-2-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .background-2 img {
+    max-width: 100%;
+  }
+  .right-content {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    padding: 20px;
+  }
+  .logo {
+    margin-bottom: 20px;
+  }
+  .webname {
+    position: static;
+    transform: none;
+    margin: 0;
+  }
+  .menu {
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+  }
+  .actions {
+    margin-top: 20px;
+  }
+  .login-btn {
+    margin-right: 0;
+  }
   .footer-container {
     flex-direction: column;
     gap: 30px;
     align-items: center;
     text-align: center;
   }
-
   .footer-block {
     min-width: auto;
   }
+  .article-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
 }
 
-body, html {
-  overflow-x: hidden; /* Ẩn thanh cuộn ngang */
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@media (max-height: 800px) {
+  .header {
+    height: 100px;
+  }
+  .logo {
+    height: 80px;
+  }
+  .webname {
+    margin-top: -80px;
+    font-size: 18px;
+  }
+  .body {
+    margin-top: 100px;
+  }
+  .background-1 {
+    margin-top: 100px;
+  }
 }
-
