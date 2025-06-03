@@ -50,8 +50,9 @@ return (
       <div className='right-content'>
         <div className='content1'>Building a Safer, More Reliable Blood Supply</div>
         <div className='content2'>Every day, countless lives are at risk in underserved communities because of limited access to safe blood. GBF partners with local organizations to strengthen their capabilities—through funding, tools, and education—while promoting voluntary blood donation for long-term impact.</div>
-        <button className="btn-donate">Reach out to us</button>
-
+<Link to="/blood-donation">
+  <button className="btn-donate">Reach out to us</button>
+</Link>
        </div>
        </div>
       </section>
