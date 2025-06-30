@@ -1,15 +1,20 @@
 import { Routes, Route } from 'react-router-dom'
-import Login from './Login'
-import Home from './HomePage'
-import Register from './Register'
-import BloodGuide from'./BloodGuide'
-import News from './News'
-import Contact from './Contact'
-import BloodDonation from './BloodDonation'
-import Emergency from './Emergency';
+import Login from './components/Login';
+import Home from './components/HomePage';
+import Register from './components/Register';
+import BloodGuide from './components/BloodGuide';
+import News from './components/News';
+import Contact from './components/Contact';
+import BloodDonation from './components/BloodDonation';
+import Emergency from './components/Emergency';
+import UserProfile  from './components/UserProfile';
+import { UserProvider } from './context/UserContext';
+
+
 
 export default function App() {
   return (
+    <UserProvider>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -19,8 +24,9 @@ export default function App() {
       <Route path='/contact' element={<Contact/>}/>
       <Route path='/blood-donation' element={<BloodDonation/>}/>
       <Route path="/emergency-blood" element={<Emergency />} />
-
-    
+      <Route path="/profile" element={<UserProfile />} />
+      {/* Add more routes as needed */}
     </Routes>
+    </UserProvider>
   );
 }
