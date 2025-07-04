@@ -9,6 +9,7 @@ import BloodDonation from './components/BloodDonation';
 import Emergency from './components/Emergency';
 import UserProfile  from './components/UserProfile';
 import { UserProvider } from './context/UserContext';
+import Dashboard from './admin/Dashboard';
 
 
 
@@ -25,6 +26,7 @@ export default function App() {
       <Route path='/blood-donation' element={<BloodDonation/>}/>
       <Route path="/emergency-blood" element={<Emergency />} />
       <Route path="/profile" element={<UserProfile />} />
+      <Route path="/Dashboard" element={<Dashboard />} />
       {/* Add more routes as needed */}
     </Routes>
     </UserProvider>
