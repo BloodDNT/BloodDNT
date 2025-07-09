@@ -8,6 +8,7 @@ import Contact from './components/Contact';
 import BloodDonation from './components/BloodDonation';
 import Emergency from './components/Emergency';
 import UserProfile  from './components/UserProfile';
+import RequestBloodPage from './components/RequestBloodPage';
 import { UserProvider } from './context/UserContext';
 
 
@@ -25,6 +26,7 @@ export default function App() {
       <Route path='/blood-donation' element={<BloodDonation/>}/>
       <Route path="/emergency-blood" element={<Emergency />} />
       <Route path="/profile" element={<UserProfile />} />
+      <Route path="/register/request-blood" element={<RequestBloodPage />} />
       {/* Add more routes as needed */}
     </Routes>
     </UserProvider>
