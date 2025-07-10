@@ -1,31 +1,35 @@
-/* Reset & Base */
+/* RESET + BASE */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html, body {
+body, html {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
   overflow-x: hidden;
+  font-family: Arial, sans-serif;
 }
 
-/* Layout wrapper để đẩy footer xuống đáy */
 .layout-wrapper {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100vw; /* 👈 Thêm dòng này */
+  overflow-x: hidden;
 }
+
 
 main {
   flex: 1;
+  margin-top: 130px;
+  padding: 20px;
 }
 
-/* ========== Header ========== */
+/* === HEADER === */
 .header {
   position: fixed;
   top: 0;
@@ -41,6 +45,16 @@ main {
   z-index: 1000;
 }
 
+.logo {
+  height: 100px;
+  margin-right: 8px;
+}
+.logo img {
+  height: 100%;
+  width: auto;
+  border-radius: 50%;
+}
+
 .webname {
   position: absolute;
   left: 50%;
@@ -51,20 +65,12 @@ main {
   margin-top: -100px;
 }
 
-.logo {
-  height: 100px;
-}
-
-.logo img {
-  height: 100%;
-  border-radius: 50%;
-}
-
-/* ========== Navigation ========== */
+/* === MENU === */
 .menu {
   display: flex;
   align-items: center;
   gap: 24px;
+  margin-right: 20px;
 }
 
 .menu a {
@@ -91,14 +97,14 @@ main {
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
   min-width: 160px;
+  background: white;
   border: 1px solid #ccc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   opacity: 0;
   transform: translateY(-10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 100;
+  transition: all 0.3s ease;
+  z-index: 1;
 }
 
 .dropdown:hover .dropdown-content {
@@ -108,17 +114,19 @@ main {
 }
 
 .dropdown-content a {
-  padding: 10px;
   display: block;
-  color: #333;
-  text-decoration: none;
+  padding: 10px;
   border-bottom: 1px solid #eee;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s ease;
 }
 
 .dropdown-content a:hover {
-  background-color: #fce4ec;
+  background: #fce4ec;
 }
 
+/* === ACTIONS === */
 .actions {
   display: flex;
   align-items: center;
@@ -139,34 +147,15 @@ main {
   background-color: #a4001d;
 }
 
-/* ========== Main Body ========== */
-main {
-  margin-top: 130px;
-  padding: 20px;
-}
-
-.html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-.layout-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-main {
-  flex: 1;
-  margin-top: 130px;
-}
-
+/* === FOOTER === */
 .footer {
-  width: 100%;
-  box-sizing: border-box;
+  background-color: #990000;
+  color: white;
+  padding: 40px 20px 20px;
+  width: 100vw; 
+  overflow-x: hidden;
+  position: relative; 
 }
-
 
 .footer-container {
   max-width: 1100px;
@@ -188,29 +177,30 @@ main {
   font-weight: 600;
 }
 
-.footer-block p {
+.footer-block p,
+.footer-block ul {
   font-size: 1rem;
   line-height: 1.5;
+  margin: 0;
+  padding: 0;
 }
 
 .footer-block ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
 }
 
-.footer-block ul li {
+.footer-block li {
   margin-bottom: 8px;
 }
 
-.footer-block ul li a {
+.footer-block a {
   color: white;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
-.footer-block ul li a:hover {
+.footer-block a:hover {
   color: #ffd6d6;
   text-decoration: underline;
 }
@@ -220,4 +210,108 @@ main {
   font-size: 0.9rem;
   margin-top: 30px;
   opacity: 0.7;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1200px) {
+  .header { padding: 0 20px; }
+  .menu { gap: 16px; }
+  .webname { font-size: 18px; }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    padding: 20px;
+    text-align: center;
+  }
+  .logo { margin-bottom: 10px; }
+  .webname {
+    position: static;
+    transform: none;
+    margin-top: 0;
+  }
+  .menu {
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+  }
+  .actions { margin-top: 20px; }
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+.overview-section.personal-info {
+  background-color: #fff0f3;
+  padding: 30px 40px;
+  margin: 40px auto;
+  max-width: 900px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+}
+
+.overview-section.personal-info h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #990000;
+  border-bottom: 2px solid #ffcdd2;
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.overview-section.personal-info ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 30px;
+  padding-left: 250px;
+  font-size: 50px;
+}
+
+.overview-section.personal-info li {
+  font-size: 1.5rem;
+  line-height: 1.8;
+  color: #333;
+  
+}
+
+.btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.btn-action {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+ 
+}
+
+.btn-action.donate {
+  background-color: #d90429;
+  color: white;
+}
+
+.btn-action.donate:hover {
+  background-color: #a4001d;
+  transform: translateY(-2px);
+}
+
+.btn-action.request {
+  background-color: #ec407a;
+  color: white;
+}
+
+.btn-action.request:hover {
+  background-color: #c2185b;
+  transform: translateY(-2px);
 }

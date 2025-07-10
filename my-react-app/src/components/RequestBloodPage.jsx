@@ -85,17 +85,16 @@ export default function Home() {
             <h2>🧑 Thông Tin Người Dùng</h2>
             <ul>
               <li><strong>Họ tên:</strong> {user?.FullName || user?.fullName || user?.name || "Chưa đăng nhập"}</li>
-              <li><strong>Email:</strong> {user?.email || "Không có thông tin"}</li>
-              <li><strong>Số điện thoại:</strong> {user.phoneNumber || "Không có thông tin"}</li>
-              <li><strong>Ngày sinh:</strong> {user.dateOfBirth || "Không có thông tin"}</li>
-              <li><strong>Giới tính:</strong> {user?.gender || "Không có thông tin"}</li>
-              <li><strong>Nhóm máu:</strong> {user?.bloodType || "Chưa cập nhật"}</li>
-              <li><strong>Địa chỉ:</strong> {user?.address || "Không có thông tin"}</li>
+              <li><strong>Email:</strong> {user?.Email || "Không có thông tin"}</li>
+              <li><strong>Số điện thoại:</strong> {user.PhoneNumber || "Không có thông tin"}</li>
+              <li><strong>Ngày sinh:</strong> {user.DateOfBirth || "Không có thông tin"}</li>
+              <li><strong>Giới tính:</strong> {user?.Gender || "Không có thông tin"}</li>
+              <li><strong>Nhóm máu:</strong> {user?.BloodType || "Chưa cập nhật"}</li>
+              <li><strong>Địa chỉ:</strong> {user?.Address || "Không có thông tin"}</li>
             </ul>
 
             <div className="btn-group">
               <button className="btn-action donate" onClick={handleDonateClick}>🩸 Đăng ký hiến máu</button>
-              <button className="btn-action request" onClick={handleRequestClick}>❤️ Yêu cầu nhận máu</button>
             </div>
           </section>
         )}

@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useCallback, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
 import './BloodDonation.css';
 
 // Component for Registration Form
@@ -25,7 +26,7 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
   };
 
   return (
-    <form className='register-form' onSubmit={handleSubmit} aria-label="Đăng ký hiến máu">
+    <form className='register-form' onSubmit={handleSubmit}>
       <div className='form-group'>
         <input
           type='date'
@@ -33,18 +34,11 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           value={form.donateBloodDate}
           onChange={onChange}
           required
-          aria-label="Ngày hiến máu"
         />
         {errors.donateBloodDate && <span className='error'>{errors.donateBloodDate}</span>}
       </div>
       <div className='form-group'>
-        <select
-          name='bloodType'
-          value={form.bloodType}
-          onChange={onChange}
-          required
-          aria-label="Nhóm máu"
-        >
+        <select name='bloodType' value={form.bloodType} onChange={onChange} required>
           <option value='' disabled>Chọn nhóm máu</option>
           {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type) => (
             <option key={type} value={type}>{type}</option>
@@ -60,7 +54,6 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           onChange={onChange}
           placeholder='CMND/CCCD'
           required
-          aria-label="Số CMND/CCCD"
         />
         {errors.identificationNumber && <span className='error'>{errors.identificationNumber}</span>}
       </div>
@@ -70,7 +63,6 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           value={form.note}
           onChange={onChange}
           placeholder='Ghi chú (không bắt buộc)'
-          aria-label="Ghi chú"
         />
       </div>
       <button type='submit' className='submit-btn'>Đăng ký</button>
@@ -102,15 +94,9 @@ const RequestForm = React.memo(({ form, onChange, onSubmit }) => {
   };
 
   return (
-    <form className='request-form' onSubmit={handleSubmit} aria-label="Yêu cầu nhận máu">
+    <form className='request-form' onSubmit={handleSubmit}>
       <div className='form-group'>
-        <select
-          name='component'
-          value={form.component}
-          onChange={onChange}
-          required
-          aria-label="Thành phần máu"
-        >
+        <select name='component' value={form.component} onChange={onChange} required>
           <option value='' disabled>Chọn thành phần máu</option>
           {['Red Cells', 'Plasma', 'White Cells', 'Platelets'].map((comp) => (
             <option key={comp} value={comp}>{comp}</option>
@@ -119,13 +105,7 @@ const RequestForm = React.memo(({ form, onChange, onSubmit }) => {
         {errors.component && <span className='error'>{errors.component}</span>}
       </div>
       <div className='form-group'>
-        <select
-          name='bloodType'
-          value={form.bloodType}
-          onChange={onChange}
-          required
-          aria-label="Nhóm máu"
-        >
+        <select name='bloodType' value={form.bloodType} onChange={onChange} required>
           <option value='' disabled>Chọn nhóm máu</option>
           {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type) => (
             <option key={type} value={type}>{type}</option>
@@ -142,19 +122,12 @@ const RequestForm = React.memo(({ form, onChange, onSubmit }) => {
           placeholder='Số lượng (đơn vị)'
           min='1'
           required
-          aria-label="Số lượng"
         />
         {errors.quantity && <span className='error'>{errors.quantity}</span>}
       </div>
       <div className='form-group'>
-        <select
-          name='urgencyLevel'
-          value={form.urgencyLevel}
-          onChange={onChange}
-          required
-          aria-label="Mức độ khẩn cấp"
-        >
-          {['Normal', 'Urgent',].map((level) => (
+        <select name='urgencyLevel' value={form.urgencyLevel} onChange={onChange} required>
+          {['Normal', 'Urgent'].map((level) => (
             <option key={level} value={level}>{level}</option>
           ))}
         </select>
@@ -167,7 +140,6 @@ const RequestForm = React.memo(({ form, onChange, onSubmit }) => {
           onChange={onChange}
           placeholder='CMND/CCCD'
           required
-          aria-label="Số CMND/CCCD"
         />
         {errors.identificationNumber && <span className='error'>{errors.identificationNumber}</span>}
       </div>
@@ -176,9 +148,9 @@ const RequestForm = React.memo(({ form, onChange, onSubmit }) => {
   );
 });
 
-// Component for List Item
+// List Item Display
 const ListItem = React.memo(({ item, type }) => (
-  <div className={`${type}-item`} role="listitem">
+  <div className={`${type}-item`}>
     {type === 'register' ? (
       <>
         <p><strong>Ngày:</strong> {item.donateBloodDate}</p>
@@ -218,6 +190,15 @@ export default function BloodDonation() {
   });
   const [requestList, setRequestList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { user, logout } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const handleRegisterChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -268,6 +249,7 @@ export default function BloodDonation() {
 
   return (
     <>
+      {/* HEADER CẬP NHẬT */}
       <header className='header'>
         <div className='logo'>
           <Link to="/">
@@ -287,70 +269,80 @@ export default function BloodDonation() {
               <Link to='/blood/knowledge'>Blood Knowledge</Link>
             </div>
           </div>
+          <Link to='/register/request-blood'>Register/Request-Blood</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>
           <Link to='/about'>About Us</Link>
         </nav>
         <div className='actions'>
-          <Link to='/login'>
-            <button className='login-btn'>👤 Login</button>
-          </Link>
+          {!user ? (
+            <Link to='/login'>
+              <button className='login-btn'>👤 Login</button>
+            </Link>
+          ) : (
+            <div
+              className="dropdown user-menu"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}
+            >
+              <div className="dropbtn user-name">
+                Xin chào, {user?.FullName || user?.fullName || user?.name || 'User'} <span className="ml-2">▼</span>
+              </div>
+              {isOpen && (
+                <div className="dropdown-content user-dropdown">
+                  <Link to="/profile">👤 Thông tin cá nhân</Link>
+                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <button className="logout-btn" onClick={handleLogout}>
+                    🚪 Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
       <main className='body'>
+        {/* Form và danh sách đăng ký */}
         <section className='register-section'>
           <h2>Đăng ký hiến máu</h2>
-          <RegistrationForm
-            form={registerForm}
-            onChange={handleRegisterChange}
-            onSubmit={handleRegisterSubmit}
-          />
+          <RegistrationForm form={registerForm} onChange={handleRegisterChange} onSubmit={handleRegisterSubmit} />
           {registerList.length > 0 && (
             <div className='register-list'>
               <h3>Đăng ký của bạn</h3>
               <div className='list-container'>
-                {isLoading ? (
-                  <div className='skeleton'></div>
-                ) : (
-                  registerList.map((item) => (
-                    <ListItem key={item.idRegister} item={item} type="register" />
-                  ))
-                )}
+                {isLoading ? <div className='skeleton'></div> : registerList.map((item) => (
+                  <ListItem key={item.idRegister} item={item} type="register" />
+                ))}
               </div>
             </div>
           )}
         </section>
 
+        {/* Button khẩn cấp */}
         <div className='emergency-button-container'>
           <Link to='/emergency-blood'>
             <button className='emergency-btn'>🚨 Yêu cầu máu khẩn cấp</button>
           </Link>
         </div>
 
+        {/* Form và danh sách yêu cầu */}
         <section className='request-section'>
           <h2>Yêu cầu nhận máu</h2>
-          <RequestForm
-            form={requestForm}
-            onChange={handleRequestChange}
-            onSubmit={handleRequestSubmit}
-          />
+          <RequestForm form={requestForm} onChange={handleRequestChange} onSubmit={handleRequestSubmit} />
           {requestList.length > 0 && (
             <div className='request-list'>
               <h3>Yêu cầu của bạn</h3>
               <div className='list-container'>
-                {isLoading ? (
-                  <div className='skeleton'></div>
-                ) : (
-                  requestList.map((item) => (
-                    <ListItem key={item.idRequest} item={item} type="request" />
-                  ))
-                )}
+                {isLoading ? <div className='skeleton'></div> : requestList.map((item) => (
+                  <ListItem key={item.idRequest} item={item} type="request" />
+                ))}
               </div>
             </div>
           )}
         </section>
 
+        {/* FOOTER */}
         <footer className='footer'>
           <div className='footer-container'>
             <div className='footer-block location'>
