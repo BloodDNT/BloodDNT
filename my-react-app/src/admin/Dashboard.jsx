@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Card from "./Card";
-import BloodInventoryTable from "./BloodInventoryTable";
-import RegisteredDonorsTable from "./RegisteredDonorsTable";
-import SuccessfulDonationsTable from "./SuccessfulDonationsTable";
-import UpcomingAppointmentsTable from "./UpcomingAppointmentsTable";
+import BloodInventoryTable from "./table/BloodInventoryTable";
+import RegisteredDonorsTable from "./table/RegisteredDonorsTable";
+import SuccessfulDonationsTable from "./table/SuccessfulDonationsTable";
+import UpcomingAppointmentsTable from "./table/UpcomingAppointmentsTable";
+
 
 
 import "../styles/dashboard.css";

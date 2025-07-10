@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/table.css";
+import "../../styles/table.css";
 
 const ROWS_PER_PAGE = 5;
 

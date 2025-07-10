@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/table.css";
+import "../../styles/table.css";
 import axios from "axios";
 
 const SuccessfulDonationsTable = () => {

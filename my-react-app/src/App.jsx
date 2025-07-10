@@ -13,9 +13,7 @@ import UserProfile from "./components/UserProfile";
 
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
-import BloodInventoryTable from "./admin/BloodInventoryTable";
-import RegisteredDonorsTable from "./admin/RegisteredDonorsTable";
-import PendingRequestsTable from "./admin/PendingRequestsTable";
+
 
 export default function App() {
   return (
@@ -35,9 +33,6 @@ export default function App() {
         {/* Admin pages with persistent Sidebar */}
         <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="blood-inventory" element={<BloodInventoryTable />} />
-          <Route path="donors" element={<RegisteredDonorsTable />} />
-          <Route path="requests" element={<PendingRequestsTable />} />
         </Route>
       </Routes>
     </UserProvider>

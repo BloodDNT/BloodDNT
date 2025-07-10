@@ -1,5 +1,5 @@
 import React from "react";
-import "../styles/table.css";
+import "../../styles/table.css";
 
 const BloodInventoryTable = ({ data }) => {
   const totalAll = data.reduce((sum, row) => sum + (row.total || 0), 0);
