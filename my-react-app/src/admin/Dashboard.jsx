@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Card from "./Card";
 import BloodInventoryTable from "./BloodInventoryTable";
-import { RegisteredDonorsTable } from "./RegisteredDonorsTable";
+import RegisteredDonorsTable from "./RegisteredDonorsTable";
 import "../styles/dashboard.css";
 
 function Dashboard() {

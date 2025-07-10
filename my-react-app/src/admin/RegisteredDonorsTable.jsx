@@ -3,7 +3,7 @@ import "../styles/table.css";
 
 const ROWS_PER_PAGE = 5;
 
-export const RegisteredDonorsTable = ({ data }) => {
+const RegisteredDonorsTable  = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(data.length / ROWS_PER_PAGE);
 
@@ -72,3 +72,6 @@ export const RegisteredDonorsTable = ({ data }) => {
     </div>
   );
 };
+
+
+export default RegisteredDonorsTable;
