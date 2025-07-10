@@ -41,3 +41,28 @@
   padding: 10px;
   border-radius: 6px;
 }
+
+.admin-layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 220px;
+  color: white;
+  padding: 20px;
+  height: 100vh;
+  flex-shrink: 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.admin-content {
+  margin-left: 220px;   /* đẩy nội dung ra khỏi sidebar */
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}

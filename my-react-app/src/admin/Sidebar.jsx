@@ -10,26 +10,25 @@ const Sidebar = () => {
       <nav>
         <ul>
           <li>
-            <NavLink to="/" exact="true" activeclassname="active">
+            <NavLink to="/dashboard" end className={({ isActive }) => isActive ? "active" : ""}>
               <FaTachometerAlt /> Dashboard
             </NavLink>
           </li>
           <li>
-            <NavLink to="/blood-inventory" activeclassname="active">
+            <NavLink to="/dashboard/blood-inventory" className={({ isActive }) => isActive ? "active" : ""}>
               <FaTint /> Blood Inventory
             </NavLink>
           </li>
           <li>
-            <NavLink to="/donors" activeclassname="active">
+            <NavLink to="/dashboard/donors" className={({ isActive }) => isActive ? "active" : ""}>
               <FaUser /> Donors
             </NavLink>
           </li>
           <li>
-            <NavLink to="/requests" activeclassname="active">
+            <NavLink to="/dashboard/requests" className={({ isActive }) => isActive ? "active" : ""}>
               <FaHospital /> Requests
             </NavLink>
           </li>
-          
         </ul>
       </nav>
     </div>
