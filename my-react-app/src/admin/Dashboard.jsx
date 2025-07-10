@@ -3,6 +3,8 @@ import axios from "axios";
 import Card from "./Card";
 import BloodInventoryTable from "./BloodInventoryTable";
 import RegisteredDonorsTable from "./RegisteredDonorsTable";
+import SuccessfulDonationsTable from "./SuccessfulDonationsTable";
+
 import "../styles/dashboard.css";
 
 function Dashboard() {
@@ -10,17 +12,21 @@ function Dashboard() {
 
   const [inventoryData, setInventoryData] = useState([]);
   const [donorsData, setDonorsData] = useState([]);
+  const [successfulData, setSuccessfulData] = useState([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, donorsRes] = await Promise.all([
+        const [inventoryRes, donorsRes, successRes] = await Promise.all([
           axios.get("http://localhost:5000/api/blood-inventory"),
           axios.get("http://localhost:5000/api/registered-donors"),
+          axios.get("http://localhost:5000/api/successful-donations"),,
         ]);
 
         setInventoryData(inventoryRes.data);
         setDonorsData(donorsRes.data);
+        setSuccessfulData(successRes.data);
       } catch (error) {
         console.error("❌ Lỗi khi tải dữ liệu:", error);
       }
@@ -34,6 +40,8 @@ function Dashboard() {
   };
 
   const totalUnits = inventoryData.reduce((sum, row) => sum + (row.total || 0), 0);
+  const totalSuccessCount = successfulData.length;
+
 
   return (
     <div className="dashboard-container">
@@ -67,11 +75,20 @@ function Dashboard() {
             color="#2196F3"
           />
         </div>
+        <div onClick={() => handleCardClick("successful")}>
+  <Card
+    icon="✅"
+    title="Successful Donations"
+    value={totalSuccessCount.toLocaleString()}
+    color="#4CAF50"
+  />
+</div>
       </div>
 
       {/* Tables */}
       {activeTable === "inventory" && <BloodInventoryTable data={inventoryData} />}
       {activeTable === "registered" && <RegisteredDonorsTable data={donorsData} />}
+      {activeTable === "successful" && <SuccessfulDonationsTable />}
     </div>
   );
 }
