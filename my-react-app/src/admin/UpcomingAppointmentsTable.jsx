@@ -1,64 +1,56 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "../styles/table.css";
+import axios from "axios";
 
 const UpcomingAppointmentsTable = () => {
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true); // thêm trạng thái loading
 
   useEffect(() => {
-    axios
-       .get("http://localhost:5000/api/upcoming-donations")
-      .then((res) => {
+    axios.get("http://localhost:5000/api/upcoming-appointments")
+      .then(res => {
         console.log("✅ Dữ liệu từ API (Upcoming):", res.data);
         if (Array.isArray(res.data)) {
           setAppointments(res.data);
         } else {
-          console.warn("❗ API không trả về dạng mảng:", res.data);
-          setAppointments([]);
+          console.error("❌ Dữ liệu không phải mảng:", res.data);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("❌ Lỗi khi gọi API Upcoming Appointments:", err);
-        setAppointments([]); 
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }, []);
 
   return (
-    <div className="inventory-table">
-      <h2>Upcoming Donation Appointments</h2>
+    <div className="table-container">
+      <h2>Lịch hẹn hiến máu sắp tới</h2>
+      <p><strong>Tổng số lịch hẹn:</strong> {appointments.length}</p>
 
-      {loading ? (
-        <p>⏳ Đang tải dữ liệu...</p>
-      ) : (
-        <table>
-          <thead>
+      <table className="custom-table">
+        <thead>
+          <tr>
+            <th>Người hiến</th>
+            <th>Ngày</th>
+            <th>Giờ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {appointments.length === 0 ? (
             <tr>
-              <th>Donor</th>
-              <th>Date</th>
-              <th>Time</th>
+              <td colSpan="3" style={{ textAlign: "center", padding: "16px" }}>
+                Không có lịch hẹn nào sắp tới.
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {appointments.length > 0 ? (
-              appointments.map((appt, i) => (
-                <tr key={i}>
-                  <td>{appt.Donor}</td>
-                  <td>{appt.Date}</td>
-                  <td>{appt.Time}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3">No upcoming appointments</td>
+          ) : (
+            appointments.map((appt, index) => (
+              <tr key={index}>
+                <td>{appt.Donor}</td>
+                <td>{new Date(appt.Date).toLocaleDateString()}</td>
+                <td>{appt.Time}</td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

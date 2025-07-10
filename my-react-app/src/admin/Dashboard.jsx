@@ -4,6 +4,8 @@ import Card from "./Card";
 import BloodInventoryTable from "./BloodInventoryTable";
 import RegisteredDonorsTable from "./RegisteredDonorsTable";
 import SuccessfulDonationsTable from "./SuccessfulDonationsTable";
+import UpcomingAppointmentsTable from "./UpcomingAppointmentsTable";
+
 
 import "../styles/dashboard.css";
 
@@ -13,20 +15,24 @@ function Dashboard() {
   const [inventoryData, setInventoryData] = useState([]);
   const [donorsData, setDonorsData] = useState([]);
   const [successfulData, setSuccessfulData] = useState([]);
+  const [upcomingData, setUpcomingData] = useState([]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, donorsRes, successRes] = await Promise.all([
+        const [inventoryRes, donorsRes, successRes, upcomingRes] = await Promise.all([
           axios.get("http://localhost:5000/api/blood-inventory"),
           axios.get("http://localhost:5000/api/registered-donors"),
-          axios.get("http://localhost:5000/api/successful-donations"),,
+          axios.get("http://localhost:5000/api/successful-donations"),
+          axios.get("http://localhost:5000/api/upcoming-appointments")
         ]);
 
         setInventoryData(inventoryRes.data);
         setDonorsData(donorsRes.data);
         setSuccessfulData(successRes.data);
+        setUpcomingData(upcomingRes.data);
+
       } catch (error) {
         console.error("❌ Lỗi khi tải dữ liệu:", error);
       }
@@ -41,6 +47,7 @@ function Dashboard() {
 
   const totalUnits = inventoryData.reduce((sum, row) => sum + (row.total || 0), 0);
   const totalSuccessCount = successfulData.length;
+  const totalUpcoming = upcomingData.length;
 
 
   return (
@@ -76,19 +83,29 @@ function Dashboard() {
           />
         </div>
         <div onClick={() => handleCardClick("successful")}>
-  <Card
-    icon="✅"
-    title="Successful Donations"
-    value={totalSuccessCount.toLocaleString()}
-    color="#4CAF50"
-  />
-</div>
+          <Card
+            icon="✅"
+            title="Successful Donations"
+            value={totalSuccessCount.toLocaleString()}
+            color="#4CAF50"
+          />
+        </div>
+        <div onClick={() => handleCardClick("upcoming")}>
+          <Card
+            icon="📅"
+            title="Upcoming Appointments"
+            value={totalUpcoming.toLocaleString()}
+            color="#4CAF50"
+          />
+        </div>
       </div>
 
       {/* Tables */}
       {activeTable === "inventory" && <BloodInventoryTable data={inventoryData} />}
       {activeTable === "registered" && <RegisteredDonorsTable data={donorsData} />}
       {activeTable === "successful" && <SuccessfulDonationsTable />}
+      {activeTable === "upcoming" && <UpcomingAppointmentsTable />}
+
     </div>
   );
 }
