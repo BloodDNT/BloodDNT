@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import './homepage.css';
+import './requestBlood.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
 
@@ -14,7 +14,7 @@ export default function Home() {
   };
 
   const handleDonateClick = () => {
-    navigate('/register-donation');
+    navigate('/blood-donation');
   };
 
   const handleRequestClick = () => {
@@ -23,6 +23,7 @@ export default function Home() {
 
   return (
     <>
+ <div className="layout-wrapper">
       <header className='header'>
         <div className='logo'>
           <Link to="/">
@@ -78,25 +79,27 @@ export default function Home() {
         </div>
       </header> 
 
-      {user && (
-        <section className='overview-section personal-info'>
-          <h2>🧑 Thông Tin Người Dùng</h2>
-          <ul>
-            <li><strong>Họ tên:</strong> {user?.FullName || user?.fullName || user?.name || "Chưa đăng nhập"}</li>
-            <li><strong>Email:</strong> {user?.email || "Không có thông tin"}</li>
-            <li><strong>Số điện thoại:</strong> {user.phoneNumber || "Không có thông tin"}</li>
-            <li><strong>Ngày sinh:</strong> {user.dateOfBirth || "Không có thông tin"}</li>
-            <li><strong>Giới tính:</strong> {user?.gender || "Không có thông tin"}</li>
-            <li><strong>Nhóm máu:</strong> {user?.bloodType || "Chưa cập nhật"}</li>
-            <li><strong>Địa chỉ:</strong> {user?.address || "Không có thông tin"}</li>
-          </ul>
+      <main>
+        {user && (
+          <section className='overview-section personal-info'>
+            <h2>🧑 Thông Tin Người Dùng</h2>
+            <ul>
+              <li><strong>Họ tên:</strong> {user?.FullName || user?.fullName || user?.name || "Chưa đăng nhập"}</li>
+              <li><strong>Email:</strong> {user?.email || "Không có thông tin"}</li>
+              <li><strong>Số điện thoại:</strong> {user.phoneNumber || "Không có thông tin"}</li>
+              <li><strong>Ngày sinh:</strong> {user.dateOfBirth || "Không có thông tin"}</li>
+              <li><strong>Giới tính:</strong> {user?.gender || "Không có thông tin"}</li>
+              <li><strong>Nhóm máu:</strong> {user?.bloodType || "Chưa cập nhật"}</li>
+              <li><strong>Địa chỉ:</strong> {user?.address || "Không có thông tin"}</li>
+            </ul>
 
-          <div className="btn-group">
-            <button className="btn-action donate" onClick={handleDonateClick}>🩸 Đăng ký hiến máu</button>
-            <button className="btn-action request" onClick={handleRequestClick}>❤️ Yêu cầu nhận máu</button>
-          </div>
-        </section>
-      )}
+            <div className="btn-group">
+              <button className="btn-action donate" onClick={handleDonateClick}>🩸 Đăng ký hiến máu</button>
+              <button className="btn-action request" onClick={handleRequestClick}>❤️ Yêu cầu nhận máu</button>
+            </div>
+          </section>
+        )}
+      </main>
 
       <section className='footer'>
         <div className='footer-container'>
@@ -120,6 +123,8 @@ export default function Home() {
         </div>
         <p className='footer-copy'>© 2025 HopeDonor. All rights reserved.</p>
       </section>
+    </div>
     </>
+    
   );
 }
