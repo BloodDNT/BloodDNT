@@ -21,7 +21,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api', registerRoute);
-app.use(donationHistoryRoute);
+app.use('/api', donationHistoryRoute);
 const PORT = process.env.PORT || 5000;
 sequelize.sync()
   .then(() => {

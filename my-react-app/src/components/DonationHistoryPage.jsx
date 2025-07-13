@@ -1,15 +1,44 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import './DonationHistoryPage.css';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 import { Link, useNavigate } from 'react-router-dom';
+
+function DonationItem({ item, expandedCardId, onToggle }) {
+  const isExpanded = expandedCardId === item.IDRegister;
+
+  return (
+    <div className='donation-item'>
+      <p><strong>Ngày hiến máu:</strong> {new Date(item.DonateBloodDate).toLocaleDateString('vi-VN')}</p>
+      <p><strong>Nhóm máu:</strong> {item.BloodTypeName}</p>
+
+      <button
+        onClick={() => onToggle(item.IDRegister)}
+        aria-expanded={isExpanded}
+        aria-controls={`donation-details-${item.IDRegister}`}
+        type="button"
+      >
+        {isExpanded ? 'Ẩn chi tiết' : 'Xem chi tiết'}
+      </button>
+
+      {isExpanded && (
+        <div id={`donation-details-${item.IDRegister}`} className="donation-details">
+          <hr />
+          <p><strong>CMND/CCCD:</strong> {item.IdentificationNumber}</p>
+          <p><strong>Ghi chú:</strong> {item.Note || 'Không có'}</p>
+          <p><strong>Trạng thái:</strong> {item.Status}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function DonationHistoryPage() {
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [expandedCardId, setExpandedCardId] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -23,14 +52,10 @@ export default function DonationHistoryPage() {
     const fetchDonationHistory = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/api/donation-history/${user.IDUser}`);
-        if (Array.isArray(res.data)) {
-          setHistory(res.data);
-        } else {
-          console.warn('Dữ liệu không đúng định dạng:', res.data);
-          setHistory([]);
-        }
+        setHistory(Array.isArray(res.data) ? res.data : []);
       } catch (error) {
-        console.error('Lỗi khi lấy lịch sử:', error);
+        console.error('❌ Lỗi khi lấy lịch sử:', error);
+        setHistory([]);
       } finally {
         setLoading(false);
       }
@@ -39,13 +64,18 @@ export default function DonationHistoryPage() {
     fetchDonationHistory();
   }, [user?.IDUser]);
 
+  const toggleExpandedCard = useCallback(
+    (id) => {
+      setExpandedCardId(prev => (prev === id ? null : id));
+    },
+    []
+  );
+
   return (
     <>
       <header className='header'>
         <div className='logo'>
-          <Link to="/">
-            <img src='/LogoPage.jpg' alt='Logo' loading="lazy" />
-          </Link>
+          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' /></Link>
           <div className='webname'>Hope Donor 🩸</div>
         </div>
 
@@ -72,17 +102,13 @@ export default function DonationHistoryPage() {
           {!user ? (
             <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
           ) : (
-            <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
-              <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || 'User'} <span className="ml-2">▼</span>
+            <div className="dropdown user-menu">
+              <div className="dropbtn user-name">Xin chào, {user.FullName || 'User'} ▼</div>
+              <div className="dropdown-content user-dropdown">
+                <Link to="/profile">👤 Thông tin cá nhân</Link>
+                <Link to="/notifications">🔔 Thông báo</Link>
+                <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>🚪 Đăng xuất</button>
               </div>
-              {isOpen && (
-                <div className="dropdown-content user-dropdown">
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
-                  <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>🚪 Đăng xuất</button>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -96,14 +122,13 @@ export default function DonationHistoryPage() {
           <div className='no-data'>Chưa có lịch sử hiến máu.</div>
         ) : (
           <div className='donation-list'>
-            {history.map((item) => (
-              <div className='donation-item' key={item.IDRegister}>
-                <p><strong>Ngày hiến máu:</strong> {new Date(item.DonateBloodDate).toLocaleDateString('vi-VN')}</p>
-                <p><strong>Nhóm máu:</strong> {item.BloodTypeName || item.IDBlood}</p>
-                <p><strong>CMND/CCCD:</strong> {item.IdentificationNumber}</p>
-                <p><strong>Ghi chú:</strong> {item.Note || 'Không có'}</p>
-                <p><strong>Trạng thái:</strong> <span className={`donation-status ${item.Status?.toLowerCase() || 'unknown'}`}>{item.Status}</span></p>
-              </div>
+            {history.map(item => (
+              <DonationItem
+                key={item.IDRegister}
+                item={item}
+                expandedCardId={expandedCardId}
+                onToggle={toggleExpandedCard}
+              />
             ))}
           </div>
         )}
