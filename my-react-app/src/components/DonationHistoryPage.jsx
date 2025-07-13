@@ -2,26 +2,42 @@ import React, { useState, useEffect, useContext } from 'react';
 import './DonationHistoryPage.css';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function DonationHistoryPage() {
-  const { user } = useContext(UserContext);
+  const { user, logout } = useContext(UserContext);
+  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (!user?.IDUser) return;
+
     const fetchDonationHistory = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/donation-history/${user?.IDUser}`);
-        setHistory(res.data);
+        const res = await axios.get(`http://localhost:5000/api/donation-history/${user.IDUser}`);
+        if (Array.isArray(res.data)) {
+          setHistory(res.data);
+        } else {
+          console.warn('Dữ liệu không đúng định dạng:', res.data);
+          setHistory([]);
+        }
       } catch (error) {
         console.error('Lỗi khi lấy lịch sử:', error);
       } finally {
         setLoading(false);
       }
     };
-    if (user?.IDUser) fetchDonationHistory();
-  }, [user]);
+
+    fetchDonationHistory();
+  }, [user?.IDUser]);
 
   return (
     <>
@@ -32,6 +48,7 @@ export default function DonationHistoryPage() {
           </Link>
           <div className='webname'>Hope Donor 🩸</div>
         </div>
+
         <nav className='menu'>
           <Link to='/bloodguide'>Blood Guide</Link>
           <div className='dropdown'>
@@ -45,13 +62,29 @@ export default function DonationHistoryPage() {
             </div>
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
-          <Link to='/history'>DonatationHistory</Link>
+          <Link to='/history'>Donation History</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>
           <Link to='/about'>About Us</Link>
         </nav>
+
         <div className='actions'>
-          <Link to='/profile'>👤 Cá nhân</Link>
+          {!user ? (
+            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
+          ) : (
+            <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+              <div className="dropbtn user-name">
+                Xin chào, {user?.FullName || user?.fullName || user?.name || 'User'} <span className="ml-2">▼</span>
+              </div>
+              {isOpen && (
+                <div className="dropdown-content user-dropdown">
+                  <Link to="/profile">👤 Thông tin cá nhân</Link>
+                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>🚪 Đăng xuất</button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
@@ -65,11 +98,11 @@ export default function DonationHistoryPage() {
           <div className='donation-list'>
             {history.map((item) => (
               <div className='donation-item' key={item.IDRegister}>
-                <p><strong>Ngày hiến máu:</strong> {item.DonateBloodDate}</p>
+                <p><strong>Ngày hiến máu:</strong> {new Date(item.DonateBloodDate).toLocaleDateString('vi-VN')}</p>
                 <p><strong>Nhóm máu:</strong> {item.BloodTypeName || item.IDBlood}</p>
                 <p><strong>CMND/CCCD:</strong> {item.IdentificationNumber}</p>
                 <p><strong>Ghi chú:</strong> {item.Note || 'Không có'}</p>
-                <p><strong>Trạng thái:</strong> <span className={`donation-status ${item.Status}`}>{item.Status}</span></p>
+                <p><strong>Trạng thái:</strong> <span className={`donation-status ${item.Status?.toLowerCase() || 'unknown'}`}>{item.Status}</span></p>
               </div>
             ))}
           </div>

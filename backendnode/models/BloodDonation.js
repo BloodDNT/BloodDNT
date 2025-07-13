@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); // ✅ Đảm bảo import sequelize
-
+const GroupBlood = require('./GroupBlood');
 const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   IDRegister: {
     type: DataTypes.INTEGER,
@@ -39,5 +39,5 @@ const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   tableName: 'RegisterDonateBlood',
   timestamps: false,
 });
-
+RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
 module.exports = RegisterDonateBlood;

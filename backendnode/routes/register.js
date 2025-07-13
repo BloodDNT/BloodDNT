@@ -1,8 +1,8 @@
-// routes/register.js
+
 const express = require('express');
 const router = express.Router();
 
-const RegisterDonateBlood = require('../models/BloodDonation'); // 🧠 Đảm bảo đã import đúng model
+const RegisterDonateBlood = require('../models/BloodDonation'); 
 
 router.post('/register-blood', async (req, res) => {
   try {
@@ -15,13 +15,13 @@ router.post('/register-blood', async (req, res) => {
     } = req.body;
 
     const newRecord = await RegisterDonateBlood.create({
-      // ❌ Không cần IDRegister nếu là identity (auto increment)
+      
       IDUser: parseInt(IDUser), // Đảm bảo là kiểu số
       DonateBloodDate,
       IDBlood: parseInt(IDBlood),
       IdentificationNumber,
       Note,
-      Status: 'Pendings',
+      Status: 'Pending',
       QRCode: null
     });
 

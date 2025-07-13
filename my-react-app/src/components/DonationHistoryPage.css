@@ -69,3 +69,15 @@
   color: #999;
   margin-top: 20px;
 }
+.donation-status.pending {
+  color: orange;
+}
+.donation-status.approved {
+  color: green;
+}
+.donation-status.rejected {
+  color: red;
+}
+.donation-status.unknown {
+  color: gray;
+}
