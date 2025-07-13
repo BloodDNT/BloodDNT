@@ -26,7 +26,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, donorsRes, successRes, upcomingRes] = await Promise.all([
+        const [inventoryRes, donorsRes, successRes, upcomingRes, usersRes] = await Promise.all([
           axios.get("http://localhost:5000/api/blood-inventory"),
           axios.get("http://localhost:5000/api/registered-donors"),
           axios.get("http://localhost:5000/api/successful-donations"),
@@ -38,6 +38,9 @@ function Dashboard() {
         setDonorsData(donorsRes.data);
         setSuccessfulData(successRes.data);
         setUpcomingData(upcomingRes.data);
+
+         const nonAdminUsers = usersRes.data.filter(user => user.Role !== "Admin");
+      setUsers(nonAdminUsers);
 
       } catch (error) {
         console.error("❌ Lỗi khi tải dữ liệu:", error);
@@ -54,6 +57,7 @@ function Dashboard() {
   const totalUnits = inventoryData.reduce((sum, row) => sum + (row.total || 0), 0);
   const totalSuccessCount = successfulData.length;
   const totalUpcoming = upcomingData.length;
+  const totalUser = users.length;
 
 
   return (
@@ -63,10 +67,6 @@ function Dashboard() {
         <div>
           <h1>Dashboard</h1>
           <p>Blood Donation Support System</p>
-        </div>
-        <div className="dashboard-actions">
-          <button className="btn manage">Manage</button>
-          <button className="btn add">Add Donor</button>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ function Dashboard() {
           <Card
             icon="🧑‍💼"
             title="Total Users"
-            value={users.length.toLocaleString()}
+            value={totalUser.toLocaleString()}
             color="#9C27B0"
           />
         </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/table.css";
 
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 1;
 
 const RegisteredDonorsTable = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,7 +79,14 @@ const RegisteredDonorsTable = ({ data }) => {
       </table>
 
       {data.length > ROWS_PER_PAGE && (
-        <div className="pagination-controls">
+        <div className="pagination-controls"
+         style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "16px",
+            marginTop: "16px",
+          }}>
           <button onClick={handlePrev} disabled={currentPage === 1}>
             ◀ Trang trước
           </button>
