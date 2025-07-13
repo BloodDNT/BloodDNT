@@ -32,6 +32,9 @@ app.use('/api/upcoming-appointments', upcomingAppointmentsRoutes);
 const successfulDonationsRoutes = require('./routes/successfulDonations');
 app.use('/api/successful-donations', successfulDonationsRoutes);
 
+const userRoutes = require('./routes/users');
+app.use('/api/users', userRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 

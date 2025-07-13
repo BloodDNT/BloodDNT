@@ -5,6 +5,8 @@ import BloodInventoryTable from "./table/BloodInventoryTable";
 import RegisteredDonorsTable from "./table/RegisteredDonorsTable";
 import SuccessfulDonationsTable from "./table/SuccessfulDonationsTable";
 import UpcomingAppointmentsTable from "./table/UpcomingAppointmentsTable";
+import UserManagement from "./table/UserManagement";
+
 
 
 
@@ -17,6 +19,8 @@ function Dashboard() {
   const [donorsData, setDonorsData] = useState([]);
   const [successfulData, setSuccessfulData] = useState([]);
   const [upcomingData, setUpcomingData] = useState([]);
+  const [users, setUsers] = useState([]);
+
 
 
   useEffect(() => {
@@ -26,7 +30,8 @@ function Dashboard() {
           axios.get("http://localhost:5000/api/blood-inventory"),
           axios.get("http://localhost:5000/api/registered-donors"),
           axios.get("http://localhost:5000/api/successful-donations"),
-          axios.get("http://localhost:5000/api/upcoming-appointments")
+          axios.get("http://localhost:5000/api/upcoming-appointments"),
+          axios.get("http://localhost:5000/api/users")
         ]);
 
         setInventoryData(inventoryRes.data);
@@ -99,6 +104,14 @@ function Dashboard() {
             color="#4CAF50"
           />
         </div>
+        <div onClick={() => handleCardClick("users")}>
+          <Card
+            icon="🧑‍💼"
+            title="Total Users"
+            value={users.length.toLocaleString()}
+            color="#9C27B0"
+          />
+        </div>
       </div>
 
       {/* Tables */}
@@ -106,6 +119,7 @@ function Dashboard() {
       {activeTable === "registered" && <RegisteredDonorsTable data={donorsData} />}
       {activeTable === "successful" && <SuccessfulDonationsTable />}
       {activeTable === "upcoming" && <UpcomingAppointmentsTable />}
+      {activeTable === "users" && <UserManagement />}
 
     </div>
   );
