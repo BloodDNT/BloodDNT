@@ -8,9 +8,10 @@ const UserManagement = () => {
   const [form, setForm] = useState({
     FullName: "",
     Email: "",
-    Role: "Donor",
+    Role: "User",
     Password: "",
   });
+  const [filterRole, setFilterRole] = useState("All");
 
   useEffect(() => {
     fetchUsers();
@@ -19,9 +20,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/users");
-      // Ẩn người dùng Admin
-      const filteredUsers = res.data.filter(user => user.Role !== "Admin");
-      setUsers(filteredUsers);
+      setUsers(res.data);
     } catch (err) {
       console.error("❌ Lỗi khi tải danh sách người dùng:", err);
     }
@@ -40,7 +39,7 @@ const UserManagement = () => {
       } else {
         await axios.post("http://localhost:5000/api/users", form);
       }
-      setForm({ FullName: "", Email: "", Role: "Donor", Password: "" });
+      setForm({ FullName: "", Email: "", Role: "User", Password: "" });
       setEditingUser(null);
       fetchUsers();
     } catch (err) {
@@ -68,6 +67,11 @@ const UserManagement = () => {
       }
     }
   };
+
+  const filteredUsers = users.filter((user) => {
+    if (filterRole === "All") return user.Role === "User" || user.Role === "Staff";
+    return user.Role === filterRole;
+  });
 
   return (
     <div className="table-container">
@@ -98,11 +102,20 @@ const UserManagement = () => {
           required={!editingUser}
         />
         <select name="Role" value={form.Role} onChange={handleInputChange}>
-          <option value="Donor">Người hiến máu</option>
+          <option value="User">Người hiến máu</option>
           <option value="Staff">Nhân viên y tế</option>
         </select>
         <button type="submit">{editingUser ? "Cập nhật" : "Thêm mới"}</button>
       </form>
+
+      <div style={{ margin: "1rem 0" }}>
+        <label>Lọc theo vai trò: </label>
+        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)}>
+          <option value="All">Tất cả</option>
+          <option value="User">Người hiến máu</option>
+          <option value="Staff">Nhân viên y tế</option>
+        </select>
+      </div>
 
       <table className="custom-table">
         <thead>
@@ -115,12 +128,12 @@ const UserManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {users.length === 0 ? (
+          {filteredUsers.length === 0 ? (
             <tr>
               <td colSpan="5" style={{ textAlign: "center" }}>Không có người dùng.</td>
             </tr>
           ) : (
-            users.map((user, index) => (
+            filteredUsers.map((user, index) => (
               <tr key={user.IDUser}>
                 <td>{index + 1}</td>
                 <td>{user.FullName}</td>
