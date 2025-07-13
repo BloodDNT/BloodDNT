@@ -44,6 +44,7 @@ export default function Home() {
             </div>
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
+          <Link to='/history'>DonatationHistory</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>
           <Link to='/about'>About Us</Link>
@@ -84,13 +85,14 @@ export default function Home() {
           <section className='overview-section personal-info'>
             <h2>🧑 Thông Tin Người Dùng</h2>
             <ul>
-              <li><strong>Họ tên:</strong> {user?.FullName || user?.fullName || user?.name || "Chưa đăng nhập"}</li>
-              <li><strong>Email:</strong> {user?.Email || "Không có thông tin"}</li>
-              <li><strong>Số điện thoại:</strong> {user.PhoneNumber || "Không có thông tin"}</li>
-              <li><strong>Ngày sinh:</strong> {user.DateOfBirth || "Không có thông tin"}</li>
-              <li><strong>Giới tính:</strong> {user?.Gender || "Không có thông tin"}</li>
-              <li><strong>Nhóm máu:</strong> {user?.BloodType || "Chưa cập nhật"}</li>
-              <li><strong>Địa chỉ:</strong> {user?.Address || "Không có thông tin"}</li>
+            <li><strong>Họ tên:</strong> {user?.fullName || user?.FullName || user?.name || "Chưa đăng nhập"}</li>
+<li><strong>Email:</strong> {user?.email || user?.Email || "Không có thông tin"}</li>
+<li><strong>Số điện thoại:</strong> {user?.phoneNumber || user?.PhoneNumber || "Không có thông tin"}</li>
+<li><strong>Ngày sinh:</strong> {user?.dateOfBirth || user?.DateOfBirth || "Không có thông tin"}</li>
+<li><strong>Giới tính:</strong> {user?.gender || user?.Gender || "Không có thông tin"}</li>
+<li><strong>Nhóm máu:</strong> {user?.bloodType || user?.BloodType || "Chưa cập nhật"}</li>
+<li><strong>Địa chỉ:</strong> {user?.address || user?.Address || "Không có thông tin"}</li>
+
             </ul>
 
             <div className="btn-group">

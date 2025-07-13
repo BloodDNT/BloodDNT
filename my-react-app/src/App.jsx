@@ -10,7 +10,7 @@ import Emergency from './components/Emergency';
 import UserProfile  from './components/UserProfile';
 import RequestBloodPage from './components/RequestBloodPage';
 import { UserProvider } from './context/UserContext';
-
+import DonationHistoryPage from './components/DonationHistoryPage';
 
 
 export default function App() {
@@ -27,6 +27,7 @@ export default function App() {
       <Route path="/emergency-blood" element={<Emergency />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/register/request-blood" element={<RequestBloodPage />} />
+      <Route path="/history" element={<DonationHistoryPage/>}/>
       {/* Add more routes as needed */}
     </Routes>
     </UserProvider>

@@ -164,12 +164,15 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Đăng nhập thành công',
       token,
-      user: {  fullName: user.FullName,
-    email: user.Email,
-    phoneNumber: user.PhoneNumber,
-    address: user.Address,
-    dateOfBirth: user.DateOfBirth,
-    gender: user.Gender }
+      user: {
+        IDUser: user.IDUser, // ✅ thêm dòng này
+        fullName: user.FullName,
+        email: user.Email,
+        phoneNumber: user.PhoneNumber,
+        address: user.Address,
+        dateOfBirth: user.DateOfBirth,
+        gender: user.Gender
+      }
     });
   } catch (error) {
     console.error(error);
