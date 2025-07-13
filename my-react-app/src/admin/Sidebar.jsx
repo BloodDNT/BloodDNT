@@ -15,8 +15,8 @@ const Sidebar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard/blood-inventory" className={({ isActive }) => isActive ? "active" : ""}>
-              <FaTint /> Blood Inventory
+            <NavLink to="/dashboard/chart" className={({ isActive }) => isActive ? "active" : ""}>
+              <FaTint /> Chart
             </NavLink>
           </li>
           <li>
