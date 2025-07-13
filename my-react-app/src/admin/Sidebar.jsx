@@ -19,16 +19,6 @@ const Sidebar = () => {
               <FaTint /> Chart
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/dashboard/donors" className={({ isActive }) => isActive ? "active" : ""}>
-              <FaUser /> Donors
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/dashboard/requests" className={({ isActive }) => isActive ? "active" : ""}>
-              <FaHospital /> Requests
-            </NavLink>
-          </li>
         </ul>
       </nav>
     </div>
