@@ -12,7 +12,7 @@ const BloodPieChart = ({ data }) => (
         nameKey="BloodType"
         cx="50%"
         cy="50%"
-        outerRadius={150}
+        outerRadius={200}
         fill="#8884d8"
         label
       >
@@ -21,7 +21,11 @@ const BloodPieChart = ({ data }) => (
         ))}
       </Pie>
       <Tooltip />
-      <Legend />
+      <Legend
+  layout="vertical"
+  verticalAlign="middle"
+  align="right"
+/>
     </PieChart>
   </ResponsiveContainer>
 );

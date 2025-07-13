@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
   return (
-    <div className="admin-layout">
+    <div className="admin-layout" >
       <Sidebar />
       <div className="admin-content">
         <Outlet />
