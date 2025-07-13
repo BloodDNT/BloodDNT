@@ -1,9 +1,9 @@
+// routes/register.js
 const express = require('express');
 const router = express.Router();
-const { RegisterDonateBlood } = require('../models'); // Sequelize model
-const { v4: uuidv4 } = require('uuid');
 
-// API tạo bản ghi đăng ký hiến máu
+const RegisterDonateBlood = require('../models/BloodDonation'); // 🧠 Đảm bảo đã import đúng model
+
 router.post('/register-blood', async (req, res) => {
   try {
     const {
@@ -14,27 +14,22 @@ router.post('/register-blood', async (req, res) => {
       Note
     } = req.body;
 
-    const IDRegister = uuidv4(); // tạo UUID
-    const Status = 'Pending';
-    const QRCode = ''; // generate sau
-
-    await RegisterDonateBlood.create({
-      IDRegister,
-      IDUser,
+    const newRecord = await RegisterDonateBlood.create({
+      // ❌ Không cần IDRegister nếu là identity (auto increment)
+      IDUser: parseInt(IDUser), // Đảm bảo là kiểu số
       DonateBloodDate,
-      IDBlood,
+      IDBlood: parseInt(IDBlood),
       IdentificationNumber,
       Note,
-      Status,
-      QRCode,
-      DateTime: new Date() // thêm thời gian hệ thống
+      Status: 'Pendings',
+      QRCode: null
     });
 
-    res.status(200).json({ message: 'Đăng ký hiến máu thành công' });
+    res.status(201).json({ message: 'Đăng ký thành công', data: newRecord });
   } catch (err) {
-    console.error('Lỗi khi insert:', err);
+    console.error("❌ Lỗi tại API /register-blood:", err);
     res.status(500).json({ error: 'Đăng ký thất bại' });
   }
 });
 
-module.exports = router;
+module.exports = router; // ✅ Thêm dòng này để export router

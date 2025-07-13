@@ -1,26 +1,26 @@
-// models/BloodDonation.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const sequelize = require('../config/database'); // ✅ Đảm bảo import sequelize
 
 const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   IDRegister: {
-    type: DataTypes.STRING,
-    primaryKey: true,
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
   },
   IDUser: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   DonateBloodDate: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.DATE,
     allowNull: false,
   },
   IDBlood: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   IdentificationNumber: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(40),
     allowNull: false,
   },
   Note: {
@@ -28,16 +28,16 @@ const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
     allowNull: true,
   },
   Status: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(20),
     defaultValue: 'Pendings',
   },
   QRCode: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(510),
     allowNull: true,
   },
 }, {
   tableName: 'RegisterDonateBlood',
-  timestamps: false, // nếu không có createdAt, updatedAt
+  timestamps: false,
 });
 
 module.exports = RegisterDonateBlood;

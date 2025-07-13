@@ -4,7 +4,6 @@ import { UserContext } from '../context/UserContext';
 import axios from 'axios';
 import './BloodDonation.css';
 
-// Component for Registration Form
 const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
   const [errors, setErrors] = useState({});
 
@@ -71,13 +70,15 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
   );
 });
 
-// Hàm ánh xạ nhóm máu sang IDBlood (tạm thời hardcoded)
+// ✅ Sửa: Nhóm máu thành số nguyên IDBlood
 const getBloodID = (bloodType) => {
   const map = {
-    'A+': 'B001', 'A-': 'B002', 'B+': 'B003', 'B-': 'B004',
-    'AB+': 'B005', 'AB-': 'B006', 'O+': 'B007', 'O-': 'B008'
+    'A+': 1, 'A-': 2,
+    'B+': 3, 'B-': 4,
+    'AB+': 5, 'AB-': 6,
+    'O+': 7, 'O-': 8
   };
-  return map[bloodType] || 'B001';
+  return map[bloodType] || 1;
 };
 
 export default function BloodDonationPage() {
@@ -99,24 +100,30 @@ export default function BloodDonationPage() {
 
   const handleRegisterSubmit = useCallback(async (e) => {
     e.preventDefault();
-  
+
     const storedUser = user || JSON.parse(localStorage.getItem('user'));
-    console.log('storedUser:', storedUser); // ➜ In ra để kiểm tra
-    
+
+    if (!storedUser?.IDUser) {
+      alert("Không tìm thấy ID người dùng, vui lòng đăng nhập lại.");
+      return;
+    }
+
     try {
       setIsLoading(true);
       await axios.post('http://localhost:5000/api/register-blood', {
-        IDUser: storedUser.IDUser,
+        IDUser: parseInt(storedUser.IDUser),
         DonateBloodDate: registerForm.donateBloodDate,
         IDBlood: getBloodID(registerForm.bloodType),
         IdentificationNumber: registerForm.identificationNumber,
         Note: registerForm.note
       });
+
       alert('Đăng ký thành công!');
       setRegisterForm({ donateBloodDate: '', bloodType: '', identificationNumber: '', note: '' });
     } catch (error) {
-      console.error('Lỗi khi gửi form:', error);
-      alert('Lỗi khi đăng ký hiến máu');
+      console.error('❌ Lỗi khi gửi form:', error);
+      const msg = error?.response?.data?.error || 'Lỗi khi đăng ký hiến máu';
+      alert(msg);
     } finally {
       setIsLoading(false);
     }
@@ -126,9 +133,7 @@ export default function BloodDonationPage() {
     <>
       <header className='header'>
         <div className='logo'>
-          <Link to="/">
-            <img src='/LogoPage.jpg' alt='Logo' loading="lazy" />
-          </Link>
+          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' loading="lazy" /></Link>
           <div className='webname'>Hope Donor 🩸</div>
         </div>
         <nav className='menu'>
@@ -151,9 +156,7 @@ export default function BloodDonationPage() {
         </nav>
         <div className='actions'>
           {!user ? (
-            <Link to='/login'>
-              <button className='login-btn'>👤 Login</button>
-            </Link>
+            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
           ) : (
             <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
               <div className="dropbtn user-name">
