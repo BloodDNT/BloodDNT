@@ -3,9 +3,12 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const sequelize = require('./config/database');
-const blogRoutes = require('./routes/blog');
-
-require('./models/User');
+const blogRoutes = require('./routes/blog'); 
+const userRoutes = require('./routes/users');
+const successfulDonationsRoutes = require('./routes/successfulDonations');
+const upcomingAppointmentsRoutes = require('./routes/upcomingAppointments');
+const registeredDonorsRoutes = require('./routes/registeredDonors');
+const bloodInventoryRoutes = require('./routes/bloodInventory');
 
 dotenv.config();
 
@@ -21,6 +24,14 @@ app.use(cors({
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/blog', blogRoutes); 
+app.use('/api/users', userRoutes); 
+app.use('/api/successful-donations', successfulDonationsRoutes);
+app.use('/api/upcoming-appointments', upcomingAppointmentsRoutes);  
+app.use('/api/registered-donors', registeredDonorsRoutes);
+app.use('/api/blood-inventory', bloodInventoryRoutes);
+
+
 const PORT = process.env.PORT || 5000;
 
 sequelize.sync()
