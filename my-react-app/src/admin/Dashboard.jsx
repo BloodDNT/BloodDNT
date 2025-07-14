@@ -6,6 +6,7 @@ import RegisteredDonorsTable from "./table/RegisteredDonorsTable";
 import SuccessfulDonationsTable from "./table/SuccessfulDonationsTable";
 import UpcomingAppointmentsTable from "./table/UpcomingAppointmentsTable";
 import UserManagement from "./table/UserManagement";
+import BloodRecipientsTable from "./table/BloodRecipientsTable";
 
 
 
@@ -20,27 +21,29 @@ function Dashboard() {
   const [successfulData, setSuccessfulData] = useState([]);
   const [upcomingData, setUpcomingData] = useState([]);
   const [users, setUsers] = useState([]);
-
+  const [recipents, setRecipents] = useState([]);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, donorsRes, successRes, upcomingRes, usersRes] = await Promise.all([
+        const [inventoryRes, donorsRes, successRes, upcomingRes, usersRes, recipientsRes] = await Promise.all([
           axios.get("http://localhost:5000/api/blood-inventory"),
           axios.get("http://localhost:5000/api/registered-donors"),
           axios.get("http://localhost:5000/api/successful-donations"),
           axios.get("http://localhost:5000/api/upcoming-appointments"),
-          axios.get("http://localhost:5000/api/users")
+          axios.get("http://localhost:5000/api/users"),
+          axios.get("http://localhost:5000/api/blood-recipients")
         ]);
 
         setInventoryData(inventoryRes.data);
         setDonorsData(donorsRes.data);
         setSuccessfulData(successRes.data);
         setUpcomingData(upcomingRes.data);
+        setRecipents(recipientsRes.data);
 
-         const nonAdminUsers = usersRes.data.filter(user => user.Role !== "Admin");
-      setUsers(nonAdminUsers);
+        const nonAdminUsers = usersRes.data.filter(user => user.Role !== "Admin");
+        setUsers(nonAdminUsers);
 
       } catch (error) {
         console.error("❌ Lỗi khi tải dữ liệu:", error);
@@ -104,6 +107,14 @@ function Dashboard() {
             color="#4CAF50"
           />
         </div>
+        <div onClick={() => handleCardClick("recipients")}>
+          <Card
+            icon="🩸"
+            title="Blood Recipients"
+            value={recipents.length.toLocaleString()}
+            color="#FF9800"
+          />
+        </div>
         <div onClick={() => handleCardClick("users")}>
           <Card
             icon="🧑‍💼"
@@ -119,6 +130,7 @@ function Dashboard() {
       {activeTable === "registered" && <RegisteredDonorsTable data={donorsData} />}
       {activeTable === "successful" && <SuccessfulDonationsTable />}
       {activeTable === "upcoming" && <UpcomingAppointmentsTable />}
+      {activeTable === "recipients" && <BloodRecipientsTable data={recipents} />}
       {activeTable === "users" && <UserManagement />}
 
     </div>

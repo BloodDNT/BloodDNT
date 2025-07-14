@@ -32,6 +32,9 @@ app.use('/api/upcoming-appointments', upcomingAppointmentsRoutes);
 const successfulDonationsRoutes = require('./routes/successfulDonations');
 app.use('/api/successful-donations', successfulDonationsRoutes);
 
+const bloodRecipientsRoutes = require('./routes/bloodRecipients.js');
+app.use('/api/blood-recipients', bloodRecipientsRoutes);
+
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
 
