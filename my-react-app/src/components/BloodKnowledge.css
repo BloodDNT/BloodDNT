@@ -1,0 +1,85 @@
+.blood-knowledge-container {
+    width: 100%; /* Thêm dòng này */
+
+  margin: 40px auto 32px auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px 32px 32px;
+  box-shadow: 0 4px 24px #e5737333;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.blood-knowledge-container h2 {
+  text-align: center;
+  color: #b71c1c;
+  margin-bottom: 32px;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+}
+
+.blood-section {
+  margin-bottom: 36px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #f2bcbc;
+}
+.blood-section ul {
+  margin: 0 0 0 18px;
+  padding: 0;
+  font-size: 1.05rem;
+  font-weight: 500; /* Thêm dòng này để chữ đậm hơn */
+}
+.blood-caption {
+  text-align: center;
+  font-size: 1rem;
+  color: #b71c1c;
+  margin-top: 4px;
+  font-style: italic;
+}
+.blood-section:last-child {
+  border-bottom: none;
+}
+
+.blood-section h3 {
+  color: #d32f2f;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+.blood-section ul {
+  margin: 0 0 0 18px;
+  padding: 0;
+  font-size: 1.05rem;
+}
+
+.blood-section li {
+  margin-bottom: 6px;
+}
+
+.blood-section p {
+  font-size: 1.08rem;
+  color: #444;
+  margin-top: 8px;
+}
+
+.blood-img {
+   width: 700px;          
+  max-width: 100%;         
+  height: 500px;  
+  display: block;
+  margin: 18px auto 24px auto;  
+  object-fit: contain;
+  border-radius: 24px;
+}
+
+
+@media (max-width: 600px) {
+  .blood-knowledge-container {
+    padding: 16px 4vw;
+  }
+  .blood-img {
+    width: 90px;
+  }
+  .blood-section h3 {
+    font-size: 1.1rem;
+  }
+}
