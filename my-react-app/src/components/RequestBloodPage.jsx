@@ -96,7 +96,10 @@
               </ul>
 
               <div className="btn-group">
-                <button className="btn-action donate" onClick={handleDonateClick}>🩸 Đăng ký hiến máu</button>
+              <div className="btn-group">
+  <button className="btn-action donate" onClick={handleDonateClick}>🩸 Đăng ký hiến máu</button>
+  <button className="btn-action request" onClick={handleRequestClick}>🆘 Đơn yêu cầu máu</button>
+</div>
               </div>
             </section>
           )}

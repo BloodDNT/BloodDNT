@@ -49,5 +49,18 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Lỗi server', details: err.message });
   }
 });
+router.get('/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
 
+    const requests = await RequestDonateBlood.findAll({
+      where: { IDUser: id }
+    });
+
+    res.json(requests);
+  } catch (err) {
+    console.error('❌ Lỗi khi lấy yêu cầu máu:', err);
+    res.status(500).json({ error: 'Không thể lấy danh sách yêu cầu máu' });
+  }
+});
 module.exports = router;

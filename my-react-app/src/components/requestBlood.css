@@ -9,8 +9,8 @@
   }
   
   .main-header, .main-footer {
-    background-color: #c62828;
-    color: white;
+    background-color: #990000 !important;
+    color: white !important;
     padding: 1rem 2rem;
   }
   
@@ -28,7 +28,9 @@
   }
   
   .logo img {
-    height: 40px;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
   }
   
   .webname {
@@ -50,6 +52,7 @@
   
   .menu a:hover {
     text-decoration: underline;
+    color: #ffd6d6;
   }
   
   .actions {
@@ -58,7 +61,7 @@
   
   .login-btn, .logout-btn {
     background-color: white;
-    color: #c62828;
+    color: #990000;
     padding: 0.4rem 1rem;
     border: none;
     border-radius: 4px;
@@ -73,14 +76,14 @@
   
   .dropdown-content.user-dropdown {
     position: absolute;
-    background-color: white;
+    background-color: #fff6fa;
     top: 100%;
     right: 0;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     min-width: 200px;
     z-index: 1;
     color: black;
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 0.5rem 0;
   }
   
@@ -96,7 +99,8 @@
   }
   
   .dropdown-content.user-dropdown a:hover, .dropdown-content.user-dropdown button:hover {
-    background-color: #f2f2f2;
+    background-color: #fce4ec;
+    color: #007bff;
   }
   
   main {
@@ -129,7 +133,7 @@
   }
   
   .blood-request-form button {
-    background-color: #c62828;
+    background-color: #990000;
     color: white;
     padding: 0.75rem;
     border: none;
@@ -156,8 +160,8 @@
   
   .main-footer {
     padding-top: 2rem;
-    background-color: #c62828;
-    color: white;
+    background-color: #990000 !important;
+    color: white !important;
   }
   
   .footer-container {
@@ -176,5 +180,6 @@
     text-align: center;
     margin-top: 1rem;
     font-size: 0.9rem;
+    opacity: 0.7;
   }
-  
+      

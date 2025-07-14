@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // ✅ Đảm bảo import sequelize
+const sequelize = require('../config/database');
 const GroupBlood = require('./GroupBlood');
+
 const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   IDRegister: {
     type: DataTypes.INTEGER,
@@ -29,15 +30,17 @@ const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   },
   Status: {
     type: DataTypes.STRING(20),
-    defaultValue: 'Pendings',
+    defaultValue: 'Pending',
   },
   QRCode: {
-    type: DataTypes.STRING(510),
-    allowNull: true,
-  },
+    type: DataTypes.TEXT,
+    allowNull: true
+  }
 }, {
   tableName: 'RegisterDonateBlood',
   timestamps: false,
 });
+
 RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
+
 module.exports = RegisterDonateBlood;

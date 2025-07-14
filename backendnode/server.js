@@ -23,9 +23,10 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api', registerRoute);
 app.use('/api', donationHistoryRoute);
-app.use('/api/request-donate-blood', requestDonateRoute);
+app.use('/api/blood-requests', requestDonateRoute);
+
 const PORT = process.env.PORT || 5000;
-sequelize.sync()
+sequelize.sync()  
   .then(() => {
     app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
   })

@@ -270,6 +270,15 @@ textarea {
 .register-item p, .request-item p {
   margin: 5px 0;
 }
+.qr-preview {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.qr-preview img {
+  max-width: 400px;
+  margin-top: 1rem;
+}
 
 /* ==== LOADING ==== */
 .skeleton {

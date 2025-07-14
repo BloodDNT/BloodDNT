@@ -70,7 +70,6 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
   );
 });
 
-// ✅ Sửa: Nhóm máu thành số nguyên IDBlood
 const getBloodID = (bloodType) => {
   const map = {
     'A+': 1, 'A-': 2,
@@ -89,6 +88,7 @@ export default function BloodDonationPage() {
     note: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [qrCode, setQrCode] = useState('');
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -100,9 +100,7 @@ export default function BloodDonationPage() {
 
   const handleRegisterSubmit = useCallback(async (e) => {
     e.preventDefault();
-
     const storedUser = user || JSON.parse(localStorage.getItem('user'));
-
     if (!storedUser?.IDUser) {
       alert("Không tìm thấy ID người dùng, vui lòng đăng nhập lại.");
       return;
@@ -110,7 +108,7 @@ export default function BloodDonationPage() {
 
     try {
       setIsLoading(true);
-      await axios.post('http://localhost:5000/api/register-blood', {
+      const response = await axios.post('http://localhost:5000/api/register-blood', {
         IDUser: parseInt(storedUser.IDUser),
         DonateBloodDate: registerForm.donateBloodDate,
         IDBlood: getBloodID(registerForm.bloodType),
@@ -119,6 +117,7 @@ export default function BloodDonationPage() {
       });
 
       alert('Đăng ký thành công!');
+      setQrCode(response.data.data.QRCode); // Lưu QR code trả về
       setRegisterForm({ donateBloodDate: '', bloodType: '', identificationNumber: '', note: '' });
     } catch (error) {
       console.error('❌ Lỗi khi gửi form:', error);
@@ -177,8 +176,19 @@ export default function BloodDonationPage() {
       <main className='body'>
         <section className='register-section'>
           <h2>Đăng ký hiến máu</h2>
-          <RegistrationForm form={registerForm} onChange={handleRegisterChange} onSubmit={handleRegisterSubmit} />
+          <RegistrationForm
+            form={registerForm}
+            onChange={handleRegisterChange}
+            onSubmit={handleRegisterSubmit}
+          />
           {isLoading && <p>Đang xử lý...</p>}
+
+          {qrCode && (
+            <div className='qr-preview'>
+              <h3>Mã QR của bạn</h3>
+              <img src={qrCode} alt='QR Code' />
+            </div>
+          )}
         </section>
       </main>
 

@@ -12,7 +12,7 @@ import RequestBloodPage from './components/RequestBloodPage';
 import { UserProvider } from './context/UserContext';
 import DonationHistoryPage from './components/DonationHistoryPage';
 import RequestBlood from './components/RequestBlood';
-
+import MyBloodActivities from './components/MyBloodActivities';
 export default function App() {
   return (
     <UserProvider>
@@ -29,6 +29,7 @@ export default function App() {
       <Route path="/register/request-blood" element={<RequestBloodPage />} />
       <Route path="/history" element={<DonationHistoryPage/>}/>
       <Route path="/request-blood" element={<RequestBlood />} />
+      <Route path="/my-activities" element={<MyBloodActivities />} />
       {/* Add more routes as needed */}
     </Routes>
     </UserProvider>

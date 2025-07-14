@@ -36,7 +36,7 @@ main {
   left: 0;
   right: 0;
   height: 130px;
-  background-color: white;
+  background-color: rgb(207, 33, 33);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
@@ -306,6 +306,15 @@ main {
   transform: translateY(-2px);
 }
 
+.btn-action.request {
+  background-color: #ec407a;
+  color: white;
+}
+
+.btn-action.request:hover {
+  background-color: #c2185b;
+  transform: translateY(-2px);
+}
 .btn-action.request {
   background-color: #ec407a;
   color: white;
