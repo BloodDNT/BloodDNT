@@ -8,7 +8,6 @@ import Contact from './components/Contact';
 import BloodDonation from './components/BloodDonation';
 import Emergency from './components/Emergency';
 import UserProfile  from './components/UserProfile';
-import BloodKnowledge from './components/BloodKnowledge';   
 import { UserProvider } from './context/UserContext';
 
 
@@ -22,7 +21,6 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/bloodguide" element={<BloodGuide/>} />
       <Route path='/news' element={<News/>}/>
-      <Route path='/bloodknowledge' element={<BloodKnowledge/>}/>
       <Route path='/contact' element={<Contact/>}/>
       <Route path='/blood-donation' element={<BloodDonation/>}/>
       <Route path="/emergency-blood" element={<Emergency />} />
