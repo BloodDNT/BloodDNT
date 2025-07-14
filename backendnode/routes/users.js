@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const sequelize = require('../config/database');
+const bcrypt = require('bcrypt');
+
 
 // Lấy tất cả người dùng
 router.get('/', async (req, res) => {
@@ -19,11 +21,13 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const { FullName, Email, Password, Role } = req.body;
   try {
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
     await sequelize.query(`
-      INSERT INTO Users (FullName, Email, Password, Role)
-      VALUES (:FullName, :Email, :Password, :Role)
-    `, {
-      replacements: { FullName, Email, Password, Role }
+  INSERT INTO Users (FullName, Email, Password, Role)
+  VALUES (:FullName, :Email, :Password, :Role)
+`, {
+      replacements: { FullName, Email, Password: hashedPassword, Role }
     });
     res.status(201).json({ message: 'Người dùng đã được thêm.' });
   } catch (err) {
@@ -36,17 +40,25 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const { FullName, Email, Password, Role } = req.body;
+
   try {
-    await sequelize.query(`
+    let query = `
       UPDATE Users SET 
         FullName = :FullName,
         Email = :Email,
-        ${Password ? 'Password = :Password,' : ''}
-        Role = :Role
-      WHERE IDUser = :id
-    `, {
-      replacements: { id, FullName, Email, Password, Role }
-    });
+    `;
+    const replacements = { id, FullName, Email, Role };
+
+    if (Password) {
+      const hashedPassword = await bcrypt.hash(Password, 10);
+      query += ` Password = :Password,`;
+      replacements.Password = hashedPassword;
+    }
+
+    query += ` Role = :Role WHERE IDUser = :id`;
+
+    await sequelize.query(query, { replacements });
+
     res.json({ message: 'Người dùng đã được cập nhật.' });
   } catch (err) {
     console.error("❌ Lỗi khi cập nhật người dùng:", err);
