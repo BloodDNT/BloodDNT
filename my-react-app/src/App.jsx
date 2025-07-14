@@ -11,7 +11,7 @@ import UserProfile  from './components/UserProfile';
 import RequestBloodPage from './components/RequestBloodPage';
 import { UserProvider } from './context/UserContext';
 import DonationHistoryPage from './components/DonationHistoryPage';
-
+import RequestBlood from './components/RequestBlood';
 
 export default function App() {
   return (
@@ -28,6 +28,7 @@ export default function App() {
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/register/request-blood" element={<RequestBloodPage />} />
       <Route path="/history" element={<DonationHistoryPage/>}/>
+      <Route path="/request-blood" element={<RequestBlood />} />
       {/* Add more routes as needed */}
     </Routes>
     </UserProvider>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const dbConfig = require('../config/database');
+
 router.get('/donation-history/:id', async (req, res) => {
   const userId = parseInt(req.params.id, 10);
   console.log("🧪 Nhận yêu cầu ID:", userId);
@@ -24,9 +25,27 @@ router.get('/donation-history/:id', async (req, res) => {
         ORDER BY r.DonateBloodDate DESC;
       `);
 
-    res.json(result.recordset); // Trả dữ liệu đơn giản, KHÔNG có thông tin user nữa
+    // ✅ Lọc ra object đơn giản, tránh vòng lặp circular
+    const cleaned = result.recordset.map(row => ({
+      IDRegister: row.IDRegister,
+      DonateBloodDate: row.DonateBloodDate,
+      BloodTypeName: row.BloodTypeName,
+      IdentificationNumber: row.IdentificationNumber,
+      Note: row.Note,
+      Status: row.Status
+    }));
+
+    res.json(cleaned);
   } catch (err) {
-    console.error('❌ Lỗi lấy lịch sử hiến máu:', err);
-    res.status(500).json({ error: 'Lỗi máy chủ', detail: err.message });
+    console.error('❌ Lỗi lấy lịch sử hiến máu:', err.message);
+    console.error('📦 Stack trace:', err.stack);
+    res.status(500).json({
+      error: 'Lỗi máy chủ',
+      message: err.message,
+      stack: err.stack
+    });
   }
 });
+
+// ✅ Đảm bảo export router đúng cách
+module.exports = router;

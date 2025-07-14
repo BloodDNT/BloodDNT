@@ -36,7 +36,8 @@ export default function Home() {
               <Link to='/blood/knowledge'>Blood Knowledge</Link>
             </div>
           </div>
-          <Link to='/register/request-blood'>Register/Request-Blood</Link>
+          <Link to='/register/request-blood'>Register</Link>
+          <Link to='/request-blood'>Request-Blood</Link>
           <Link to='/history'>DonatationHistory</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>
