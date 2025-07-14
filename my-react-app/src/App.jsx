@@ -14,6 +14,7 @@ import UserProfile from "./components/UserProfile";
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import BloodChartPage from "./admin/BloodChartPage";
+import BlogManagement from "./admin/BlogManagement";
 import BloodInventoryTable from "./admin/table/BloodInventoryTable";
 import RegisteredDonorsTable from "./admin/table/RegisteredDonorsTable";
 
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="chart" element={<BloodChartPage />} />
+          <Route path="blogs" element={<BlogManagement />} />
         </Route>
       </Routes>
     </UserProvider>

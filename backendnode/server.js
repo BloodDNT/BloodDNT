@@ -38,9 +38,12 @@ app.use('/api/blood-recipients', bloodRecipientsRoutes);
 const userRoutes = require('./routes/users');
 app.use('/api/users', userRoutes);
 
+const blogRoutes = require("./routes/blog");
+app.use("/api/blogs", blogRoutes);
+
 
 const PORT = process.env.PORT || 5000;
-
+  
 sequelize.sync()
   .then(() => {
     app.listen(PORT, () =>

@@ -2,6 +2,8 @@ import React from "react";
 import { FaTachometerAlt, FaTint, FaUser, FaHospital } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import "../styles/sidebar.css";
+import { FaBlog } from "react-icons/fa";
+
 
 const Sidebar = () => {
   return (
@@ -17,6 +19,11 @@ const Sidebar = () => {
           <li>
             <NavLink to="/dashboard/chart" className={({ isActive }) => isActive ? "active" : ""}>
               <FaTint /> Chart
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/dashboard/blogs" className={({ isActive }) => isActive ? "active" : ""}>
+              <FaBlog /> Blog Management
             </NavLink>
           </li>
         </ul>
