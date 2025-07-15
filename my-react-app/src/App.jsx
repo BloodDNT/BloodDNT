@@ -16,7 +16,23 @@ import BloodChartPage from "./admin/BloodChartPage";
 
 import { UserProvider } from './context/UserContext';
 
+import Login from "./components/Login";
+import Home from "./components/HomePage";
+import Register from "./components/Register";
+import BloodGuide from "./components/BloodGuide";
+import News from "./components/News";
+import Contact from "./components/Contact";
+import BloodDonation from "./components/BloodDonation";
+import Emergency from "./components/Emergency";
+import UserProfile from "./components/UserProfile";
 
+import AdminLayout from "./admin/AdminLayout";
+import Dashboard from "./admin/Dashboard";
+import BloodChartPage from "./admin/BloodChartPage";
+import CombinedDonorChart from "./admin/chart/CombinedDonorChart";
+
+import BloodInventoryTable from "./admin/table/BloodInventoryTable";
+import RegisteredDonorsTable from "./admin/table/RegisteredDonorsTable";
 
 export default function App() {
   return (
