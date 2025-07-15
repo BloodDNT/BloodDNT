@@ -12,7 +12,7 @@ import BloodKnowledge from './components/BloodKnowledge';
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import BloodChartPage from "./admin/BloodChartPage";
-
+import AboutUs from './components/AboutUs';
 
 import { UserProvider } from './context/UserContext';
       
@@ -38,6 +38,7 @@ export default function App() {
       <Route path="/blood-inventory" element={<BloodInventoryTable />} />
       <Route path="/registered-donors" element={<RegisteredDonorsTable />} /> 
       <Route path="/combined-donor-chart" element={<CombinedDonorChart />} />
+      <Route path="/about" element={<AboutUs />} />
       {/* Admin routes */}
       <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
