@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/auth');
 const sequelize = require('./config/database');
+
+// Routes
+const authRoutes = require('./routes/auth');
 const blogRoutes = require('./routes/blog'); 
 const userRoutes = require('./routes/users');
 const successfulDonationsRoutes = require('./routes/successfulDonations');
@@ -23,29 +25,14 @@ app.use(cors({
 
 app.use(express.json());
 
-const bloodInventoryRoutes = require('./routes/bloodInventory');
-app.use('/api/blood-inventory', bloodInventoryRoutes);
-
-const registeredDonorsRoutes = require('./routes/registeredDonors');
-app.use('/api/registered-donors', registeredDonorsRoutes);
-
-const upcomingAppointmentsRoutes = require('./routes/upcomingAppointments');
-app.use('/api/upcoming-appointments', upcomingAppointmentsRoutes);
-
-const successfulDonationsRoutes = require('./routes/successfulDonations');
-app.use('/api/successful-donations', successfulDonationsRoutes);
-
-const userRoutes = require('./routes/users');
-app.use('/api/users', userRoutes);
-
+// Only ONE require and ONE use per route
 app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes); 
-app.use('/api/users', userRoutes); 
+app.use('/api/users', userRoutes);
 app.use('/api/successful-donations', successfulDonationsRoutes);
 app.use('/api/upcoming-appointments', upcomingAppointmentsRoutes);  
 app.use('/api/registered-donors', registeredDonorsRoutes);
 app.use('/api/blood-inventory', bloodInventoryRoutes);
-
 
 const PORT = process.env.PORT || 5000;
 

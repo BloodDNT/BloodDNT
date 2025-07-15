@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // đường dẫn đúng tới database.js của bạn
-
+const sequelize = require('../config/database'); 
 const User = sequelize.define('User', {
   IDUser: {
     type: DataTypes.INTEGER,
