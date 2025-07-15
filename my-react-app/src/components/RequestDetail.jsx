@@ -13,7 +13,7 @@ export default function RequestDetail() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/blood-requests/detail/${id}`)
+      .get(`http://localhost:5000/api/public-blood-requests/detail/${id}`)
       .then((res) => {
         setRequest(res.data.data);
         setLoading(false);

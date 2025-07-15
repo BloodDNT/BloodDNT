@@ -92,7 +92,7 @@ router.put('/cancel/:id', async (req, res) => {
       return res.status(404).json({ error: 'Không tìm thấy đơn để huỷ' });
     }
 
-    await record.update({ IsCancelled: true, Status: 'Rejected' });
+    await record.update({ IsCancelled: true, Status: 'Canceled' });
 
     res.json({ message: 'Đơn hiến máu đã được huỷ thành công ❌' });
   } catch (err) {
