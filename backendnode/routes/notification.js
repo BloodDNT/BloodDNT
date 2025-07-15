@@ -2,16 +2,23 @@ const express = require('express');
 const router = express.Router();
 const { sequelize } = require('../models');
 
-// Lấy tất cả thông báo của người dùng
+// GET - lấy danh sách thông báo của 1 user
 router.get('/:idUser', async (req, res) => {
   const { idUser } = req.params;
-
   try {
     const [results] = await sequelize.query(`
-      SELECT * FROM Notifications
+      SELECT 
+        IDNotification,
+        Type,
+        Message,
+        Status,
+        FORMAT(SendDate, 'yyyy-MM-dd HH:mm:ss') AS SendDate
+      FROM Notification
       WHERE IDUser = :idUser
-      ORDER BY CreatedAt DESC
-    `, { replacements: { idUser } });
+      ORDER BY SendDate DESC
+    `, {
+      replacements: { idUser }
+    });
 
     res.json(results);
   } catch (err) {
@@ -20,18 +27,19 @@ router.get('/:idUser', async (req, res) => {
   }
 });
 
-// Đánh dấu đã đọc
-router.put('/read/:idNotification', async (req, res) => {
-  const { idNotification } = req.params;
-
+// PUT - đánh dấu là đã đọc
+router.put('/read/:id', async (req, res) => {
+  const { id } = req.params;
   try {
     await sequelize.query(`
-      UPDATE Notifications
-      SET IsRead = 1
-      WHERE IDNotification = :idNotification
-    `, { replacements: { idNotification } });
+      UPDATE Notification
+      SET Status = 'Read'
+      WHERE IDNotification = :id
+    `, {
+      replacements: { id }
+    });
 
-    res.json({ message: 'Marked as read' });
+    res.json({ message: 'Đã đánh dấu là đã đọc' });
   } catch (err) {
     console.error('❌ Error updating notification:', err);
     res.status(500).json({ error: 'Server error' });

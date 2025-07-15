@@ -13,6 +13,8 @@ require('./models/User');
 dotenv.config();
 
 const app = express();
+const notificationRoutes = require('./routes/notification');
+app.use('/api/notifications', notificationRoutes);
 
 app.use(cors({
   origin: 'http://localhost:5173',
