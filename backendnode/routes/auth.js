@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
 
-    const token = jwt.sign({ IDUser: user.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', { expiresIn: '1h' });
+    const token = jwt.sign({ IDUser: user.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', { expiresIn: '12h' });
 
     res.json({
       message: 'Đăng nhập thành công',
