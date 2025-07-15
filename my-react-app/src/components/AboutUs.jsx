@@ -1,63 +1,68 @@
-// src/pages/AboutUs.jsx
-import React, { useEffect } from "react";
-import "./about.css"; 
+import React, { useContext, useState, useEffect } from 'react';
+import './about.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext.jsx';
 
-export default function AboutUs() {
-  useEffect(() => {
-    const fok = () => {
-      document.getElementById("arr").style.backgroundImage =
-        "url(https://cdn.iconscout.com/icon/premium/png-64-thumb/chevron-arrow-3883460-3231250.png)";
-    };
-    const kof = () => {
-      document.getElementById("arr").style.backgroundImage =
-        "url(https://cdn.iconscout.com/icon/free/png-64/right-arrow-1438234-1216195.png)";
-    };
-    const gok = () => {
-      document.getElementById("brr").style.backgroundImage =
-        "url(https://cdn.iconscout.com/icon/premium/png-64-thumb/chevron-arrow-3883460-3231250.png)";
-    };
-    const kog = () => {
-      document.getElementById("brr").style.backgroundImage =
-        "url(https://cdn.iconscout.com/icon/free/png-64/right-arrow-1438234-1216195.png)";
-    };
-    const hok = () => {
-      document.getElementById("crr").style.backgroundImage =
-        "url(https://cdn.iconscout.com/icon/premium/png-64-thumb/chevron-arrow-3883460-3231250.png)";
-    };
-    const koh = () => {
-      document.getElementById("crr").style.backgroundImage =
-        "url(https://cdn.iconscout.com/icon/free/png-64/right-arrow-1438234-1216195.png)";
-    };
-
-    window.onscroll = () => {
-      const ilake = document.getElementById("head");
-      ilake.style.top = "0px";
-      ilake.style.position = "sticky";
-    };
-
-    const handleScroll = () => {
-      const reveals = document.querySelectorAll(".reveal");
-      for (let i = 0; i < reveals.length; i++) {
-        const windowHeight = window.innerHeight;
-        const elementTop = reveals[i].getBoundingClientRect().top;
-        const revealPoint = 100;
-
-        if (elementTop < windowHeight - revealPoint) {
-          reveals[i].classList.add("active");
-        } else {
-          reveals[i].classList.remove("active");
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <div className="App">
-      {/* nội dung bạn dán từ <nav> đến </footer> */}
-      {/* Dài nên không lặp lại ở đây */}
-    </div>
-  );
+export default function AboutUs() { 
+  const { user, logout } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+    const handleLogout = () => {
+    logout(); // gọi hàm logout trong context
+    navigate('/login'); // chuyển về trang login
+  };
+return (
+    <>
+      <header className='header'>
+        {/* logo */}
+        <div className='logo'>
+          <Link to="/">
+            <img src='/LogoPage.jpg' alt='Logo' />
+          </Link>
+          <div className='webname'>Hope Donnor🩸</div>
+        </div>
+        {/* menu */}
+        <nav className='menu'>
+          <Link to='/bloodguide'>Blood Guide</Link>
+          <div className='dropdown'>
+            <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
+           
+          </div>
+          <Link to='/news'>News & Events</Link>
+          <Link to='/contact'>Contact</Link>
+          <Link to='/about'>About Us</Link>
+        </nav>
+        {/* login/user menu */}
+        <div className='actions'>
+          {!user ? (
+            <Link to='/login'>
+              <button className='login-btn'>👤 Login</button>
+            </Link>
+          ) : (
+            <div 
+              className="dropdown user-menu"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}
+            >
+             <div className="dropbtn user-name">
+  Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+</div>
+              {isOpen && (
+                <div className="dropdown-content user-dropdown">
+                  <Link to="/profile">👤 Thông tin cá nhân</Link>
+                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <button
+                    className="logout-btn"
+                    onClick={handleLogout}
+                  >
+                    🚪 Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </header>
+</>
+);
 }
