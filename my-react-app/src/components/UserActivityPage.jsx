@@ -13,8 +13,10 @@ export default function UserActivityPage() {
 
   useEffect(() => {
     if (!user?.IDUser) return;
+  
     axios.get(`http://localhost:5000/api/user-activities/${user.IDUser}`)
       .then((res) => {
+        console.log("📦 RESPONSE:", res.data); // 👈 In dữ liệu từ server
         setDonations(res.data.donations || []);
         setRequests(res.data.requests || []);
       })
@@ -22,19 +24,31 @@ export default function UserActivityPage() {
         console.error('❌ Lỗi lấy hoạt động:', err);
       });
   }, [user]);
+    
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const handleCancel = async (id) => {
+    const confirm = window.confirm('Bạn có chắc muốn huỷ đơn này?');
+    if (!confirm) return;
+    try {
+      await axios.put(`http://localhost:5000/api/blood-donation/cancel/${id}`);
+      alert('✅ Đã huỷ đơn!');
+      setDonations(prev => prev.map(d => d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d));
+    } catch (err) {
+      alert('❌ Huỷ đơn thất bại!');
+      console.error(err);
+    }
+  };
+
   return (
     <div className="layout-wrapper">
       <header className='header'>
         <div className='logo'>
-          <Link to="/">
-            <img src='/LogoPage.jpg' alt='Logo' />
-          </Link>
+          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' /></Link>
           <div className='webname'>Hope Donnor🩸</div>
         </div>
         <nav className='menu'>
@@ -57,15 +71,9 @@ export default function UserActivityPage() {
         </nav>
         <div className='actions'>
           {!user ? (
-            <Link to='/login'>
-              <button className='login-btn'>👤 Login</button>
-            </Link>
+            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
           ) : (
-            <div
-              className="dropdown user-menu"
-              onMouseEnter={() => setIsOpen(true)}
-              onMouseLeave={() => setIsOpen(false)}
-            >
+            <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
               <div className="dropbtn user-name">
                 Xin chào, {user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
               </div>
@@ -87,29 +95,46 @@ export default function UserActivityPage() {
 
           <div className="activity-section">
             <h3>🩸 Đơn Đăng Ký Hiến Máu</h3>
-            {donations.length === 0 ? <p>Không có đơn nào.</p> : (
-              <ul>
+            {donations.length === 0 ? (
+              <p>Không có đơn nào.</p>
+            ) : (
+              <div className="donation-list">
+                <div className="donation-header">
+                  <span>Mã đơn</span>
+                  <span>Trạng thái</span>
+                  <span>Hành động</span>
+                </div>
                 {donations.map(d => (
-                  <li key={d.IDRegister}>
-                    <Link to={`/donation/${d.IDRegister}`}>Đơn #{d.IDRegister} - {d.Status}</Link>
-                  </li>
+                  <div className="donation-row" key={d.IDRegister}>
+                    <span>#{d.IDRegister}</span>
+                    <span>{d.Status}</span>
+                    <span className="action-buttons">
+                      <button onClick={() => navigate(`/donation/${d.IDRegister}`)} className="view-btn">Xem chi tiet</button>
+                      {d.Status !== 'Cancelled' && (
+                        <>
+                          <button onClick={() => navigate(`/donation/edit/${d.IDRegister}`)} className="edit-btn">Chinh sua</button>
+                          <button onClick={() => handleCancel(d.IDRegister)} className="cancel-btn">Huy don</button>
+                        </>
+                      )}
+                    </span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
 
           <div className="activity-section">
-            <h3>🧾 Đơn Yêu Cầu Nhận Máu</h3>
-            {requests.length === 0 ? <p>Không có đơn nào.</p> : (
-              <ul>
-                {requests.map(r => (
-                  <li key={r.IDRequest}>
-                    <Link to={`/request/${r.IDRequest}`}>Đơn #{r.IDRequest} - {r.Status}</Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+  <h3>🧾 Đơn Yêu Cầu Nhận Máu</h3>
+  {requests.length === 0 ? <p>Không có đơn nào.</p> : (
+    <ul>
+      {requests.map((r, index) => (
+        <li key={r.IDRequest || index}>
+          <Link to={`/request/${r.IDRequest}`}>Đơn #{r.IDRequest} - {r.Status}</Link>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
         </section>
       </main>
 
