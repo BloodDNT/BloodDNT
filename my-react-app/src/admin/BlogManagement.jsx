@@ -7,7 +7,8 @@ const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
-  const [showForm, setShowForm] = useState(false); // ✅ đúng chỗ
+  const [showForm, setShowForm] = useState(false);
+  const [filterRole, setFilterRole] = useState("Tất cả");
 
   useEffect(() => {
     fetchBlogs();
@@ -26,7 +27,7 @@ const BlogManagement = () => {
     if (window.confirm("Bạn có chắc chắn muốn xoá bài viết này?")) {
       try {
         await axios.delete(`http://localhost:5000/api/blogs/${id}`);
-        setBlogs(prev => prev.filter((b) => b.IDPost !== id));
+        setBlogs((prev) => prev.filter((b) => b.IDPost !== id));
       } catch (error) {
         console.error("❌ Xoá thất bại:", error);
       }
@@ -43,7 +44,7 @@ const BlogManagement = () => {
       await axios.post("http://localhost:5000/api/blogs", {
         Title: newTitle,
         Content: newContent,
-        IDUser: 1,
+        IDUser: 1, 
       });
       await fetchBlogs();
       setNewTitle("");
@@ -54,6 +55,12 @@ const BlogManagement = () => {
       console.error("❌ Tạo bài viết thất bại:", error);
     }
   };
+
+  // Lọc theo người đăng
+  const filteredBlogs = blogs.filter((blog) => {
+  if (filterRole === "Tất cả") return true;
+  return blog.Role === filterRole;
+});
 
   return (
     <div className="table-container">
@@ -69,21 +76,23 @@ const BlogManagement = () => {
           color: "#fff",
           border: "none",
           borderRadius: "4px",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         {showForm ? "🔽 Đóng lại" : "➕ Tạo bài viết"}
       </button>
 
-      {/* Form tạo mới */}
+      {/* Form tạo bài viết */}
       {showForm && (
-        <div style={{
-          marginBottom: "20px",
-          padding: "16px",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          background: "#f9f9f9"
-        }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            padding: "16px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            background: "#f9f9f9",
+          }}
+        >
           <h4>🆕 Thêm bài viết mới</h4>
           <input
             type="text"
@@ -96,7 +105,12 @@ const BlogManagement = () => {
             placeholder="Nội dung"
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
-            style={{ padding: "8px", width: "100%", height: "120px", marginBottom: "8px" }}
+            style={{
+              padding: "8px",
+              width: "100%",
+              height: "120px",
+              marginBottom: "8px",
+            }}
           />
           <button
             onClick={handleCreate}
@@ -105,13 +119,28 @@ const BlogManagement = () => {
               background: "#007bff",
               color: "#fff",
               border: "none",
-              borderRadius: "4px"
+              borderRadius: "4px",
             }}
           >
             Đăng bài
           </button>
         </div>
       )}
+
+      {/* Bộ lọc */}
+      <div style={{ marginBottom: "16px" }}>
+        <label style={{ marginRight: "8px" }}>Lọc theo người đăng:</label>
+        <select
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          style={{ padding: "6px", borderRadius: "4px" }}
+        >
+          <option value="Tất cả">Tất cả</option>
+          <option value="Admin">Admin</option>
+          <option value="Staff">Staff</option>
+          <option value="User">User</option>
+        </select>
+      </div>
 
       {/* Bảng blog */}
       <table className="custom-table">
@@ -122,22 +151,28 @@ const BlogManagement = () => {
             <th>Người đăng</th>
             <th>Nội dung</th>
             <th>Thích</th>
-            <th>Bình luân</th>
+            <th>Bình luận</th>
             <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {blogs.length === 0 ? (
+          {filteredBlogs.length === 0 ? (
             <tr>
-              <td colSpan="5" style={{ textAlign: "center" }}>Chưa có bài viết nào.</td>
+              <td colSpan="7" style={{ textAlign: "center" }}>
+                Không có bài viết phù hợp.
+              </td>
             </tr>
           ) : (
-            blogs.map((blog) => (
+            filteredBlogs.map((blog) => (
               <tr key={blog.IDPost}>
                 <td>{blog.Title}</td>
-                <td>{new Date(blog.LastUpdated || blog.PostedAt).toLocaleDateString("vi-VN")}</td>
+                <td>{new Date(blog.LastUpdated).toLocaleDateString("vi-VN")}</td>
                 <td>{blog.Author}</td>
-                <td>{blog.Content.length > 50 ? blog.Content.slice(0, 50) + "..." : blog.Content}</td>
+                <td>
+                  {blog.Content.length > 50
+                    ? blog.Content.slice(0, 50) + "..."
+                    : blog.Content}
+                </td>
                 <td>{blog.LikeCount || 0}</td>
                 <td>{blog.CommentCount || 0}</td>
                 <td>

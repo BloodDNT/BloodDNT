@@ -14,6 +14,7 @@ router.get("/", async (req, res) => {
         WHEN u.Role = 'Admin' THEN N'Admin' 
         ELSE u.FullName 
     END AS Author,
+    u.Role,
     COUNT(DISTINCT bl.IDLike) AS LikeCount,
     COUNT(DISTINCT bc.IDComment) AS CommentCount
 FROM Blog b
