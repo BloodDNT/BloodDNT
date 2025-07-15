@@ -67,7 +67,8 @@ export default function RequestBlood() {
     console.log("📦 Payload gửi:", payload);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/request-donate-blood', payload);
+      const res = await axios.post('http://localhost:5000/api/blood-requests', payload);
+
       alert('🩸 Gửi yêu cầu thành công!');
       setQrImage(res.data.data?.QRCode);
     } catch (err) {

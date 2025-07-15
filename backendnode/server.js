@@ -1,11 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+
 const authRoutes = require('./routes/auth');
-const registerRoute = require('./routes/register');
-const sequelize = require('./config/database');
-const donationHistoryRoute = require('./routes/donationHistory');
+const registerRoute = require('./routes/registerBlood');
 const requestDonateRoute = require('./routes/requestDonateBlood');
+const userActivityRoutes = require('./routes/userActivities');
+const sequelize = require('./config/database');
 require('./models/User');
 
 dotenv.config();
@@ -20,12 +21,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Mount real routes
 app.use('/api/auth', authRoutes);
-app.use('/api', registerRoute);
-app.use('/api', donationHistoryRoute);
+app.use('/api/blood-donations', registerRoute);
 app.use('/api/blood-requests', requestDonateRoute);
-
+app.use('/api/user-activities', userActivityRoutes);
 const PORT = process.env.PORT || 5000;
+
 sequelize.sync()  
   .then(() => {
     app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

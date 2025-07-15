@@ -12,24 +12,43 @@ import RequestBloodPage from './components/RequestBloodPage';
 import { UserProvider } from './context/UserContext';
 import DonationHistoryPage from './components/DonationHistoryPage';
 import RequestBlood from './components/RequestBlood';
-import MyBloodActivities from './components/MyBloodActivities';
+import UserActivityPage from './components/UserActivityPage';
+import RequestDetail from './components/RequestDetail';
+import DonationDetail from './components/DonationDetail';
+import EditRegisterDonate from './components/EditRegisterDonate';
 export default function App() {
   return (
     <UserProvider>
     <Routes>
       <Route path="/" element={<Home />} />
+
       <Route path="/login" element={<Login />} />
+
       <Route path="/register" element={<Register />} />
+
       <Route path="/bloodguide" element={<BloodGuide/>} />
+
       <Route path='/news' element={<News/>}/>
+      <Route path="/donation/edit/:id" element={<EditRegisterDonate />} />
       <Route path='/contact' element={<Contact/>}/>
+
       <Route path='/blood-donation' element={<BloodDonation/>}/>
+
       <Route path="/emergency-blood" element={<Emergency />} />
+
       <Route path="/profile" element={<UserProfile />} />
+
       <Route path="/register/request-blood" element={<RequestBloodPage />} />
+
       <Route path="/history" element={<DonationHistoryPage/>}/>
+
       <Route path="/request-blood" element={<RequestBlood />} />
-      <Route path="/my-activities" element={<MyBloodActivities />} />
+
+      <Route path="/my-activities" element={<UserActivityPage />} />
+
+      <Route path="/request/:id" element={<RequestDetail />} />
+
+      <Route path="/donation/:id" element={<DonationDetail />} />
       {/* Add more routes as needed */}
     </Routes>
     </UserProvider>

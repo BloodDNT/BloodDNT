@@ -80,6 +80,7 @@ const handleInputChange = (e) => {
             </div>
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
+          <Link to='/my-activities'>List res/req</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/history'>DonatationHistory</Link>
           <Link to='/contact'>Contact</Link>

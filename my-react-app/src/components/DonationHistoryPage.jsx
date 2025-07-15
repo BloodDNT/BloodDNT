@@ -92,6 +92,7 @@ export default function DonationHistoryPage() {
             </div>
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
+          <Link to='/my-activities'>List res/req</Link>
           <Link to='/history'>Donation History</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>

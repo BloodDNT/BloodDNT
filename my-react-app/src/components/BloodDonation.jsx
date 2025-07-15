@@ -108,7 +108,8 @@ export default function BloodDonationPage() {
 
     try {
       setIsLoading(true);
-      const response = await axios.post('http://localhost:5000/api/register-blood', {
+      const response = await axios.post('http://localhost:5000/api/blood-donations/register-blood', {
+
         IDUser: parseInt(storedUser.IDUser),
         DonateBloodDate: registerForm.donateBloodDate,
         IDBlood: getBloodID(registerForm.bloodType),
@@ -148,6 +149,7 @@ export default function BloodDonationPage() {
             </div>
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
+          <Link to='/my-activities'>List res/req</Link>
           <Link to='/history'>DonatationHistory</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>

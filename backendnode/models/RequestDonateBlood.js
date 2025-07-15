@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-
+const User = require('./User');
 const RequestDonateBlood = sequelize.define('RequestDonateBlood', {
   IDRequest: {
     type: DataTypes.INTEGER,
@@ -39,13 +39,13 @@ const RequestDonateBlood = sequelize.define('RequestDonateBlood', {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  QRCode: {
-    type: DataTypes.STRING(1000), // đủ dài để chứa base64
+  QRCodeValue: {
+    type: DataTypes.STRING(10000), // đủ dài để chứa base64
     allowNull: true
   },
 }, {
   tableName: 'RequestDonateBlood',
   timestamps: false,
 });
-
+RequestDonateBlood.belongsTo(User, { foreignKey: 'IDUser' });
 module.exports = RequestDonateBlood;

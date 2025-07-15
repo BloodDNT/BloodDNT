@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const GroupBlood = require('./GroupBlood');
-
+const User = require('./User'); 
 const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   IDRegister: {
     type: DataTypes.INTEGER,
@@ -40,6 +40,7 @@ const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   tableName: 'RegisterDonateBlood',
   timestamps: false,
 });
+RegisterDonateBlood.belongsTo(User, { foreignKey: 'IDUser' });
 
 RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
 
