@@ -2,7 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const sequelize = require('./config/database');
-
+const registerRoute = require('./routes/registerBlood');
+const requestDonateRoute = require('./routes/requestDonateBlood');
+const userActivityRoutes = require('./routes/userActivities');
+const donationHistoryRoute = require('./routes/donationHistory');
+const notificationRoutes = require('./routes/notification');
+const authenticateToken = require('./middlewares/authenticateToken');
 // Routes
 const authRoutes = require('./routes/auth');
 
@@ -48,13 +53,12 @@ app.use("/api/blogs", blogRoutes);
 
 
 
-const PORT = process.env.PORT || 5000;
   
-sequelize.sync()
+
 // Mount real routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blood-donations', registerRoute);
-app.use('/api/blood-requests', requestDonateRoute);
+app.use('/api/blood-requests', authenticateToken, requestDonateRoute);
 app.use('/api/user-activities', userActivityRoutes);
 app.use('/api/donation-history', donationHistoryRoute);
 app.use('/api/notifications', notificationRoutes);

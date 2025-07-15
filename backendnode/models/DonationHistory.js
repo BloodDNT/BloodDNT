@@ -2,17 +2,13 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const DonationHistory = sequelize.define('DonationHistory', {
-
   IDHistory: {
- User
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
   IDUser: {
-
     type: DataTypes.STRING,
-User
     allowNull: false
   },
   DonateBloodDate: {
