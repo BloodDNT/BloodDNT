@@ -8,13 +8,13 @@ const requestDonateRoute = require('./routes/requestDonateBlood');
 const userActivityRoutes = require('./routes/userActivities');
 const sequelize = require('./config/database');
 const donationHistoryRoute = require('./routes/donationHistory');
+const notificationRoutes = require('./routes/notification');
 require('./models/User');
 
 dotenv.config();
 
 const app = express();
-const notificationRoutes = require('./routes/notification');
-app.use('/api/notifications', notificationRoutes);
+
 
 app.use(cors({
   origin: 'http://localhost:5173',
@@ -30,6 +30,8 @@ app.use('/api/blood-donations', registerRoute);
 app.use('/api/blood-requests', requestDonateRoute);
 app.use('/api/user-activities', userActivityRoutes);
 app.use('/api/donation-history', donationHistoryRoute);
+app.use('/api/notifications', notificationRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 sequelize.sync()  

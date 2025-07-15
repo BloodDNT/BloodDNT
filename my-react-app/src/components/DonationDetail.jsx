@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import './DonationDetail.css';
-import { Link } from 'react-router-dom'; 
+
 export default function DonationDetail() {
   const { id } = useParams();
   const [donation, setDonation] = useState(null);
@@ -28,7 +28,7 @@ export default function DonationDetail() {
     const input = detailRef.current;
     const canvas = await html2canvas(input, {
       scale: 2,
-      useCORS: true, // ✅ Giúp QR code hiển thị
+      useCORS: true,
     });
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
@@ -38,8 +38,20 @@ export default function DonationDetail() {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save('Phieu_Dang_Ky_Hien_Mau.pdf');
   };
-  
-  
+
+  const handleCancel = async () => {
+    const confirmCancel = window.confirm("Bạn có chắc chắn muốn huỷ đơn hiến máu này?");
+    if (!confirmCancel) return;
+
+    try {
+      await axios.put(`http://localhost:5000/api/blood-donations/cancel/${donation.IDRegister}`);
+      alert('✅ Đơn hiến máu đã được huỷ thành công!');
+      window.location.reload();
+    } catch (error) {
+      console.error("❌ Lỗi huỷ đơn:", error);
+      alert("Không thể huỷ đơn, vui lòng thử lại.");
+    }
+  };
 
   if (loading) return <p>⏳ Đang tải thông tin đơn hiến máu...</p>;
   if (!donation) return <p>❌ Không tìm thấy đơn hiến máu.</p>;
@@ -76,8 +88,8 @@ export default function DonationDetail() {
               <p><strong>Email:</strong> {donation.User.Email}</p>
               <p><strong>SĐT:</strong> {donation.User.PhoneNumber}</p>
               <p><strong>Địa chỉ thường trú:</strong> {donation.User.Address}</p>
-              <p><strong>Ngày đăng ký:</strong> {new Date(donation.DonateBloodDate).toLocaleDateString()}</p> 
               <p><strong>Giới tính:</strong> {donation.User.Gender}</p>
+              <p><strong>Ngày đăng ký:</strong> {new Date(donation.DonateBloodDate).toLocaleDateString()}</p>
             </>
           )}
         </div>
@@ -89,10 +101,17 @@ export default function DonationDetail() {
           </div>
         )}
       </div>
-      <Link to={`/donation/edit/${donation.IDRegister}`}>
 
-  <button className="edit-btn">✏️ Chỉnh sửa đơn</button>
-</Link>
+      {donation.Status !== 'Cancelled' && (
+        <div className="btn-group">
+          <button onClick={handleCancel} className="cancel-btn">
+            ❌ Huỷ đơn
+          </button>
+          <Link to={`/donation/edit/${donation.IDRegister}`}>
+            <button className="edit-btn">✏️ Chỉnh sửa đơn</button>
+          </Link>
+        </div>
+      )}
 
       <button onClick={exportPDF} className="download-btn">
         📄 Tải PDF Phiếu Hiến Máu

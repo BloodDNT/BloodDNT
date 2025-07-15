@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const GroupBlood = require('./GroupBlood');
 const User = require('./User'); 
+
 const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   IDRegister: {
     type: DataTypes.INTEGER,
@@ -35,13 +36,17 @@ const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   QRCode: {
     type: DataTypes.TEXT,
     allowNull: true
+  },
+  IsCancelled: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   tableName: 'RegisterDonateBlood',
   timestamps: false,
 });
-RegisterDonateBlood.belongsTo(User, { foreignKey: 'IDUser' });
 
+RegisterDonateBlood.belongsTo(User, { foreignKey: 'IDUser' });
 RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
 
 module.exports = RegisterDonateBlood;

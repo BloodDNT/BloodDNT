@@ -16,6 +16,7 @@ import UserActivityPage from './components/UserActivityPage';
 import RequestDetail from './components/RequestDetail';
 import DonationDetail from './components/DonationDetail';
 import EditRegisterDonate from './components/EditRegisterDonate';
+import NotificationPage from './components/NotificationPage';
 export default function App() {
   return (
     <UserProvider>
@@ -45,6 +46,7 @@ export default function App() {
       <Route path="/request-blood" element={<RequestBlood />} />
 
       <Route path="/my-activities" element={<UserActivityPage />} />
+      <Route path="/notifications" element={<NotificationPage />} />
 
       <Route path="/request/:id" element={<RequestDetail />} />
 

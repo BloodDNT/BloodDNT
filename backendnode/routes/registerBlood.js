@@ -26,7 +26,8 @@ router.post('/register-blood', async (req, res) => {
       IdentificationNumber,
       Note,
       Status: 'Pending',
-      QRCode: ''
+      QRCode: '',
+      IsCancelled: false
     });
 
     const host = 'http://localhost:5173';
@@ -49,7 +50,7 @@ router.post('/register-blood', async (req, res) => {
   }
 });
 
-// ✅ API xem chi tiết đơn hiến máu kèm thông tin người hiến
+// ✅ API xem chi tiết đơn hiến máu
 router.get('/detail/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -70,6 +71,8 @@ router.get('/detail/:id', async (req, res) => {
     res.status(500).json({ error: 'Lỗi server', details: err.message });
   }
 });
+
+// ✅ API cập nhật đơn
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -77,6 +80,24 @@ router.put('/:id', async (req, res) => {
     res.json({ message: 'Cập nhật thành công' });
   } catch (err) {
     res.status(500).json({ error: 'Lỗi cập nhật', details: err.message });
+  }
+});
+
+// ✅ API huỷ đơn hiến máu
+router.put('/cancel/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const record = await RegisterDonateBlood.findByPk(id);
+    if (!record) {
+      return res.status(404).json({ error: 'Không tìm thấy đơn để huỷ' });
+    }
+
+    await record.update({ IsCancelled: true, Status: 'Rejected' });
+
+    res.json({ message: 'Đơn hiến máu đã được huỷ thành công ❌' });
+  } catch (err) {
+    console.error('❌ Lỗi huỷ đơn:', err);
+    res.status(500).json({ error: 'Lỗi server', details: err.message });
   }
 });
 

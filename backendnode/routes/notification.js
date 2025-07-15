@@ -2,10 +2,18 @@ const express = require('express');
 const router = express.Router();
 const { sequelize } = require('../models');
 
-// GET - lấy danh sách thông báo của 1 user
+// ✅ GET - Lấy danh sách thông báo của một user
 router.get('/:idUser', async (req, res) => {
-  const { idUser } = req.params;
+  let { idUser } = req.params;
+
   try {
+    // Ép kiểu và loại bỏ khoảng trắng (nếu có)
+    idUser = parseInt(idUser.trim(), 10);
+
+    if (isNaN(idUser)) {
+      return res.status(400).json({ error: 'IDUser không hợp lệ' });
+    }
+
     const [results] = await sequelize.query(`
       SELECT 
         IDNotification,
@@ -23,26 +31,32 @@ router.get('/:idUser', async (req, res) => {
     res.json(results);
   } catch (err) {
     console.error('❌ Error fetching notifications:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Lỗi máy chủ khi lấy thông báo' });
   }
 });
 
-// PUT - đánh dấu là đã đọc
+// ✅ PUT - Đánh dấu thông báo là đã đọc
 router.put('/read/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
+    const notificationId = parseInt(id.trim(), 10);
+    if (isNaN(notificationId)) {
+      return res.status(400).json({ error: 'ID thông báo không hợp lệ' });
+    }
+
     await sequelize.query(`
       UPDATE Notification
       SET Status = 'Read'
       WHERE IDNotification = :id
     `, {
-      replacements: { id }
+      replacements: { id: notificationId }
     });
 
     res.json({ message: 'Đã đánh dấu là đã đọc' });
   } catch (err) {
     console.error('❌ Error updating notification:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Lỗi máy chủ khi cập nhật trạng thái' });
   }
 });
 
