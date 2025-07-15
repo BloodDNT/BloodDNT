@@ -103,22 +103,11 @@ export default function DonationDetail() {
         )}
       </div>
 
-      {donation.Status !== 'Cancelled' && (
-  <div className="btn-group">
-    <Link to={`/donation/edit/${donation.IDRegister}`}>
-      <button className="action-btn edit-btn">✏️ Chỉnh sửa đơn</button>
-    </Link>
-  </div>
-)}
-
-<div className="btn-group">
-  <button onClick={exportPDF} className="action-btn download-btn">
-    📄 Tải PDF Phiếu Hiến Máu
-  </button>
-  <button onClick={() => navigate('/my-activities')} className="action-btn back-btn">
-    🔙 Quay lại
-  </button>
-</div>
-
+      <div className="btn-group">
+        
+        <button onClick={exportPDF} className="action-btn download-btn">📄 Tải PDF </button>
+        <button onClick={() => navigate('/my-activities')} className="action-btn back-btn">Quay lại</button>
+      </div>
+    </div>
   );
 }
