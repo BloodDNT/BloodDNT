@@ -1,6 +1,15 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database'); 
 const User = sequelize.define('User', {
+  VerificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  IsVerified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   IDUser: {
     type: DataTypes.INTEGER,
     primaryKey: true,
