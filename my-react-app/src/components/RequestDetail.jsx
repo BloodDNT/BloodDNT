@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -7,6 +8,7 @@ import './RequestDetail.css';
 
 export default function RequestDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const detailRef = useRef();
@@ -89,9 +91,11 @@ export default function RequestDetail() {
         )}
       </div>
 
-      <button onClick={exportPDF} className="download-btn">
-        📄 Tải PDF Phiếu Yêu Cầu
-      </button>
+      <div className="btn-group">
+        
+        <button onClick={exportPDF} className="action-btn download-btn">📄 Tải PDF </button>
+        <button onClick={() => navigate('/my-activities')} className="action-btn back-btn">Quay lại</button>
+      </div>
     </div>
   );
 }

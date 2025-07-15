@@ -1,3 +1,4 @@
+// ... (imports and context as before)
 import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../context/UserContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,6 +11,8 @@ export default function UserActivityPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [donations, setDonations] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [donationFilter, setDonationFilter] = useState('All');
+  const [requestFilter, setRequestFilter] = useState('All');
 
   useEffect(() => {
     if (!user?.IDUser) return;
@@ -34,16 +37,9 @@ export default function UserActivityPage() {
     const confirm = window.confirm('Bạn có chắc muốn huỷ đơn hiến máu này?');
     if (!confirm) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/api/blood-donations/${id}`,
-        { Status: 'Cancelled' },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`http://localhost:5000/api/blood-donations/${id}`, { Status: 'Cancelled' });
       alert('✅ Đã huỷ đơn!');
-      setDonations((prev) =>
-        prev.map((d) => (d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d))
-      );
+      setDonations((prev) => prev.map((d) => (d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d)));
     } catch (err) {
       alert('❌ Huỷ đơn thất bại!');
       console.error(err);
@@ -54,28 +50,26 @@ export default function UserActivityPage() {
     const confirm = window.confirm('Bạn có chắc muốn huỷ đơn yêu cầu máu này?');
     if (!confirm) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5000/api/blood-requests/cancel/${id}`, // ✅ Đúng route
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`http://localhost:5000/api/blood-requests/cancel/${id}`);
       alert('✅ Đã huỷ đơn yêu cầu!');
-      setRequests((prev) =>
-        prev.map((r) => (r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r))
-      );
+      setRequests((prev) => prev.map((r) => (r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r)));
     } catch (err) {
       alert('❌ Huỷ đơn yêu cầu thất bại!');
       console.error(err);
     }
   };
 
+  const filteredDonations = donationFilter === 'All' ? donations : donations.filter((d) => d.Status === donationFilter);
+  const filteredRequests = requestFilter === 'All' ? requests : requests.filter((r) => r.Status === requestFilter);
+
   return (
     <div className="layout-wrapper">
+      {/* Header giống cũ */}
       <header className="header">
+        {/* Logo + Menu */}
         <div className="logo">
           <Link to="/"><img src="/LogoPage.jpg" alt="Logo" /></Link>
-          <div className="webname">Hope Donnor🩸</div>
+          <div className="webname">Hope Donor🩸</div>
         </div>
         <nav className="menu">
           <Link to="/bloodguide">Blood Guide</Link>
@@ -119,10 +113,21 @@ export default function UserActivityPage() {
         <section className="activity-page">
           <h2>📋 Lịch sử hoạt động của bạn</h2>
 
+          {/* Bộ lọc đơn hiến máu */}
+          <div className="filter-group">
+            <label>Lọc đơn hiến máu theo trạng thái:</label>
+            <select value={donationFilter} onChange={(e) => setDonationFilter(e.target.value)}>
+              <option value="All">Tất cả</option>
+              <option value="Pending">Đang chờ</option>
+              <option value="Approved">Đã duyệt</option>
+              <option value="Cancelled">Đã huỷ</option>
+            </select>
+          </div>
+
           {/* Đơn hiến máu */}
           <div className="activity-section">
             <h3>🩸 Đơn Đăng Ký Hiến Máu</h3>
-            {donations.length === 0 ? (
+            {filteredDonations.length === 0 ? (
               <p>Không có đơn nào.</p>
             ) : (
               <div className="donation-list">
@@ -131,7 +136,7 @@ export default function UserActivityPage() {
                   <span>Trạng thái</span>
                   <span>Hành động</span>
                 </div>
-                {donations.map((d) => (
+                {filteredDonations.map((d) => (
                   <div className="donation-row" key={d.IDRegister}>
                     <span>#{d.IDRegister}</span>
                     <span>{d.Status}</span>
@@ -150,10 +155,21 @@ export default function UserActivityPage() {
             )}
           </div>
 
+          {/* Bộ lọc đơn yêu cầu máu */}
+          <div className="filter-group">
+            <label>Lọc đơn yêu cầu theo trạng thái:</label>
+            <select value={requestFilter} onChange={(e) => setRequestFilter(e.target.value)}>
+              <option value="All">Tất cả</option>
+              <option value="Pending">Đang chờ</option>
+              <option value="Approved">Đã duyệt</option>
+              <option value="Cancelled">Đã huỷ</option>
+            </select>
+          </div>
+
           {/* Đơn yêu cầu máu */}
           <div className="activity-section">
             <h3>🧾 Đơn Yêu Cầu Nhận Máu</h3>
-            {requests.length === 0 ? (
+            {filteredRequests.length === 0 ? (
               <p>Không có đơn nào.</p>
             ) : (
               <div className="donation-list">
@@ -162,7 +178,7 @@ export default function UserActivityPage() {
                   <span>Trạng thái</span>
                   <span>Hành động</span>
                 </div>
-                {requests.map((r) => (
+                {filteredRequests.map((r) => (
                   <div className="donation-row" key={r.IDRequest}>
                     <span>#{r.IDRequest}</span>
                     <span>{r.Status}</span>
@@ -183,6 +199,7 @@ export default function UserActivityPage() {
         </section>
       </main>
 
+      {/* Footer như cũ */}
       <section className="footer">
         <div className="footer-container">
           <div className="footer-block location">

@@ -74,7 +74,7 @@ export default function RequestBlood() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          withCredentials: true // ✅ Gửi kèm cookie/session nếu cần
+          withCredentials: true
         }
       );
 
@@ -87,9 +87,16 @@ export default function RequestBlood() {
     }
   };
 
+  // 📅 Giới hạn ngày chọn từ hôm nay đến 7 ngày sau
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 7);
+  const formatDate = (date) => date.toISOString().split('T')[0];
+  const minDateStr = formatDate(today);
+  const maxDateStr = formatDate(maxDate);
+
   return (
     <div className="layout-wrapper">
-      {/* Header */}
       <header className="main-header">
         <div className='logo'>
           <Link to="/"><img src='/LogoPage.jpg' alt='Logo' loading="lazy" /></Link>
@@ -158,14 +165,25 @@ export default function RequestBlood() {
             </select>
 
             <input name="Quantity" type="number" placeholder="Số lượng (đơn vị)" required onChange={handleChange} />
+
             <select name="UrgencyLevel" required onChange={handleChange}>
               <option value="">-- Mức độ khẩn cấp --</option>
               <option value="Critical">Critical</option>
               <option value="Urgent">Urgent</option>
               <option value="Normal">Normal</option>
             </select>
+
             <input name="IdentificationNumber" type="text" placeholder="Số CCCD người nhận" required onChange={handleChange} />
-            <input name="RequestDate" type="date" required onChange={handleChange} />
+
+            <input
+              name="RequestDate"
+              type="date"
+              required
+              onChange={handleChange}
+              min={minDateStr}
+              max={maxDateStr}
+            />
+
             <button type="submit">📩 Gửi Yêu Cầu</button>
           </form>
 
@@ -178,7 +196,6 @@ export default function RequestBlood() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="main-footer">
         <div className='footer-container'>
           <div className='footer-block location'>
