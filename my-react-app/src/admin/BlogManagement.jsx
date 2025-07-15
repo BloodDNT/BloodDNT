@@ -3,16 +3,23 @@ import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 import "../styles/table.css";
 
+const ROWS_PER_PAGE = 1;
+
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterRole, setFilterRole] = useState("Tất cả");
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [filterRole, setFilterRole] = useState("Tất cả");
 
   useEffect(() => {
     fetchBlogs();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset về trang 1 khi đổi filter
+  }, [filterRole]);
 
   const fetchBlogs = async () => {
     try {
@@ -27,7 +34,7 @@ const BlogManagement = () => {
     if (window.confirm("Bạn có chắc chắn muốn xoá bài viết này?")) {
       try {
         await axios.delete(`http://localhost:5000/api/blogs/${id}`);
-        setBlogs((prev) => prev.filter((b) => b.IDPost !== id));
+        setBlogs(prev => prev.filter((b) => b.IDPost !== id));
       } catch (error) {
         console.error("❌ Xoá thất bại:", error);
       }
@@ -44,7 +51,7 @@ const BlogManagement = () => {
       await axios.post("http://localhost:5000/api/blogs", {
         Title: newTitle,
         Content: newContent,
-        IDUser: 1, 
+        IDUser: 1,
       });
       await fetchBlogs();
       setNewTitle("");
@@ -56,20 +63,26 @@ const BlogManagement = () => {
     }
   };
 
-  // Lọc theo người đăng
-  const filteredBlogs = blogs.filter((blog) => {
-  if (filterRole === "Tất cả") return true;
-  return blog.Role === filterRole;
-});
+  const filteredBlogs = blogs.filter((b) =>
+    filterRole === "Tất cả" ? true : b.Role === filterRole
+  );
+
+  const totalPages = Math.ceil(filteredBlogs.length / ROWS_PER_PAGE);
+  const paginatedBlogs = filteredBlogs.slice(
+    (currentPage - 1) * ROWS_PER_PAGE,
+    currentPage * ROWS_PER_PAGE
+  );
+
+  const handlePrev = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <div className="table-container">
       <h2>📝 Quản lý bài viết Blog</h2>
 
-      {/* Nút mở/đóng form */}
       <button
         onClick={() => setShowForm(!showForm)}
-        style={{
+        style={{  
           marginBottom: "16px",
           padding: "8px 16px",
           backgroundColor: "#28a745",
@@ -82,17 +95,8 @@ const BlogManagement = () => {
         {showForm ? "🔽 Đóng lại" : "➕ Tạo bài viết"}
       </button>
 
-      {/* Form tạo bài viết */}
       {showForm && (
-        <div
-          style={{
-            marginBottom: "20px",
-            padding: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-            background: "#f9f9f9",
-          }}
-        >
+        <div style={{ marginBottom: "20px", padding: "16px", border: "1px solid #ccc", borderRadius: "8px", background: "#f9f9f9" }}>
           <h4>🆕 Thêm bài viết mới</h4>
           <input
             type="text"
@@ -105,12 +109,7 @@ const BlogManagement = () => {
             placeholder="Nội dung"
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
-            style={{
-              padding: "8px",
-              width: "100%",
-              height: "120px",
-              marginBottom: "8px",
-            }}
+            style={{ padding: "8px", width: "100%", height: "120px", marginBottom: "8px" }}
           />
           <button
             onClick={handleCreate}
@@ -119,7 +118,7 @@ const BlogManagement = () => {
               background: "#007bff",
               color: "#fff",
               border: "none",
-              borderRadius: "4px",
+              borderRadius: "4px"
             }}
           >
             Đăng bài
@@ -127,7 +126,6 @@ const BlogManagement = () => {
         </div>
       )}
 
-      {/* Bộ lọc */}
       <div style={{ marginBottom: "16px" }}>
         <label style={{ marginRight: "8px" }}>Lọc theo người đăng:</label>
         <select
@@ -142,7 +140,6 @@ const BlogManagement = () => {
         </select>
       </div>
 
-      {/* Bảng blog */}
       <table className="custom-table">
         <thead>
           <tr>
@@ -156,23 +153,19 @@ const BlogManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredBlogs.length === 0 ? (
+          {paginatedBlogs.length === 0 ? (
             <tr>
-              <td colSpan="7" style={{ textAlign: "center" }}>
-                Không có bài viết phù hợp.
+              <td colSpan="7" style={{ textAlign: "center", padding: "16px" }}>
+                Không có bài viết nào.
               </td>
             </tr>
           ) : (
-            filteredBlogs.map((blog) => (
+            paginatedBlogs.map((blog) => (
               <tr key={blog.IDPost}>
                 <td>{blog.Title}</td>
-                <td>{new Date(blog.LastUpdated).toLocaleDateString("vi-VN")}</td>
+                <td>{new Date(blog.LastUpdated || blog.PostedAt).toLocaleDateString("vi-VN")}</td>
                 <td>{blog.Author}</td>
-                <td>
-                  {blog.Content.length > 50
-                    ? blog.Content.slice(0, 50) + "..."
-                    : blog.Content}
-                </td>
+                <td>{blog.Content.length > 50 ? blog.Content.slice(0, 50) + "..." : blog.Content}</td>
                 <td>{blog.LikeCount || 0}</td>
                 <td>{blog.CommentCount || 0}</td>
                 <td>
@@ -193,6 +186,29 @@ const BlogManagement = () => {
           )}
         </tbody>
       </table>
+
+      {filteredBlogs.length > ROWS_PER_PAGE && (
+        <div
+          className="pagination-controls"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "16px",
+            marginTop: "16px",
+          }}
+        >
+          <button onClick={handlePrev} disabled={currentPage === 1}>
+            ◀ Trang trước
+          </button>
+          <span>
+            Trang {currentPage} / {totalPages}
+          </span>
+          <button onClick={handleNext} disabled={currentPage === totalPages}>
+            Trang sau ▶
+          </button>
+        </div>
+      )}
     </div>
   );
 };
