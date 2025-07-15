@@ -3,6 +3,7 @@ import './DonationHistoryPage.css';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 import { Link, useNavigate } from 'react-router-dom';
+import RecoveryCountdown from '../components/RecoveryCountdown';
 
 function DonationItem({ item, expandedCardId, onToggle }) {
   const isExpanded = expandedCardId === item.IDRegister;
@@ -39,6 +40,7 @@ export default function DonationHistoryPage() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedCardId, setExpandedCardId] = useState(null);
+  const [nextDonateDate, setNextDonateDate] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -52,7 +54,16 @@ export default function DonationHistoryPage() {
     const fetchDonationHistory = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/api/donation-history/${user.IDUser}`);
-        setHistory(Array.isArray(res.data) ? res.data : []);
+        const data = Array.isArray(res.data) ? res.data : [];
+        setHistory(data);
+
+        if (data.length > 0) {
+          const sorted = [...data].sort((a, b) => new Date(b.DonateBloodDate) - new Date(a.DonateBloodDate));
+          const latest = sorted[0];
+          if (latest?.NextDonateDate) {
+            setNextDonateDate(latest.NextDonateDate);
+          }
+        }
       } catch (error) {
         console.error('❌ Lỗi khi lấy lịch sử:', error);
         setHistory([]);
@@ -104,7 +115,7 @@ export default function DonationHistoryPage() {
             <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
           ) : (
             <div className="dropdown user-menu">
-              <div className="dropbtn user-name">Xin chào, {user.FullName || 'User'} ▼</div>
+              <div className="dropbtn user-name">Xin chào, {user.fullName || 'User'} ▼</div>
               <div className="dropdown-content user-dropdown">
                 <Link to="/profile">👤 Thông tin cá nhân</Link>
                 <Link to="/notifications">🔔 Thông báo</Link>
@@ -117,6 +128,9 @@ export default function DonationHistoryPage() {
 
       <main className='donation-history-page'>
         <h2>Lịch sử hiến máu của bạn</h2>
+
+        {nextDonateDate && <RecoveryCountdown nextDate={nextDonateDate} />}
+
         {loading ? (
           <div className='loading'>Đang tải dữ liệu...</div>
         ) : history.length === 0 ? (

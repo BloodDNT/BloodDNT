@@ -7,6 +7,7 @@ const registerRoute = require('./routes/registerBlood');
 const requestDonateRoute = require('./routes/requestDonateBlood');
 const userActivityRoutes = require('./routes/userActivities');
 const sequelize = require('./config/database');
+const donationHistoryRoute = require('./routes/donationHistory');
 require('./models/User');
 
 dotenv.config();
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/blood-donations', registerRoute);
 app.use('/api/blood-requests', requestDonateRoute);
 app.use('/api/user-activities', userActivityRoutes);
+app.use('/api/donation-history', donationHistoryRoute);
 const PORT = process.env.PORT || 5000;
 
 sequelize.sync()  
