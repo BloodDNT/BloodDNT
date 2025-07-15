@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './EditRequestBlood.css'; // nếu có CSS riêng
+import './EditRequestBlood.css';
 
 export default function EditRequestBlood() {
   const { id } = useParams();
@@ -14,8 +14,19 @@ export default function EditRequestBlood() {
   });
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/blood-requests/detail/${id}`)
-      .then((res) => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Bạn chưa đăng nhập. Vui lòng đăng nhập lại.');
+          navigate('/login');
+          return;
+        }
+
+        const res = await axios.get(`http://localhost:5000/api/blood-requests/detail/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
         const d = res.data.data;
         setFormData({
           RequestDate: d.RequestDate?.substring(0, 10),
@@ -23,12 +34,14 @@ export default function EditRequestBlood() {
           EmergencyLevel: d.EmergencyLevel || 'Normal',
           Note: d.Note || '',
         });
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error('❌ Lỗi lấy dữ liệu yêu cầu:', err);
         alert('Không tìm thấy đơn yêu cầu máu!');
-        navigate('/history'); // hoặc trang phù hợp khác
-      });
+        navigate('/history');
+      }
+    };
+
+    fetchData();
   }, [id, navigate]);
 
   const handleChange = (e) => {
@@ -38,7 +51,17 @@ export default function EditRequestBlood() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/blood-requests/${id}`, formData);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Bạn chưa đăng nhập!');
+        navigate('/login');
+        return;
+      }
+
+      await axios.put(`http://localhost:5000/api/blood-requests/${id}`, formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       alert('✅ Cập nhật đơn yêu cầu thành công!');
       navigate(`/request/${id}`);
     } catch (err) {

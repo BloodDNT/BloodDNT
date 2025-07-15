@@ -14,9 +14,9 @@ export default function UserActivityPage() {
   useEffect(() => {
     if (!user?.IDUser) return;
 
-    axios.get(`http://localhost:5000/api/user-activities/${user.IDUser}`)
+    axios
+      .get(`http://localhost:5000/api/user-activities/${user.IDUser}`)
       .then((res) => {
-        console.log("📦 RESPONSE:", res.data);
         setDonations(res.data.donations || []);
         setRequests(res.data.requests || []);
       })
@@ -34,9 +34,16 @@ export default function UserActivityPage() {
     const confirm = window.confirm('Bạn có chắc muốn huỷ đơn này?');
     if (!confirm) return;
     try {
-      await axios.put(`http://localhost:5000/api/blood-donation/cancel/${id}`);
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `http://localhost:5000/api/blood-donations/${id}`,
+        { Status: 'Cancelled' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert('✅ Đã huỷ đơn!');
-      setDonations(prev => prev.map(d => d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d));
+      setDonations((prev) =>
+        prev.map((d) => (d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d))
+      );
     } catch (err) {
       alert('❌ Huỷ đơn thất bại!');
       console.error(err);
@@ -47,9 +54,16 @@ export default function UserActivityPage() {
     const confirm = window.confirm('Bạn có chắc muốn huỷ đơn yêu cầu này?');
     if (!confirm) return;
     try {
-      await axios.put(`http://localhost:5000/api/request-blood/cancel/${id}`);
+      const token = localStorage.getItem('token');
+      await axios.put(
+        `http://localhost:5000/api/blood-requests/${id}`,
+        { Status: 'Cancelled' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert('✅ Đã huỷ đơn yêu cầu!');
-      setRequests(prev => prev.map(r => r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r));
+      setRequests((prev) =>
+        prev.map((r) => (r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r))
+      );
     } catch (err) {
       alert('❌ Huỷ đơn thất bại!');
       console.error(err);
@@ -58,42 +72,55 @@ export default function UserActivityPage() {
 
   return (
     <div className="layout-wrapper">
-      <header className='header'>
-        <div className='logo'>
-          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' /></Link>
-          <div className='webname'>Hope Donnor🩸</div>
+      <header className="header">
+        <div className="logo">
+          <Link to="/">
+            <img src="/LogoPage.jpg" alt="Logo" />
+          </Link>
+          <div className="webname">Hope Donnor🩸</div>
         </div>
-        <nav className='menu'>
-          <Link to='/bloodguide'>Blood Guide</Link>
-          <div className='dropdown'>
-            <Link to='/blood' className='dropbtn'>Blood ▼</Link>
-            <div className='dropdown-content'>
-              <Link to='/blood/type'>Type</Link>
-              <Link to='/blood/red-cells'>Red Cells</Link>
-              <Link to='/blood/plasma'>Plasma</Link>
-              <Link to='/blood/white-cells'>White Cells</Link>
-              <Link to='/blood/knowledge'>Blood Knowledge</Link>
+        <nav className="menu">
+          <Link to="/bloodguide">Blood Guide</Link>
+          <div className="dropdown">
+            <Link to="/blood" className="dropbtn">
+              Blood ▼
+            </Link>
+            <div className="dropdown-content">
+              <Link to="/blood/type">Type</Link>
+              <Link to="/blood/red-cells">Red Cells</Link>
+              <Link to="/blood/plasma">Plasma</Link>
+              <Link to="/blood/white-cells">White Cells</Link>
+              <Link to="/blood/knowledge">Blood Knowledge</Link>
             </div>
           </div>
-          <Link to='/register/request-blood'>Register/Request-Blood</Link>
-          <Link to='/history'>DonatationHistory</Link>
-          <Link to='/news'>News & Events</Link>
-          <Link to='/contact'>Contact</Link>
-          <Link to='/about'>About Us</Link>
+          <Link to="/register/request-blood">Register/Request-Blood</Link>
+          <Link to="/history">DonatationHistory</Link>
+          <Link to="/news">News & Events</Link>
+          <Link to="/contact">Contact</Link>
+          <Link to="/about">About Us</Link>
         </nav>
-        <div className='actions'>
+        <div className="actions">
           {!user ? (
-            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
+            <Link to="/login">
+              <button className="login-btn">👤 Login</button>
+            </Link>
           ) : (
-            <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+            <div
+              className="dropdown user-menu"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}
+            >
               <div className="dropbtn user-name">
-                Xin chào, {user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                Xin chào, {user?.fullName || user?.name || 'User'}{' '}
+                <span className="ml-2">▼</span>
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
                   <Link to="/notifications">🔔 Thông báo</Link>
-                  <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
+                  <button className="logout-btn" onClick={handleLogout}>
+                    🚪 Đăng xuất
+                  </button>
                 </div>
               )}
             </div>
@@ -116,16 +143,31 @@ export default function UserActivityPage() {
                   <span>Trạng thái</span>
                   <span>Hành động</span>
                 </div>
-                {donations.map(d => (
+                {donations.map((d) => (
                   <div className="donation-row" key={d.IDRegister}>
                     <span>#{d.IDRegister}</span>
                     <span>{d.Status}</span>
                     <span className="action-buttons">
-                      <button onClick={() => navigate(`/donation/${d.IDRegister}`)} className="view-btn">Xem chi tiết</button>
+                      <button
+                        onClick={() => navigate(`/donation/${d.IDRegister}`)}
+                        className="view-btn"
+                      >
+                        Xem chi tiết
+                      </button>
                       {d.Status !== 'Cancelled' && (
                         <>
-                          <button onClick={() => navigate(`/donation/edit/${d.IDRegister}`)} className="edit-btn">Chỉnh sửa</button>
-                          <button onClick={() => handleCancel(d.IDRegister)} className="cancel-btn">Huỷ đơn</button>
+                          <button
+                            onClick={() => navigate(`/donation/edit/${d.IDRegister}`)}
+                            className="edit-btn"
+                          >
+                            Chỉnh sửa
+                          </button>
+                          <button
+                            onClick={() => handleCancel(d.IDRegister)}
+                            className="cancel-btn"
+                          >
+                            Huỷ đơn
+                          </button>
                         </>
                       )}
                     </span>
@@ -151,11 +193,26 @@ export default function UserActivityPage() {
                     <span>#{r.IDRequest}</span>
                     <span>{r.Status}</span>
                     <span className="action-buttons">
-                      <button onClick={() => navigate(`/request/${r.IDRequest}`)} className="view-btn">Xem chi tiết</button>
+                      <button
+                        onClick={() => navigate(`/request/${r.IDRequest}`)}
+                        className="view-btn"
+                      >
+                        Xem chi tiết
+                      </button>
                       {r.Status !== 'Cancelled' && (
                         <>
-                          <button onClick={() => navigate(`/request/edit/${r.IDRequest}`)} className="edit-btn">Chỉnh sửa</button>
-                          <button onClick={() => handleCancelRequest(r.IDRequest)} className="cancel-btn">Huỷ đơn</button>
+                          <button
+                            onClick={() => navigate(`/request/edit/${r.IDRequest}`)}
+                            className="edit-btn"
+                          >
+                            Chỉnh sửa
+                          </button>
+                          <button
+                            onClick={() => handleCancelRequest(r.IDRequest)}
+                            className="cancel-btn"
+                          >
+                            Huỷ đơn
+                          </button>
                         </>
                       )}
                     </span>
@@ -167,27 +224,39 @@ export default function UserActivityPage() {
         </section>
       </main>
 
-      <section className='footer'>
-        <div className='footer-container'>
-          <div className='footer-block location'>
+      <section className="footer">
+        <div className="footer-container">
+          <div className="footer-block location">
             <h3>📍 Location</h3>
             <p>Blood Donation Center, FPT University, Q9, TP.HCM</p>
           </div>
-          <div className='footer-block hotline'>
+          <div className="footer-block hotline">
             <h3>📞 Hotline</h3>
             <p>+84 123 456 789</p>
             <p>+84 123 456 987</p>
           </div>
-          <div className='footer-block social-media'>
+          <div className="footer-block social-media">
             <h3>🌐 Follow Us</h3>
             <ul>
-              <li><a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a></li>
-              <li><a href='https://instagram.com' target='_blank' rel='noreferrer'>Instagram</a></li>
-              <li><a href='https://twitter.com' target='_blank' rel='noreferrer'>Twitter</a></li>
+              <li>
+                <a href="https://facebook.com" target="_blank" rel="noreferrer">
+                  Facebook
+                </a>
+              </li>
+              <li>
+                <a href="https://instagram.com" target="_blank" rel="noreferrer">
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com" target="_blank" rel="noreferrer">
+                  Twitter
+                </a>
+              </li>
             </ul>
           </div>
         </div>
-        <p className='footer-copy'>© 2025 HopeDonor. All rights reserved.</p>
+        <p className="footer-copy">© 2025 HopeDonor. All rights reserved.</p>
       </section>
     </div>
   );
