@@ -121,6 +121,8 @@ const BlogManagement = () => {
             <th>Ngày đăng</th>
             <th>Người đăng</th>
             <th>Nội dung</th>
+            <th>Thích</th>
+            <th>Bình luân</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -136,6 +138,8 @@ const BlogManagement = () => {
                 <td>{new Date(blog.LastUpdated || blog.PostedAt).toLocaleDateString("vi-VN")}</td>
                 <td>{blog.Author}</td>
                 <td>{blog.Content.length > 50 ? blog.Content.slice(0, 50) + "..." : blog.Content}</td>
+                <td>{blog.LikeCount || 0}</td>
+                <td>{blog.CommentCount || 0}</td>
                 <td>
                   <button
                     onClick={() => handleDelete(blog.IDPost)}

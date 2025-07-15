@@ -41,8 +41,8 @@ router.delete('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    await sequelize.query(`DELETE FROM Blog WHERE IDPost = @id`, {
-      replacements: { id }
+    await sequelize.query(`DELETE FROM Blog WHERE IDPost = ?`, {
+      replacements: [id]
     });
     res.status(200).send("✅ Xoá bài viết thành công");
   } catch (error) {
