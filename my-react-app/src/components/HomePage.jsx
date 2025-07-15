@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import './homepage.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
@@ -7,7 +7,22 @@ export default function Home() {
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+ const bannerImages = [
+    '/background11.png',
+    '/background12.jpg',
+    '/background13.jpg'
+  ];
+  const [currentImage, setCurrentImage] = useState(0);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage(prev =>
+        prev === bannerImages.length - 1 ? 0 : prev + 1
+      );
+    }, 5000); // đổi ảnh mỗi 5 giây
+
+    return () => clearInterval(interval);
+  }, []);
   const handleLogout = () => {
     logout(); // gọi hàm logout trong context
     navigate('/login'); // chuyển về trang login
@@ -68,8 +83,11 @@ export default function Home() {
       {/* body */}
       <div className='body'>
         <section className='background-1'>
-          <img src='/background11.png' alt='Blood' className='background1-image'/>
-        </section>
+ <img
+    src={bannerImages[currentImage]}
+    alt='Blood'
+    className='background1-image fade-in'
+  />        </section>
         <section className='background-2'>
           <div className='background-2-container'>
             <img src='/background2.jpg' alt='Blood' className='background1-image'/>

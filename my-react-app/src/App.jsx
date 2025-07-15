@@ -8,7 +8,7 @@ import Contact from './components/Contact';
 import BloodDonation from './components/BloodDonation';
 import Emergency from './components/Emergency';
 import UserProfile  from './components/UserProfile';
-
+import BloodKnowledge from './components/BloodKnowledge';
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import BloodChartPage from "./admin/BloodChartPage";
@@ -31,7 +31,9 @@ export default function App() {
       <Route path='/blood-donation' element={<BloodDonation/>}/>
       <Route path="/emergency-blood" element={<Emergency />} />
       <Route path="/profile" element={<UserProfile />} />
-
+      <Route path="/bloodknowledge" element={<BloodKnowledge />} />
+      
+      {/* Admin routes */}
       <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="chart" element={<BloodChartPage />} />

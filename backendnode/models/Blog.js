@@ -7,7 +7,9 @@ const Blog = sequelize.define('Blog', {
   Title: { type: DataTypes.STRING, allowNull: false },
   Content: { type: DataTypes.TEXT, allowNull: false },
   Category: { type: DataTypes.STRING },
-  LastUpdated: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+  LastUpdated: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+
+
 }, {
   tableName: 'Blog',
   timestamps: false
