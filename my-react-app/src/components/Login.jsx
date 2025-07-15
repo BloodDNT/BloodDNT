@@ -7,7 +7,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useContext(UserContext);
+   const { login, user, logout } = useContext(UserContext);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,8 +35,57 @@ export default function Login() {
       alert('Lỗi server: ' + error.message);
     }
   };
-
+ const handleLogout = () => {
+    logout();
+  };
   return (
+     <>
+      <header className='header'>
+        <div className='logo'>
+          <Link to="/">
+            <img src='/LogoPage.jpg' alt='Logo' />
+          </Link>
+          <div className='webname'>Hope Donnor🩸</div>
+        </div>
+        <nav className='menu'>
+          <Link to='/bloodguide'>Blood Guide</Link>
+          <div className='dropdown'>
+            <Link to='/bloodknowledge' className='dropbtn'>Blood ▼</Link>
+          </div>
+          <Link to='/news'>News & Events</Link>
+          <Link to='/contact'>Contact</Link>
+          <Link to='/about'>About Us</Link>
+        </nav>
+        <div className='actions'>
+          {!user ? (
+            <Link to='/login'>
+              <button className='login-btn'>👤 Login</button>
+            </Link>
+          ) : (
+            <div 
+              className="dropdown user-menu"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}
+            >
+              <div className="dropbtn user-name">
+                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+              </div>
+              {isOpen && (
+                <div className="dropdown-content user-dropdown">
+                  <Link to="/profile">👤 Thông tin cá nhân</Link>
+                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <button
+                    className="logout-btn"
+                    onClick={handleLogout}
+                  >
+                    🚪 Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </header>
     <section className="login-section">
       <div className="login-box">
         <div className='logo-login'>
@@ -84,5 +134,6 @@ export default function Login() {
         </div>
       </div>
     </section>
+    </>
   );
 }

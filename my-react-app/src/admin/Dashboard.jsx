@@ -53,7 +53,7 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  const handleCardClick = (key) => {
+  const handleCardClick = (key) => {  
     setActiveTable((prev) => (prev === key ? null : key));
   };
 

@@ -60,7 +60,7 @@ export default function Register() {
           <input type="password" placeholder="Nhập lại mật khẩu" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required />
           <input type="tel" placeholder="Số điện thoại" name="phoneNumber" value={form.phoneNumber} onChange={handleChange} required />
           <input type="text" placeholder="Địa chỉ" name="address" value={form.address} onChange={handleChange} required />
-          <input type="date" name="dateOfBirth" value={form.dateOfBirth} onChange={handleChange} required />
+          <input type="date" name="dateOfBirth" value={form.dateOfBirth}   max={new Date().toISOString().split("T")[0]} onChange={handleChange} required />
 
           <select name="gender" value={form.gender} onChange={handleChange} required>
             <option value="">Chọn giới tính</option>

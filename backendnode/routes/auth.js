@@ -32,12 +32,6 @@ const isValidPhoneNumber = (phoneNumber) => {
   return phoneRegex.test(phoneNumber);
 };
 
-// Hàm kiểm tra CCCD (12 số)
-const isValidCCCD = (cccd) => {
-  if (!cccd) return true; // Không bắt buộc
-  const cccdRegex = /^[0-9]{12}$/;
-  return cccdRegex.test(cccd);
-};
 
 // Hàm kiểm tra độ tuổi (trên 18)
 const isOver18 = (dateOfBirth) => {
@@ -280,3 +274,4 @@ router.get('/verify-email', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.authenticate = authenticate;

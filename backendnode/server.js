@@ -1,9 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/auth');
 const sequelize = require('./config/database');
-require('./models/User');
+
+// Routes
+const authRoutes = require('./routes/auth');
+
 
 dotenv.config();
 
@@ -18,7 +20,9 @@ app.use(cors({
 
 app.use(express.json());
 
+// Only ONE require and ONE use per route
 app.use('/api/auth', authRoutes);
+
 
 const bloodInventoryRoutes = require('./routes/bloodInventory');
 app.use('/api/blood-inventory', bloodInventoryRoutes);
@@ -40,6 +44,7 @@ app.use('/api/users', userRoutes);
 
 const blogRoutes = require("./routes/blog");
 app.use("/api/blogs", blogRoutes);
+
 
 
 const PORT = process.env.PORT || 5000;
