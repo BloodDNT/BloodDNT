@@ -11,6 +11,7 @@ dotenv.config();
 
 const app = express();
 
+
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -50,6 +51,17 @@ app.use("/api/blogs", blogRoutes);
 const PORT = process.env.PORT || 5000;
   
 sequelize.sync()
+// Mount real routes
+app.use('/api/auth', authRoutes);
+app.use('/api/blood-donations', registerRoute);
+app.use('/api/blood-requests', requestDonateRoute);
+app.use('/api/user-activities', userActivityRoutes);
+app.use('/api/donation-history', donationHistoryRoute);
+app.use('/api/notifications', notificationRoutes);
+
+const PORT = process.env.PORT || 5000;
+
+sequelize.sync()  
   .then(() => {
     app.listen(PORT, () =>
       console.log(`✅ Server running on http://localhost:${PORT}`)

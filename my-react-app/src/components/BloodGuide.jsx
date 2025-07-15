@@ -97,6 +97,9 @@ export default function BloodGuide() {
             <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
             
           </div>
+          <Link to='/register/request-blood'>Register/Request-Blood</Link>
+          <Link to='my-activities'>List res/req</Link>
+          <Link to='/history'>DonatationHistory</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>
           <Link to='/about'>About Us</Link>

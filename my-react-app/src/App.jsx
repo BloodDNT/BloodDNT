@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Login from './components/Login';
-import Home from './components/HomePage';
+import Home from './components/HomeUserPage';
 import Register from './components/Register';
 import BloodGuide from './components/BloodGuide';
 import News from './components/News';
@@ -25,18 +25,35 @@ import CombinedDonorChart from "./admin/chart/CombinedDonorChart";
 import BloodInventoryTable from "./admin/table/BloodInventoryTable";
 import RegisteredDonorsTable from "./admin/table/RegisteredDonorsTable";
 
+import RequestBloodPage from './components/RequestBloodPage';
+import { UserProvider } from './context/UserContext';
+import DonationHistoryPage from './components/DonationHistoryPage';
+import RequestBlood from './components/RequestBlood';
+import UserActivityPage from './components/UserActivityPage';
+import RequestDetail from './components/RequestDetail';
+import DonationDetail from './components/DonationDetail';
+import EditRegisterDonate from './components/EditRegisterDonate';
+import NotificationPage from './components/NotificationPage';
 export default function App() {
   return (
     <UserProvider>
     <Routes>
       <Route path="/" element={<Home />} />
+
       <Route path="/login" element={<Login />} />
+
       <Route path="/register" element={<Register />} />
+
       <Route path="/bloodguide" element={<BloodGuide/>} />
+
       <Route path='/news' element={<News/>}/>
+      <Route path="/donation/edit/:id" element={<EditRegisterDonate />} />
       <Route path='/contact' element={<Contact/>}/>
+
       <Route path='/blood-donation' element={<BloodDonation/>}/>
+
       <Route path="/emergency-blood" element={<Emergency />} />
+
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/bloodknowledge" element={<BloodKnowledge />} />
       <Route path="/blood-inventory" element={<BloodInventoryTable />} />
@@ -52,6 +69,21 @@ export default function App() {
         </Route>
       </Routes>
 
+
+      <Route path="/register/request-blood" element={<RequestBloodPage />} />
+
+      <Route path="/history" element={<DonationHistoryPage/>}/>
+
+      <Route path="/request-blood" element={<RequestBlood />} />
+
+      <Route path="/my-activities" element={<UserActivityPage />} />
+      <Route path="/notifications" element={<NotificationPage />} />
+
+      <Route path="/request/:id" element={<RequestDetail />} />
+
+      <Route path="/donation/:id" element={<DonationDetail />} />
+      {/* Add more routes as needed */}
+    </Routes>
     </UserProvider>
   );
 }

@@ -180,6 +180,7 @@ router.post('/login', async (req, res) => {
       message: 'Đăng nhập thành công',
       token,
       user: {
+        IDUser: user.IDUser, // ✅ thêm dòng này
         fullName: user.FullName,
         email: user.Email,
         phoneNumber: user.PhoneNumber,

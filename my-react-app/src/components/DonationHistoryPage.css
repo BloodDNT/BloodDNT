@@ -1,0 +1,126 @@
+.donation-history-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff8f8;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.donation-history-page h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #c70039;
+}
+
+.donation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.donation-item {
+  border: 1px solid #eee;
+  border-left: 6px solid #c70039;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.donation-item:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.donation-item p {
+  margin: 6px 0;
+  font-size: 15px;
+}
+
+.donation-item strong {
+  color: #333;
+}
+
+.donation-status {
+  font-weight: bold;
+}
+
+.donation-status.Pending {
+  color: #ffa500;
+}
+
+.donation-status.Approved {
+  color: #28a745;
+}
+
+.donation-status.Rejected {
+  color: #dc3545;
+}
+
+.loading {
+  text-align: center;
+  font-style: italic;
+  color: #777;
+}
+
+.no-data {
+  text-align: center;
+  color: #999;
+  margin-top: 20px;
+}
+.donation-status.pending {
+  color: orange;
+}
+.donation-status.approved {
+  color: green;
+}
+.donation-status.rejected {
+  color: red;
+}
+.donation-status.unknown {
+  color: gray;
+}
+.donation-item {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.donation-item button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #d30000;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.donation-item button:hover {
+  background-color: #a80000;
+}
+
+.donation-details {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #eef1f6;
+  border-radius: 8px;
+}
+.re-register-btn {
+  display: inline-block;
+  margin-top: 12px;
+  background-color: #e60000;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.re-register-btn:hover {
+  background-color: #cc0000;
+}
