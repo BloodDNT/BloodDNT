@@ -24,6 +24,16 @@ const getComponentID = (componentName) => {
   return map[componentName] || 1;
 };
 
+const getDefaultQuantity = (componentName) => {
+  const defaultMap = {
+    'Hồng cầu': 250, // đơn vị
+    'Tiểu cầu': 250, // ml
+    'Huyết tương tươi đông lạnh': 200,
+    'Bạch cầu': 50
+  };
+  return defaultMap[componentName] || '';
+};
+
 export default function RequestBlood() {
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
@@ -43,7 +53,18 @@ export default function RequestBlood() {
   }, [user]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'IDComponents') {
+      const defaultQty = getDefaultQuantity(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        Quantity: defaultQty
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -87,7 +108,6 @@ export default function RequestBlood() {
     }
   };
 
-  // 📅 Giới hạn ngày chọn từ hôm nay đến 7 ngày sau
   const today = new Date();
   const maxDate = new Date();
   maxDate.setDate(today.getDate() + 7);
@@ -144,7 +164,7 @@ export default function RequestBlood() {
         <section className='form-section'>
           <h2>🆘 Gửi Yêu Cầu Nhận Máu</h2>
           <form onSubmit={handleSubmit} className="blood-request-form">
-            <select name="IDComponents" required onChange={handleChange}>
+            <select name="IDComponents" required onChange={handleChange} value={formData.IDComponents}>
               <option value="">-- Chọn thành phần máu --</option>
               <option value="Hồng cầu">Hồng cầu</option>
               <option value="Tiểu cầu">Tiểu cầu</option>
@@ -152,7 +172,7 @@ export default function RequestBlood() {
               <option value="Bạch cầu">Bạch cầu</option>
             </select>
 
-            <select name="IDBlood" required onChange={handleChange}>
+            <select name="IDBlood" required onChange={handleChange} value={formData.IDBlood}>
               <option value="">-- Chọn nhóm máu --</option>
               <option value="A+">A+</option>
               <option value="A-">A-</option>
@@ -164,21 +184,42 @@ export default function RequestBlood() {
               <option value="O-">O-</option>
             </select>
 
-            <input name="Quantity" type="number" placeholder="Số lượng (đơn vị)" required onChange={handleChange} />
+            <input
+              name="Quantity"
+              type="number"
+              value={formData.Quantity}
+              placeholder={
+                !formData.IDComponents
+                  ? 'Số lượng'
+                  : formData.IDComponents === 'Hồng cầu'
+                  ? 'Số lượng (đơn vị)'
+                  : 'Số lượng (ml)'
+              }
+              required
+              onChange={handleChange}
+            />
 
-            <select name="UrgencyLevel" required onChange={handleChange}>
+            <select name="UrgencyLevel" required onChange={handleChange} value={formData.UrgencyLevel}>
               <option value="">-- Mức độ khẩn cấp --</option>
               <option value="Critical">Critical</option>
               <option value="Urgent">Urgent</option>
               <option value="Normal">Normal</option>
             </select>
 
-            <input name="IdentificationNumber" type="text" placeholder="Số CCCD người nhận" required onChange={handleChange} />
+            <input
+              name="IdentificationNumber"
+              type="text"
+              placeholder="Số CCCD người nhận"
+              required
+              value={formData.IdentificationNumber}
+              onChange={handleChange}
+            />
 
             <input
               name="RequestDate"
               type="date"
               required
+              value={formData.RequestDate}
               onChange={handleChange}
               min={minDateStr}
               max={maxDateStr}

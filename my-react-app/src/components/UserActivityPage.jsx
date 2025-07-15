@@ -49,15 +49,34 @@ export default function UserActivityPage() {
   const handleCancelRequest = async (id) => {
     const confirm = window.confirm('Bạn có chắc muốn huỷ đơn yêu cầu máu này?');
     if (!confirm) return;
+  
     try {
-      await axios.put(`http://localhost:5000/api/blood-requests/cancel/${id}`);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Bạn chưa đăng nhập!');
+        return navigate('/login');
+      }
+  
+      await axios.put(
+        `http://localhost:5000/api/blood-requests/cancel/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+  
       alert('✅ Đã huỷ đơn yêu cầu!');
-      setRequests((prev) => prev.map((r) => (r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r)));
+      setRequests((prev) =>
+        prev.map((r) => (r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r))
+      );
     } catch (err) {
       alert('❌ Huỷ đơn yêu cầu thất bại!');
       console.error(err);
     }
   };
+  
 
   const filteredDonations = donationFilter === 'All' ? donations : donations.filter((d) => d.Status === donationFilter);
   const filteredRequests = requestFilter === 'All' ? requests : requests.filter((r) => r.Status === requestFilter);

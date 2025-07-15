@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -77,8 +76,6 @@ export default function RequestDetail() {
               <p><strong>Địa chỉ thường trú:</strong> {request.User.Address}</p>
               <p><strong>Giới tính:</strong> {request.User.Gender}</p>
               <p><strong>Ngày đăng ký:</strong> {new Date(request.RequestDate).toLocaleDateString()}</p>
-
-              
             </>
           )}
         </div>
@@ -86,14 +83,21 @@ export default function RequestDetail() {
         {request.QRCodeValue && (
           <div className="qr-section">
             <h4>🔒 Mã Xác Nhận QR</h4>
-            <img src={request.QRCodeValue} alt="QR Code" className="qr-code" />
+            <img
+              src={
+                request.QRCodeValue.startsWith('data:image')
+                  ? request.QRCodeValue
+                  : `data:image/png;base64,${request.QRCodeValue}`
+              }
+              alt="QR Code"
+              className="qr-code"
+            />
           </div>
         )}
       </div>
 
       <div className="btn-group">
-        
-        <button onClick={exportPDF} className="action-btn download-btn">📄 Tải PDF </button>
+        <button onClick={exportPDF} className="action-btn download-btn">📄 Tải PDF</button>
         <button onClick={() => navigate('/my-activities')} className="action-btn back-btn">Quay lại</button>
       </div>
     </div>
