@@ -9,6 +9,10 @@ const userActivityRoutes = require('./routes/userActivities');
 const sequelize = require('./config/database');
 const donationHistoryRoute = require('./routes/donationHistory');
 const notificationRoutes = require('./routes/notification');
+const authenticateToken = require('./middlewares/authenticateToken');
+
+
+
 require('./models/User');
 
 dotenv.config();
@@ -27,7 +31,7 @@ app.use(express.json());
 // Mount real routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blood-donations', registerRoute);
-app.use('/api/blood-requests', requestDonateRoute);
+app.use('/api/blood-requests', authenticateToken, requestDonateRoute);
 app.use('/api/user-activities', userActivityRoutes);
 app.use('/api/donation-history', donationHistoryRoute);
 app.use('/api/notifications', notificationRoutes);

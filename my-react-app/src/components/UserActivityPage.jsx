@@ -13,10 +13,10 @@ export default function UserActivityPage() {
 
   useEffect(() => {
     if (!user?.IDUser) return;
-  
+
     axios.get(`http://localhost:5000/api/user-activities/${user.IDUser}`)
       .then((res) => {
-        console.log("📦 RESPONSE:", res.data); // 👈 In dữ liệu từ server
+        console.log("📦 RESPONSE:", res.data);
         setDonations(res.data.donations || []);
         setRequests(res.data.requests || []);
       })
@@ -24,7 +24,6 @@ export default function UserActivityPage() {
         console.error('❌ Lỗi lấy hoạt động:', err);
       });
   }, [user]);
-    
 
   const handleLogout = () => {
     logout();
@@ -38,6 +37,19 @@ export default function UserActivityPage() {
       await axios.put(`http://localhost:5000/api/blood-donation/cancel/${id}`);
       alert('✅ Đã huỷ đơn!');
       setDonations(prev => prev.map(d => d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d));
+    } catch (err) {
+      alert('❌ Huỷ đơn thất bại!');
+      console.error(err);
+    }
+  };
+
+  const handleCancelRequest = async (id) => {
+    const confirm = window.confirm('Bạn có chắc muốn huỷ đơn yêu cầu này?');
+    if (!confirm) return;
+    try {
+      await axios.put(`http://localhost:5000/api/request-blood/cancel/${id}`);
+      alert('✅ Đã huỷ đơn yêu cầu!');
+      setRequests(prev => prev.map(r => r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r));
     } catch (err) {
       alert('❌ Huỷ đơn thất bại!');
       console.error(err);
@@ -109,11 +121,11 @@ export default function UserActivityPage() {
                     <span>#{d.IDRegister}</span>
                     <span>{d.Status}</span>
                     <span className="action-buttons">
-                      <button onClick={() => navigate(`/donation/${d.IDRegister}`)} className="view-btn">Xem chi tiet</button>
+                      <button onClick={() => navigate(`/donation/${d.IDRegister}`)} className="view-btn">Xem chi tiết</button>
                       {d.Status !== 'Cancelled' && (
                         <>
-                          <button onClick={() => navigate(`/donation/edit/${d.IDRegister}`)} className="edit-btn">Chinh sua</button>
-                          <button onClick={() => handleCancel(d.IDRegister)} className="cancel-btn">Huy don</button>
+                          <button onClick={() => navigate(`/donation/edit/${d.IDRegister}`)} className="edit-btn">Chỉnh sửa</button>
+                          <button onClick={() => handleCancel(d.IDRegister)} className="cancel-btn">Huỷ đơn</button>
                         </>
                       )}
                     </span>
@@ -124,17 +136,34 @@ export default function UserActivityPage() {
           </div>
 
           <div className="activity-section">
-  <h3>🧾 Đơn Yêu Cầu Nhận Máu</h3>
-  {requests.length === 0 ? <p>Không có đơn nào.</p> : (
-    <ul>
-      {requests.map((r, index) => (
-        <li key={r.IDRequest || index}>
-          <Link to={`/request/${r.IDRequest}`}>Đơn #{r.IDRequest} - {r.Status}</Link>
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
+            <h3>🧾 Đơn Yêu Cầu Nhận Máu</h3>
+            {requests.length === 0 ? (
+              <p>Không có đơn nào.</p>
+            ) : (
+              <div className="donation-list">
+                <div className="donation-header">
+                  <span>Mã đơn</span>
+                  <span>Trạng thái</span>
+                  <span>Hành động</span>
+                </div>
+                {requests.map((r) => (
+                  <div className="donation-row" key={r.IDRequest}>
+                    <span>#{r.IDRequest}</span>
+                    <span>{r.Status}</span>
+                    <span className="action-buttons">
+                      <button onClick={() => navigate(`/request/${r.IDRequest}`)} className="view-btn">Xem chi tiết</button>
+                      {r.Status !== 'Cancelled' && (
+                        <>
+                          <button onClick={() => navigate(`/request/edit/${r.IDRequest}`)} className="edit-btn">Chỉnh sửa</button>
+                          <button onClick={() => handleCancelRequest(r.IDRequest)} className="cancel-btn">Huỷ đơn</button>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
       </main>
 

@@ -42,11 +42,6 @@ export default function RequestBlood() {
     console.log("👤 User:", user);
   }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -55,7 +50,6 @@ export default function RequestBlood() {
     e.preventDefault();
 
     const payload = {
-      IDUser: user?.ID || user?.id || 1,
       IDComponents: parseInt(getComponentID(formData.IDComponents)),
       IDBlood: parseInt(getBloodID(formData.IDBlood)),
       Quantity: parseInt(formData.Quantity),
@@ -67,13 +61,29 @@ export default function RequestBlood() {
     console.log("📦 Payload gửi:", payload);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/blood-requests', payload);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Bạn chưa đăng nhập. Vui lòng đăng nhập trước khi gửi yêu cầu.');
+        return navigate('/login');
+      }
+
+      const res = await axios.post(
+        'http://localhost:5000/api/blood-requests',
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true // ✅ Gửi kèm cookie/session nếu cần
+        }
+      );
 
       alert('🩸 Gửi yêu cầu thành công!');
       setQrImage(res.data.data?.QRCode);
     } catch (err) {
       console.error('❌ Lỗi khi gửi yêu cầu:', err);
-      alert('Không thể gửi yêu cầu. Vui lòng kiểm tra lại.');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi không xác định';
+      alert(msg);
     }
   };
 
