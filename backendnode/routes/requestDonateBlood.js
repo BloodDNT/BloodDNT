@@ -141,5 +141,25 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Lỗi server', details: err.message });
   }
 });
+router.put('/cancel/:id', authenticateToken, async (req, res) => {
+  try {
+    const IDUser = req.user?.IDUser;
+    const IDRequest = req.params.id;
+
+    const request = await RequestDonateBlood.findOne({ where: { IDRequest, IDUser } });
+
+    if (!request) {
+      return res.status(404).json({ error: 'Không tìm thấy đơn hoặc bạn không có quyền huỷ.' });
+    }
+
+    await request.update({ Status: 'Cancelled' });
+
+    res.json({ message: '✅ Đã huỷ đơn yêu cầu thành công!' });
+
+  } catch (err) {
+    console.error('❌ Lỗi huỷ đơn yêu cầu:', err);
+    res.status(500).json({ error: 'Lỗi server', details: err.message });
+  }
+});
 
 module.exports = router;
