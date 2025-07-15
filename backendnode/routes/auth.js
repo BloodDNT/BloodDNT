@@ -3,6 +3,9 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const sendVerificationEmail = require('../utils/sendVerificationEmail');
+const crypto = require('crypto');
+
 
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -55,8 +58,7 @@ router.post('/register', async (req, res) => {
       dateOfBirth,
       gender,
       cccd,
-      
-      
+  
     } = req.body;
 
     // Kiểm tra các trường bắt buộc
@@ -94,6 +96,8 @@ router.post('/register', async (req, res) => {
 
     // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
 
     // Tạo người dùng mới
     const newUser = await User.create({
@@ -105,9 +109,19 @@ router.post('/register', async (req, res) => {
       DateOfBirth: dateOfBirth,
       Gender: gender,
       CCCD: cccd,
-      Role: 'User'
-      // Role mặc định là 'User' trong cơ sở dữ liệu
+      Role: 'User',
+      IsVerified: false,
+      VerificationToken: verificationToken,
     });
+
+    // Gửi email xác minh
+    const verifyUrl = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
+    try {
+      await sendVerificationEmail(email, verifyUrl);
+    } catch (err) {
+      console.error('Lỗi gửi email xác minh:', err);
+      // Không trả lỗi, vẫn cho đăng ký thành công nhưng báo không gửi được email
+    }
 
     // Tạo JWT
     const token = jwt.sign({ userId: newUser.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
@@ -115,14 +129,16 @@ router.post('/register', async (req, res) => {
     });
 
     res.status(201).json({
-      message: 'Đăng ký thành công',
+      message: 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!',
       token,
-      user: {  fullName: newUser.FullName,
-    email: newUser.Email,
-    phoneNumber: newUser.PhoneNumber,
-    address: newUser.Address,
-    dateOfBirth: newUser.DateOfBirth,
-    gender: newUser.Gender }
+      user: {
+        fullName: newUser.FullName,
+        email: newUser.Email,
+        phoneNumber: newUser.PhoneNumber,
+        address: newUser.Address,
+        dateOfBirth: newUser.DateOfBirth,
+        gender: newUser.Gender
+      }
     });
   } catch (error) {
     console.error(error);
@@ -144,6 +160,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Email không tồn tại' });
     }
 
+    // Kiểm tra xác minh email
+    if (!user.IsVerified) {
+      return res.status(403).json({ message: 'Tài khoản chưa xác minh email. Vui lòng kiểm tra email để xác minh.' });
+    }
+
     // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
@@ -158,12 +179,14 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Đăng nhập thành công',
       token,
-      user: {  fullName: user.FullName,
-    email: user.Email,
-    phoneNumber: user.PhoneNumber,
-    address: user.Address,
-    dateOfBirth: user.DateOfBirth,
-    gender: user.Gender }
+      user: {
+        fullName: user.FullName,
+        email: user.Email,
+        phoneNumber: user.PhoneNumber,
+        address: user.Address,
+        dateOfBirth: user.DateOfBirth,
+        gender: user.Gender
+      }
     });
   } catch (error) {
     console.error(error);
@@ -220,6 +243,33 @@ router.put('/update', authenticate, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+});
+
+//xác minh email
+router.get('/verify-email', async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) return res.status(400).send('Thiếu mã xác minh');
+
+  try {
+    const user = await User.findOne({ where: { VerificationToken: token } });
+
+    if (!user) {
+      return res.status(400).send('Mã xác minh không hợp lệ hoặc đã hết hạn');
+    }
+
+    user.IsVerified = true;
+    user.VerificationToken = null;
+    await user.save();
+
+    return res.send(`
+      <h2>✅ Tài khoản của bạn đã được xác minh thành công!</h2>
+      <p>Bạn có thể <a href="http://localhost:3000/login">đăng nhập</a> ngay bây giờ.</p>
+    `);
+  } catch (error) {
+    console.error('Lỗi xác minh:', error);
+    res.status(500).send('Đã có lỗi xảy ra khi xác minh');
   }
 });
 
