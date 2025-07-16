@@ -19,17 +19,19 @@ const getComponentID = (componentName) => {
     'Hồng cầu': 1,
     'Tiểu cầu': 2,
     'Huyết tương tươi đông lạnh': 3,
-    'Bạch cầu': 4
+    'Bạch cầu': 4,
+    'Toàn phần': 5
   };
   return map[componentName] || 1;
 };
 
 const getDefaultQuantity = (componentName) => {
   const defaultMap = {
-    'Hồng cầu': 250, // đơn vị
-    'Tiểu cầu': 250, // ml
+    'Hồng cầu': 250,
+    'Tiểu cầu': 250,
     'Huyết tương tươi đông lạnh': 200,
-    'Bạch cầu': 50
+    'Bạch cầu': 50,
+    'Toàn phần': 450
   };
   return defaultMap[componentName] || '';
 };
@@ -170,6 +172,7 @@ export default function RequestBlood() {
               <option value="Tiểu cầu">Tiểu cầu</option>
               <option value="Huyết tương tươi đông lạnh">Huyết tương tươi đông lạnh</option>
               <option value="Bạch cầu">Bạch cầu</option>
+              <option value="Toàn phần">Toàn phần</option>
             </select>
 
             <select name="IDBlood" required onChange={handleChange} value={formData.IDBlood}>
@@ -201,7 +204,6 @@ export default function RequestBlood() {
 
             <select name="UrgencyLevel" required onChange={handleChange} value={formData.UrgencyLevel}>
               <option value="">-- Mức độ khẩn cấp --</option>
-              <option value="Critical">Critical</option>
               <option value="Urgent">Urgent</option>
               <option value="Normal">Normal</option>
             </select>
