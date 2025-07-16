@@ -201,7 +201,7 @@ export default function BloodDonationPage() {
               onMouseEnter={() => setIsOpen(true)}
               onMouseLeave={() => setIsOpen(false)}>
               <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || "User"} <span>▼</span>
+                Xin chào, {user?.fullName || "User"} <span>▼</span>
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
