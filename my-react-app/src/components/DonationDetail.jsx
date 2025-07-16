@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -10,6 +10,7 @@ export default function DonationDetail() {
   const [donation, setDonation] = useState(null);
   const [loading, setLoading] = useState(true);
   const detailRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -72,7 +73,7 @@ export default function DonationDetail() {
         <div className="section">
           <h3>🩸 Thông Tin Đăng Ký</h3>
           <p><strong>Mã đơn:</strong> {donation.IDRegister}</p>
-          <p><strong>Ngày đăng ký:</strong> {donation.DonateBloodDate}</p>
+          <p><strong>Ngày đăng ký:</strong> {new Date(donation.DonateBloodDate).toLocaleDateString()}</p>
           <p><strong>Trạng thái:</strong> {donation.Status}</p>
           <p><strong>Ghi chú:</strong> {donation.Note}</p>
         </div>
@@ -102,20 +103,11 @@ export default function DonationDetail() {
         )}
       </div>
 
-      {donation.Status !== 'Cancelled' && (
-        <div className="btn-group">
-          <button onClick={handleCancel} className="cancel-btn">
-            ❌ Huỷ đơn
-          </button>
-          <Link to={`/donation/edit/${donation.IDRegister}`}>
-            <button className="edit-btn">✏️ Chỉnh sửa đơn</button>
-          </Link>
-        </div>
-      )}
-
-      <button onClick={exportPDF} className="download-btn">
-        📄 Tải PDF Phiếu Hiến Máu
-      </button>
+      <div className="btn-group">
+        
+        <button onClick={exportPDF} className="action-btn download-btn">📄 Tải PDF </button>
+        <button onClick={() => navigate('/my-activities')} className="action-btn back-btn">Quay lại</button>
+      </div>
     </div>
   );
 }

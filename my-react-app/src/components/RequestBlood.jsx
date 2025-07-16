@@ -19,9 +19,21 @@ const getComponentID = (componentName) => {
     'Hồng cầu': 1,
     'Tiểu cầu': 2,
     'Huyết tương tươi đông lạnh': 3,
-    'Bạch cầu': 4
+    'Bạch cầu': 4,
+    'Toàn phần': 5
   };
   return map[componentName] || 1;
+};
+
+const getDefaultQuantity = (componentName) => {
+  const defaultMap = {
+    'Hồng cầu': 250,
+    'Tiểu cầu': 250,
+    'Huyết tương tươi đông lạnh': 200,
+    'Bạch cầu': 50,
+    'Toàn phần': 450
+  };
+  return defaultMap[componentName] || '';
 };
 
 export default function RequestBlood() {
@@ -42,20 +54,25 @@ export default function RequestBlood() {
     console.log("👤 User:", user);
   }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === 'IDComponents') {
+      const defaultQty = getDefaultQuantity(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        Quantity: defaultQty
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
-      IDUser: user?.ID || user?.id || 1,
       IDComponents: parseInt(getComponentID(formData.IDComponents)),
       IDBlood: parseInt(getBloodID(formData.IDBlood)),
       Quantity: parseInt(formData.Quantity),
@@ -67,19 +84,41 @@ export default function RequestBlood() {
     console.log("📦 Payload gửi:", payload);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/blood-requests', payload);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Bạn chưa đăng nhập. Vui lòng đăng nhập trước khi gửi yêu cầu.');
+        return navigate('/login');
+      }
+
+      const res = await axios.post(
+        'http://localhost:5000/api/blood-requests',
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true
+        }
+      );
 
       alert('🩸 Gửi yêu cầu thành công!');
       setQrImage(res.data.data?.QRCode);
     } catch (err) {
       console.error('❌ Lỗi khi gửi yêu cầu:', err);
-      alert('Không thể gửi yêu cầu. Vui lòng kiểm tra lại.');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi không xác định';
+      alert(msg);
     }
   };
 
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 7);
+  const formatDate = (date) => date.toISOString().split('T')[0];
+  const minDateStr = formatDate(today);
+  const maxDateStr = formatDate(maxDate);
+
   return (
     <div className="layout-wrapper">
-      {/* Header */}
       <header className="main-header">
         <div className='logo'>
           <Link to="/"><img src='/LogoPage.jpg' alt='Logo' loading="lazy" /></Link>
@@ -127,15 +166,16 @@ export default function RequestBlood() {
         <section className='form-section'>
           <h2>🆘 Gửi Yêu Cầu Nhận Máu</h2>
           <form onSubmit={handleSubmit} className="blood-request-form">
-            <select name="IDComponents" required onChange={handleChange}>
+            <select name="IDComponents" required onChange={handleChange} value={formData.IDComponents}>
               <option value="">-- Chọn thành phần máu --</option>
               <option value="Hồng cầu">Hồng cầu</option>
               <option value="Tiểu cầu">Tiểu cầu</option>
               <option value="Huyết tương tươi đông lạnh">Huyết tương tươi đông lạnh</option>
               <option value="Bạch cầu">Bạch cầu</option>
+              <option value="Toàn phần">Toàn phần</option>
             </select>
 
-            <select name="IDBlood" required onChange={handleChange}>
+            <select name="IDBlood" required onChange={handleChange} value={formData.IDBlood}>
               <option value="">-- Chọn nhóm máu --</option>
               <option value="A+">A+</option>
               <option value="A-">A-</option>
@@ -147,15 +187,46 @@ export default function RequestBlood() {
               <option value="O-">O-</option>
             </select>
 
-            <input name="Quantity" type="number" placeholder="Số lượng (đơn vị)" required onChange={handleChange} />
-            <select name="UrgencyLevel" required onChange={handleChange}>
+            <input
+              name="Quantity"
+              type="number"
+              value={formData.Quantity}
+              placeholder={
+                !formData.IDComponents
+                  ? 'Số lượng'
+                  : formData.IDComponents === 'Hồng cầu'
+                  ? 'Số lượng (đơn vị)'
+                  : 'Số lượng (ml)'
+              }
+              required
+              onChange={handleChange}
+            />
+
+            <select name="UrgencyLevel" required onChange={handleChange} value={formData.UrgencyLevel}>
               <option value="">-- Mức độ khẩn cấp --</option>
-              <option value="Critical">Critical</option>
               <option value="Urgent">Urgent</option>
               <option value="Normal">Normal</option>
             </select>
-            <input name="IdentificationNumber" type="text" placeholder="Số CCCD người nhận" required onChange={handleChange} />
-            <input name="RequestDate" type="date" required onChange={handleChange} />
+
+            <input
+              name="IdentificationNumber"
+              type="text"
+              placeholder="Số CCCD người nhận"
+              required
+              value={formData.IdentificationNumber}
+              onChange={handleChange}
+            />
+
+            <input
+              name="RequestDate"
+              type="date"
+              required
+              value={formData.RequestDate}
+              onChange={handleChange}
+              min={minDateStr}
+              max={maxDateStr}
+            />
+
             <button type="submit">📩 Gửi Yêu Cầu</button>
           </form>
 
@@ -168,7 +239,6 @@ export default function RequestBlood() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="main-footer">
         <div className='footer-container'>
           <div className='footer-block location'>

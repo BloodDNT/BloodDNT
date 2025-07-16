@@ -27,6 +27,7 @@ import DonationDetail from './components/DonationDetail';
 import EditRegisterDonate from './components/EditRegisterDonate';
 import NotificationPage from './components/NotificationPage';
 
+
 export default function App() {
   return (
     <UserProvider>
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="blogs" element={<BlogManagement />} />
         </Route>
       </Routes>
+
     </UserProvider>
   );
 }
