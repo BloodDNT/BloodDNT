@@ -21,17 +21,19 @@ export default function Login() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        console.log('user trả về:', data.user);
-        localStorage.setItem('token', data.token);
-        login(data.user);
-        alert('Đăng nhập thành công! Chào ' + data.user.fullName);
+      if (res.ok && data.token && data.user) {
+        console.log('✅ User trả về:', data.user);
+        localStorage.setItem('token', data.token);               // Lưu token để dùng cho các request sau
+        localStorage.setItem('user', JSON.stringify(data.user)); // Lưu user để load lại không bị mất
+
+        login(data.user); // Gọi context cập nhật trạng thái đăng nhập
+        alert('✅ Đăng nhập thành công! Chào ' + data.user.fullName);
         navigate('/');
       } else {
-        alert('Lỗi: ' + data.message);
+        alert('❌ Đăng nhập thất bại: ' + (data.message || 'Sai email hoặc mật khẩu'));
       }
     } catch (error) {
-      alert('Lỗi server: ' + error.message);
+      alert('❌ Lỗi server: ' + error.message);
     }
   };
 
@@ -40,7 +42,7 @@ export default function Login() {
       <div className="login-box">
         <div className='logo-login'>
           <Link to="/">
-            <div className='webname-login'>Hope Donnor🩸</div>
+            <div className='webname-login'>Hope Donor 🩸</div>
           </Link>
         </div>
         <h2 className="login-title">🔐 Đăng nhập</h2>
@@ -67,13 +69,13 @@ export default function Login() {
             required
           />
 
-          <div className="login-extra">  
+          <div className="login-extra">
             <label className="remember-me">
               <input type="checkbox" /> Nhớ mật khẩu
             </label>
             <a href="#" className="forgot-password">Quên mật khẩu?</a>
           </div>
-        
+
           <button type="submit" className="login-button">Đăng nhập</button>
         </form>
 

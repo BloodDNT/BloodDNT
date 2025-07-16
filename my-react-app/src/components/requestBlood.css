@@ -1,185 +1,211 @@
-/* requestBlood.css */
-
+/* ==== REQUEST BLOOD PAGE STYLE ==== */
 .layout-wrapper {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f8f9fa;
-  }
-  
-  .main-header, .main-footer {
-    background-color: #990000 !important;
-    color: white !important;
-    padding: 1rem 2rem;
-  }
-  
-  .main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .logo img {
-    height: 60px;
-    width: 60px;
-    border-radius: 50%;
-  }
-  
-  .webname {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .menu {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .menu a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  
-  .menu a:hover {
-    text-decoration: underline;
-    color: #ffd6d6;
-  }
-  
-  .actions {
-    margin-top: 0.5rem;
-  }
-  
-  .login-btn, .logout-btn {
-    background-color: white;
-    color: #990000;
-    padding: 0.4rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .user-menu {
-    position: relative;
-    cursor: pointer;
-  }
-  
-  .dropdown-content.user-dropdown {
-    position: absolute;
-    background-color: #fff6fa;
-    top: 100%;
-    right: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    min-width: 200px;
-    z-index: 1;
-    color: black;
-    border-radius: 8px;
-    padding: 0.5rem 0;
-  }
-  
-  .dropdown-content.user-dropdown a, .dropdown-content.user-dropdown button {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 1rem;
-    text-align: left;
-    background: none;
-    border: none;
-    color: black;
-    cursor: pointer;
-  }
-  
-  .dropdown-content.user-dropdown a:hover, .dropdown-content.user-dropdown button:hover {
-    background-color: #fce4ec;
-    color: #007bff;
-  }
-  
-  main {
-    flex-grow: 1;
-    padding: 2rem;
-    background-color: #fff;
-  }
-  
-  .form-section {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  .blood-request-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .blood-request-form select,
-  .blood-request-form input {
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-  }
-  
-  .blood-request-form button {
-    background-color: #990000;
-    color: white;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-  }
-  
-  .blood-request-form button:hover {
-    background-color: #b71c1c;
-  }
-  
-  .qr-preview {
-    margin-top: 2rem;
-    text-align: center;
-  }
-  
-  .qr-preview img {
-    max-width: 200px;
-    margin-top: 1rem;
-  }
-  
-  .main-footer {
-    padding-top: 2rem;
-    background-color: #990000 !important;
-    color: white !important;
-  }
-  
-  .footer-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
-  
-  .footer-block {
-    flex: 1;
-    min-width: 200px;
-  }
-  
-  .footer-copy {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    opacity: 0.7;
-  }
-      
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fffafa;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #b30000;
+  color: white;
+  padding: 12px 24px;
+}
+
+.logo img {
+  height: 48px;
+  margin-right: 10px;
+}
+
+.logo .webname {
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.menu {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 32px;
+  left: 0;
+  background: white;
+  min-width: 160px;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 8px 12px;
+  display: block;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #f2f2f2;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.login-btn, .logout-btn {
+  background-color: white;
+  color: #b30000;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  background: white;
+  border-radius: 6px;
+  min-width: 180px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+
+.user-dropdown a, .user-dropdown button {
+  padding: 10px 12px;
+  display: block;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  color: #333;
+}
+
+.user-dropdown a:hover, .user-dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+main {
+  flex: 1;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-section {
+  width: 100%;
+  max-width: 600px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-section h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #990000;
+}
+
+.blood-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.blood-request-form select,
+.blood-request-form input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.blood-request-form button {
+  background-color: #cc0000;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.blood-request-form button:hover {
+  background-color: #a60000;
+}
+
+.qr-preview {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.qr-preview h3 {
+  margin-bottom: 10px;
+  color: #990000;
+}
+
+.qr-preview img {
+  max-width: 200px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background: white;
+  border-radius: 8px;
+}
+
+.main-footer {
+  background-color: #f5f5f5;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+  text-align: left;
+}
+
+.footer-block {
+  flex: 1 1 200px;
+}
+
+.footer-block h3 {
+  color: #b30000;
+  margin-bottom: 10px;
+}
+
+.footer-copy {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #666;
+}

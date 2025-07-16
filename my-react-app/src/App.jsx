@@ -61,6 +61,7 @@ export default function App() {
           <Route path="blogs" element={<BlogManagement />} />
         </Route>
       </Routes>
+
     </UserProvider>
   );
 }

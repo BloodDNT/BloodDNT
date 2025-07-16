@@ -5,8 +5,7 @@ const RequestDonateBlood = require('../models/RequestDonateBlood');
 
 // Lấy đơn hiến máu và đơn yêu cầu của một user
 router.get('/:id', async (req, res) => {
-  const IDUser = req.params.id;
-
+  const IDUser = Number(req.params.id);
   try {
     const donations = await RegisterDonateBlood.findAll({ where: { IDUser } });
     const requests = await RequestDonateBlood.findAll({ where: { IDUser } });

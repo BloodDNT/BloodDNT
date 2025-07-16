@@ -14,6 +14,13 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
     if (!form.identificationNumber || !/^[0-9]{9,12}$/.test(form.identificationNumber)) {
       newErrors.identificationNumber = 'CMND/CCCD phải là số từ 9-12 chữ số';
     }
+
+    const selectedYear = new Date(form.donateBloodDate).getFullYear();
+    const currentYear = new Date().getFullYear();
+    if (selectedYear !== currentYear) {
+      newErrors.donateBloodDate = `Vui lòng chọn ngày trong năm ${currentYear}`;
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -25,6 +32,8 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
     }
   };
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <form className='register-form' onSubmit={handleSubmit}>
       <div className='form-group'>
@@ -34,9 +43,12 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           value={form.donateBloodDate}
           onChange={onChange}
           required
+          min={`${currentYear}-01-01`}
+          max={`${currentYear}-12-31`}
         />
         {errors.donateBloodDate && <span className='error'>{errors.donateBloodDate}</span>}
       </div>
+
       <div className='form-group'>
         <select name='bloodType' value={form.bloodType} onChange={onChange} required>
           <option value='' disabled>Chọn nhóm máu</option>
@@ -46,6 +58,7 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
         </select>
         {errors.bloodType && <span className='error'>{errors.bloodType}</span>}
       </div>
+
       <div className='form-group'>
         <input
           type='text'
@@ -57,6 +70,7 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
         />
         {errors.identificationNumber && <span className='error'>{errors.identificationNumber}</span>}
       </div>
+
       <div className='form-group'>
         <textarea
           name='note'
@@ -65,6 +79,7 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           placeholder='Ghi chú (không bắt buộc)'
         />
       </div>
+
       <button type='submit' className='submit-btn'>Đăng ký</button>
     </form>
   );

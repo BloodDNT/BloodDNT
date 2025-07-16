@@ -279,4 +279,34 @@
     background-color: #dc3545;
     color: white;
   }
+  .filter-group {
+    display: flex;
+    justify-content:flex-start; /* ✅ căn giữa */
+    margin-bottom: 20px;
+    gap: 8px;
+  }
   
+  .filter-group label {
+    font-weight: bold;
+    margin-right: 4px;
+    align-self: center;
+  }
+  
+  .filter-group select {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  
+  .filter-group select:hover {
+    border-color: #888;
+  }
+  
+  .filter-group select:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
