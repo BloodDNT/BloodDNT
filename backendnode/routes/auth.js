@@ -124,7 +124,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Tạo JWT
-    const token = jwt.sign({ userId: newUser.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
+    const token = jwt.sign({ IDUser: user.IDUser, Role: user.Role }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
       expiresIn: '1h'
     });
 
@@ -172,7 +172,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Tạo JWT
-    const token = jwt.sign({ userId: user.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
+    const token = jwt.sign({ IDUser: user.IDUser, Role: user.Role }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
       expiresIn: '1h'
     });
 

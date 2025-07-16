@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../../styles/table.css";
 
-const ROWS_PER_PAGE = 2;
+const ROWS_PER_PAGE = 5;
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/table.css";
 
-const ROWS_PER_PAGE = 2;
+const ROWS_PER_PAGE = 5;
 
 const RegisteredDonorsTable = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(1);

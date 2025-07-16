@@ -1,12 +1,4 @@
-/* Đặt body 100% viewport và reset margin/padding */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #fff5f5;
-  }
-  
-  /* Bọc toàn bộ nội dung để căn giữa */
+/* Bọc toàn bộ nội dung để căn giữa */
   .request-wrapper {
     display: flex;
     flex-direction: column;
@@ -109,4 +101,10 @@ body {
   .download-btn:hover {
     background-color: #9a0007;
   }
-  
+  .btn-group {
+    display: flex;
+    flex-direction: column; /* ❗ Hiển thị theo chiều dọc */
+    align-items: center;
+    gap: 16px; /* khoảng cách giữa các nút */
+    margin-top: -5px;
+  }

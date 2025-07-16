@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import axios from 'axios';
 import './BloodDonation.css';
@@ -81,6 +81,7 @@ const getBloodID = (bloodType) => {
 };
 
 export default function BloodDonationPage() {
+
   const [registerForm, setRegisterForm] = useState({
     donateBloodDate: '',
     bloodType: '',
@@ -90,8 +91,11 @@ export default function BloodDonationPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [qrCode, setQrCode] = useState('');
   const { user, logout } = useContext(UserContext);
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const handleRegisterChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -131,43 +135,58 @@ export default function BloodDonationPage() {
 
   return (
     <>
-      <header className='header'>
-        <div className='logo'>
-          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' loading="lazy" /></Link>
-          <div className='webname'>Hope Donor 🩸</div>
-        </div>
-        <nav className='menu'>
-          <Link to='/bloodguide'>Blood Guide</Link>
-          <div className='dropdown'>
-            <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
-           
-          </div>
-          <Link to='/register/request-blood'>Register/Request-Blood</Link>
-          <Link to='/my-activities'>List res/req</Link>
-          <Link to='/history'>DonatationHistory</Link>
-          <Link to='/news'>News & Events</Link>
-          <Link to='/contact'>Contact</Link>
-          <Link to='/about'>About Us</Link>
-        </nav>
-        <div className='actions'>
-          {!user ? (
-            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
-          ) : (
-            <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
-              <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || 'User'} <span className="ml-2">▼</span>
-              </div>
-              {isOpen && (
-                <div className="dropdown-content user-dropdown">
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
-                  <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>🚪 Đăng xuất</button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </header>
+       <header className='header'>
+                   {/* logo */}
+                   <div className='logo'>
+                     <Link to="/">
+                       <img src='/LogoPage.jpg' alt='Logo' />
+                     </Link>
+                     <div className='webname'>Hope Donnor🩸</div>
+                   </div>
+                   {/* menu */}
+                   <nav className='menu'>
+                     <Link to='/bloodguide'>Blood Guide</Link>
+                     <div className='dropdown'>
+                       <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
+                     </div>
+                     <Link to='/news'>News & Events</Link>
+                     <Link to='/contact'>Contact</Link>
+                     <Link to='/about'>About Us</Link>
+                   </nav>
+                   {/* login/user menu */}
+                   <div className='actions'>
+                     {!user ? (
+                       <Link to='/login'>
+                         <button className='login-btn'>👤 Login</button>
+                       </Link>
+                     ) : (
+                       <div 
+                         className="dropdown user-menu"
+                         onMouseEnter={() => setIsOpen(true)}
+                         onMouseLeave={() => setIsOpen(false)}
+                       >
+                         <div className="dropbtn user-name">
+                           Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                         </div>
+                         {isOpen && (
+                           <div className="dropdown-content user-dropdown">
+                             <Link to='/register/request-blood'>Register/Request-Blood</Link>
+                             <Link to='/my-activities'>List res/req</Link>
+                             <Link to='/history'>DonatationHistory</Link>
+                             <Link to="/profile">👤 Thông tin cá nhân</Link>
+                             <Link to="/notifications">🔔 Thông báo</Link>
+                             <button
+                               className="logout-btn"
+                               onClick={handleLogout}
+                             >
+                               🚪 Đăng xuất
+                             </button>
+                           </div>
+                         )}
+                       </div>
+                     )}
+                   </div>
+                 </header> 
 
       <main className='body'>
         <section className='register-section'>

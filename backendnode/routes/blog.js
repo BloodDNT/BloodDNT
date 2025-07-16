@@ -1,217 +1,167 @@
-
 const express = require("express");
 const router = express.Router();
-const sequelize = require("../config/database");
+const { Op } = require("sequelize");
+const authenticate = require('../middlewares/authenticateToken');
+const Blog = require("../models/Blog");
+const User = require("../models/User");
+const BlogLike = require("../models/BlogLike");
+const BlogComment = require("../models/BlogComment");
 
-const Blog = require('../models/Blog');
-const { authenticate } = require('./auth');
-const User = require('../models/User');
-const BlogLike = require('../models/BlogLike');
-const BlogComment = require('../models/BlogComment');
-
+// ✅ GET: Lấy danh sách bài viết
 router.get("/", async (req, res) => {
-    try {
-        const [results] = await sequelize.query(`
-       SELECT 
-    b.IDPost, 
-    b.Title, 
-    CAST(b.Content AS NVARCHAR(MAX)) AS Content,
-    b.LastUpdated,
-    CASE 
-        WHEN u.Role = 'Admin' THEN N'Admin' 
-        ELSE u.FullName 
-    END AS Author,
-    u.Role,
-    COUNT(DISTINCT bl.IDLike) AS LikeCount,
-    COUNT(DISTINCT bc.IDComment) AS CommentCount
-FROM Blog b
-JOIN Users u ON b.IDUser = u.IDUser
-LEFT JOIN BlogLike bl ON b.IDPost = bl.IDPost
-LEFT JOIN BlogComment bc ON b.IDPost = bc.IDPost
-GROUP BY 
-    b.IDPost, 
-    b.Title, 
-    CAST(b.Content AS NVARCHAR(MAX)), 
-    b.LastUpdated,
-    u.FullName, 
-    u.Role
-ORDER BY b.IDPost DESC;
-    `);
-
-        res.json(results);
-    } catch (error) {
-        console.error("❌ Lỗi khi lấy danh sách blog:", error);
-        res.status(500).send("Lỗi server: " + error.message);
-    }
-});
-
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-
   try {
-    await sequelize.query(`DELETE FROM Blog WHERE IDPost = ?`, {
-      replacements: [id]
+    const posts = await Blog.findAll({
+      include: [{ model: User, attributes: ["FullName", "Role"] }],
+      order: [["LastUpdated", "DESC"]],
     });
-    res.status(200).send("✅ Xoá bài viết thành công");
-  } catch (error) {
-    console.error("❌ Lỗi xoá blog:", error);
-    res.status(500).send("Lỗi server khi xoá blog");
+
+    const postsWithDetails = await Promise.all(
+      posts.map(async (post) => {
+        const likeCount = await BlogLike.count({ where: { IDPost: post.IDPost } });
+        const commentCount = await BlogComment.count({ where: { IDPost: post.IDPost } });
+
+        const previewComments = await BlogComment.findAll({
+          where: { IDPost: post.IDPost },
+          include: [{ model: User, attributes: ["FullName"] }],
+          order: [["CommentedAt", "ASC"]],
+          limit: 3,
+        });
+
+        return {
+          ...post.toJSON(),
+          Author: post.User.Role === "Admin" ? "Admin" : post.User.FullName,
+          likeCount,
+          commentCount,
+          previewComments,
+        };
+      })
+    );
+
+    res.json(postsWithDetails);
+  } catch (err) {
+    console.error("❌ Lỗi khi lấy danh sách blog:", err);
+    res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 });
 
-router.post('/', async (req, res) => {
-  console.log("BODY:", req.body); // Debug
-  const { Title, Content, IDUser } = req.body;
-
-  try {
-    await sequelize.query(`
-      INSERT INTO Blog (Title, Content, IDUser, LastUpdated)
-      VALUES (?, ?, ?, GETDATE())
-    `, {
-      replacements: [Title, Content, IDUser]
-    });
-
-    res.status(201).send("✅ Đăng bài viết thành công");
-  } catch (error) {
-    console.error("❌ Lỗi thêm bài viết:", error);
-    res.status(500).send("Lỗi server khi thêm blog");
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const { Title, Content } = req.body;
-
-  try {
-    await sequelize.query(`
-      UPDATE Blog
-      SET Title = @Title,
-          Content = @Content,
-          LastUpdated = GETDATE()
-      WHERE IDPost = @id
-    `, {
-      replacements: { id, Title, Content }
-    });
-
-    res.status(200).send("✅ Cập nhật thành công");
-  } catch (error) {
-    console.error("❌ Lỗi cập nhật blog:", error);
-    res.status(500).send("Lỗi server khi cập nhật blog");
-  }
-});
-
-
-
-// ✅ Đăng bài mới
-router.post('/', authenticate, async (req, res) => {
+// ✅ POST: Đăng bài viết mới
+router.post("/", authenticate, async (req, res) => {
   try {
     const { title, content, category } = req.body;
-    if (!title || !content)
-      return res.status(400).json({ message: 'Thiếu tiêu đề hoặc nội dung' });
+    if (!title || !content) {
+      return res.status(400).json({ message: "Thiếu tiêu đề hoặc nội dung" });
+    }
 
     const post = await Blog.create({
       Title: title,
       Content: content,
-      Category: category,
-      IDUser: req.user.IDUser
+      Category: category || null,
+      IDUser: req.user.IDUser,
+      LastUpdated: new Date(),
     });
 
-    res.json({ message: 'Đăng bài thành công', post });
+    res.status(201).json({ message: "Đăng bài thành công", post });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
+    console.error("❌ Lỗi thêm bài viết:", err);
+    res.status(500).json({ message: "Lỗi server khi thêm bài viết", error: err.message });
   }
 });
 
-// ✅ Lấy danh sách bài viết (kèm like/comment/3 bình luận đầu)
-router.get('/', async (req, res) => {
+// ✅ PUT: Cập nhật bài viết
+router.put("/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
+
   try {
-    const posts = await Blog.findAll({
-      include: [{ model: User, attributes: ['FullName'] }],
-      order: [['LastUpdated', 'DESC']]
+    const post = await Blog.findByPk(id);
+    if (!post) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+
+    if (post.IDUser !== req.user.IDUser && req.user.Role !== "Admin") {
+      return res.status(403).json({ message: "Không có quyền sửa bài viết này" });
+    }
+
+    await post.update({
+      Title: title,
+      Content: content,
+      LastUpdated: new Date(),
     });
 
-    const postsWithDetails = await Promise.all(posts.map(async post => {
-      const likeCount = await BlogLike.count({ where: { IDPost: post.IDPost } });
-      const commentCount = await BlogComment.count({ where: { IDPost: post.IDPost } });
-
-      const previewComments = await BlogComment.findAll({
-        where: { IDPost: post.IDPost },
-        include: [{ model: User, attributes: ['FullName'] }],
-        order: [['CommentedAt', 'ASC']],
-        limit: 3
-      });
-
-      return {
-        ...post.toJSON(),
-        likeCount,
-        commentCount,
-        previewComments
-      };
-    }));
-
-    res.json(postsWithDetails);
+    res.json({ message: "✅ Cập nhật thành công", post });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
+    res.status(500).json({ message: "Lỗi server khi cập nhật", error: err.message });
+  }
+});
+
+// ✅ DELETE: Xoá bài viết
+router.delete("/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await Blog.findByPk(id);
+    if (!post) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+
+    if (post.IDUser !== req.user.IDUser && req.user.Role !== "Admin") {
+      return res.status(403).json({ message: "Không có quyền xoá bài viết này" });
+    }
+
+    await post.destroy();
+    res.status(200).json({ message: "✅ Xoá bài viết thành công" });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server khi xoá", error: err.message });
   }
 });
 
 // ✅ Lấy tất cả bình luận cho 1 bài viết
-router.get('/:id/comments', async (req, res) => {
+router.get("/:id/comments", async (req, res) => {
   try {
     const IDPost = req.params.id;
 
     const comments = await BlogComment.findAll({
       where: { IDPost },
-      include: [{ model: User, attributes: ['FullName'] }],
-      order: [['CommentedAt', 'ASC']]
+      include: [{ model: User, attributes: ["FullName"] }],
+      order: [["CommentedAt", "ASC"]],
     });
 
     res.json(comments);
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
+    res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 });
 
-router.post('/:id/like', authenticate, async (req, res) => {
-  try {
-    const IDPost = req.params.id;
-    const IDUser = req.user.IDUser;
-
-    // Kiểm tra đã like chưa
-    const existed = await BlogLike.findOne({ where: { IDPost, IDUser } });
-    if (existed) {
-      return res.status(400).json({ message: 'Bạn đã thích bài này rồi' });
-    }
-
-    await BlogLike.create({ IDPost, IDUser });
-    res.json({ message: 'Đã thích bài viết' });
-  } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
-  }
-});
-
-
-router.post('/:id/comment', authenticate, async (req, res) => {
+// ✅ Bình luận bài viết
+router.post("/:id/comment", authenticate, async (req, res) => {
   try {
     const IDPost = req.params.id;
     const IDUser = req.user.IDUser;
     const { content } = req.body;
 
     if (!content)
-      return res.status(400).json({ message: 'Nội dung bình luận không được để trống' });
+      return res.status(400).json({ message: "Nội dung bình luận không được để trống" });
 
-    const comment = await BlogComment.create({
-      IDPost,
-      IDUser,
-      Content: content,
-    });
+    const comment = await BlogComment.create({ IDPost, IDUser, Content: content });
 
-    res.json({ message: 'Đã bình luận', comment });
+    res.json({ message: "Đã bình luận", comment });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server', error: err.message });
+    res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 });
 
+// ✅ Like bài viết
+router.post("/:id/like", authenticate, async (req, res) => {
+  try {
+    const IDPost = req.params.id;
+    const IDUser = req.user.IDUser;
 
+    const existed = await BlogLike.findOne({ where: { IDPost, IDUser } });
+    if (existed) {
+      return res.status(400).json({ message: "Bạn đã thích bài này rồi" });
+    }
+
+    await BlogLike.create({ IDPost, IDUser });
+    res.json({ message: "Đã thích bài viết" });
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi server", error: err.message });
+  }
+});
 
 module.exports = router;

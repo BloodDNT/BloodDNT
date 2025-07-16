@@ -7,7 +7,7 @@ export default function Home() {
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
- const bannerImages = [
+  const bannerImages = [
     '/background11.png',
     '/background12.jpg',
     '/background13.jpg'
@@ -23,6 +23,7 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
+
   const handleLogout = () => {
     logout(); // gọi hàm logout trong context
     navigate('/login'); // chuyển về trang login
@@ -42,12 +43,8 @@ export default function Home() {
         <nav className='menu'>
           <Link to='/bloodguide'>Blood Guide</Link>
           <div className='dropdown'>
-            <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
-           
+            <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
           </div>
-          <Link to='/register/request-blood'>Register</Link>
-          <Link to='/my-activities'>List res/req</Link>
-          <Link to='/history'>DonatationHistory</Link>
           <Link to='/news'>News & Events</Link>
           <Link to='/contact'>Contact</Link>
           <Link to='/about'>About Us</Link>
@@ -64,11 +61,14 @@ export default function Home() {
               onMouseEnter={() => setIsOpen(true)}
               onMouseLeave={() => setIsOpen(false)}
             >
-             <div className="dropbtn user-name">
-  Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-</div>
+              <div className="dropbtn user-name">
+                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+              </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
+                  <Link to='/register/request-blood'>Register/Request-Blood</Link>
+                  <Link to='/my-activities'>List res/req</Link>
+                  <Link to='/history'>DonatationHistory</Link>
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
                   <Link to="/notifications">🔔 Thông báo</Link>
                   <button
@@ -86,11 +86,12 @@ export default function Home() {
       {/* body */}
       <div className='body'>
         <section className='background-1'>
- <img
-    src={bannerImages[currentImage]}
-    alt='Blood'
-    className='background1-image fade-in'
-  />        </section>
+          <img
+            src={bannerImages[currentImage]}
+            alt='Blood'
+            className='background1-image fade-in'
+          />
+        </section>
         <section className='background-2'>
           <div className='background-2-container'>
             <img src='/background2.jpg' alt='Blood' className='background1-image'/>

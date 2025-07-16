@@ -25,61 +25,57 @@
       <>
   <div className="layout-wrapper">
         <header className='header'>
-          <div className='logo'>
-            <Link to="/">
-              <img src='/LogoPage.jpg' alt='Logo' />
-            </Link>
-            <div className='webname'>Hope Donnor🩸</div>
-          </div>
-          <nav className='menu'>
-            <Link to='/bloodguide'>Blood Guide</Link>
-            <div className='dropdown'>
-              <Link to='/blood' className='dropbtn'>Blood ▼</Link>
-              <div className='dropdown-content'>
-                <Link to='/blood/type'>Type</Link>
-                <Link to='/blood/red-cells'>Red Cells</Link>
-                <Link to='/blood/plasma'>Plasma</Link>
-                <Link to='/blood/white-cells'>White Cells</Link>
-                <Link to='/blood/knowledge'>Blood Knowledge</Link>
-              </div>
-            </div>
-            <Link to='/register/request-blood'>Register/Request-Blood</Link>
-            <Link to='/my-activities'>List res/req</Link>
-            <Link to='/history'>DonatationHistory</Link>
-            <Link to='/news'>News & Events</Link>
-            <Link to='/contact'>Contact</Link>
-            <Link to='/about'>About Us</Link>
-          </nav>
-          <div className='actions'>
-            {!user ? (
-              <Link to='/login'>
-                <button className='login-btn'>👤 Login</button>
-              </Link>
-            ) : (
-              <div 
-                className="dropdown user-menu"
-                onMouseEnter={() => setIsOpen(true)}
-                onMouseLeave={() => setIsOpen(false)}
-              >
-                <div className="dropbtn user-name">
-                  Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-                </div>
-                {isOpen && (
-                  <div className="dropdown-content user-dropdown">
-                    <Link to="/profile">👤 Thông tin cá nhân</Link>
-                    <Link to="/notifications">🔔 Thông báo</Link>
-                    <button
-                      className="logout-btn"
-                      onClick={handleLogout}
-                    >
-                      🚪 Đăng xuất
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </header> 
+                      {/* logo */}
+                      <div className='logo'>
+                        <Link to="/">
+                          <img src='/LogoPage.jpg' alt='Logo' />
+                        </Link>
+                        <div className='webname'>Hope Donnor🩸</div>
+                      </div>
+                      {/* menu */}
+                      <nav className='menu'>
+                        <Link to='/bloodguide'>Blood Guide</Link>
+                        <div className='dropdown'>
+                          <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
+                        </div>
+                        <Link to='/news'>News & Events</Link>
+                        <Link to='/contact'>Contact</Link>
+                        <Link to='/about'>About Us</Link>
+                      </nav>
+                      {/* login/user menu */}
+                      <div className='actions'>
+                        {!user ? (
+                          <Link to='/login'>
+                            <button className='login-btn'>👤 Login</button>
+                          </Link>
+                        ) : (
+                          <div 
+                            className="dropdown user-menu"
+                            onMouseEnter={() => setIsOpen(true)}
+                            onMouseLeave={() => setIsOpen(false)}
+                          >
+                            <div className="dropbtn user-name">
+                              Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                            </div>
+                            {isOpen && (
+                              <div className="dropdown-content user-dropdown">
+                                <Link to='/register/request-blood'>Register/Request-Blood</Link>
+                                <Link to='/my-activities'>List res/req</Link>
+                                <Link to='/history'>DonatationHistory</Link>
+                                <Link to="/profile">👤 Thông tin cá nhân</Link>
+                                <Link to="/notifications">🔔 Thông báo</Link>
+                                <button
+                                  className="logout-btn"
+                                  onClick={handleLogout}
+                                >
+                                  🚪 Đăng xuất
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </header> 
 
         <main>
           {user && (

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import './DonationHistoryPage.css';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link,} from 'react-router-dom';
 import RecoveryCountdown from '../components/RecoveryCountdown';
 
 function DonationItem({ item, expandedCardId, onToggle }) {
   const isExpanded = expandedCardId === item.IDRegister;
+   
 
   return (
     <div className='donation-item'>
@@ -36,17 +37,16 @@ function DonationItem({ item, expandedCardId, onToggle }) {
 
 export default function DonationHistoryPage() {
   const { user, logout } = useContext(UserContext);
-  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [nextDonateDate, setNextDonateDate] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [user, navigate]);
+ const handleLogout = () => {
+    logout(); // gọi hàm logout trong context
+  };
+
 
   useEffect(() => {
     if (!user?.IDUser) return;
@@ -84,48 +84,58 @@ export default function DonationHistoryPage() {
 
   return (
     <>
-      <header className='header'>
-        <div className='logo'>
-          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' /></Link>
-          <div className='webname'>Hope Donor 🩸</div>
-        </div>
-
-        <nav className='menu'>
-          <Link to='/bloodguide'>Blood Guide</Link>
-          <div className='dropdown'>
-            <Link to='/blood' className='dropbtn'>Blood ▼</Link>
-            <div className='dropdown-content'>
-              <Link to='/blood/type'>Blood Type</Link>
-              <Link to='/blood/red-cells'>Red Cells</Link>
-              <Link to='/blood/plasma'>Plasma</Link>
-              <Link to='/blood/white-cells'>White Cells</Link>
-              <Link to='/blood/knowledge'>Blood Knowledge</Link>
-            </div>
-          </div>
-          <Link to='/register/request-blood'>Register/Request-Blood</Link>
-          <Link to='/my-activities'>List res/req</Link>
-          <Link to='/history'>Donation History</Link>
-          <Link to='/news'>News & Events</Link>
-          <Link to='/contact'>Contact</Link>
-          <Link to='/about'>About Us</Link>
-        </nav>
-
-        <div className='actions'>
-          {!user ? (
-            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
-          ) : (
-            <div className="dropdown user-menu">
-              <div className="dropbtn user-name">Xin chào, {user.fullName || 'User'} ▼</div>
-              <div className="dropdown-content user-dropdown">
-                <Link to="/profile">👤 Thông tin cá nhân</Link>
-                <Link to="/notifications">🔔 Thông báo</Link>
-                <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>🚪 Đăng xuất</button>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
+       <header className='header'>
+             {/* logo */}
+             <div className='logo'>
+               <Link to="/">
+                 <img src='/LogoPage.jpg' alt='Logo' />
+               </Link>
+               <div className='webname'>Hope Donnor🩸</div>
+             </div>
+             {/* menu */}
+             <nav className='menu'>
+               <Link to='/bloodguide'>Blood Guide</Link>
+               <div className='dropdown'>
+                 <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
+               </div>
+               <Link to='/news'>News & Events</Link>
+               <Link to='/contact'>Contact</Link>
+               <Link to='/about'>About Us</Link>
+             </nav>
+             {/* login/user menu */}
+             <div className='actions'>
+               {!user ? (
+                 <Link to='/login'>
+                   <button className='login-btn'>👤 Login</button>
+                 </Link>
+               ) : (
+                 <div 
+                   className="dropdown user-menu"
+                   onMouseEnter={() => setIsOpen(true)}
+                   onMouseLeave={() => setIsOpen(false)}
+                 >
+                   <div className="dropbtn user-name">
+                     Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                   </div>
+                   {isOpen && (
+                     <div className="dropdown-content user-dropdown">
+                       <Link to='/register/request-blood'>Register/Request-Blood</Link>
+                       <Link to='/my-activities'>List res/req</Link>
+                       <Link to='/history'>DonatationHistory</Link>
+                       <Link to="/profile">👤 Thông tin cá nhân</Link>
+                       <Link to="/notifications">🔔 Thông báo</Link>
+                       <button
+                         className="logout-btn"
+                         onClick={handleLogout}
+                       >
+                         🚪 Đăng xuất
+                       </button>
+                     </div>
+                   )}
+                 </div>
+               )}
+             </div>
+           </header> 
       <main className='donation-history-page'>
         <h2>Lịch sử hiến máu của bạn</h2>
 
@@ -164,7 +174,7 @@ export default function DonationHistoryPage() {
             <h3>🌐 Theo dõi chúng tôi</h3>
             <ul>
               <li><a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a></li>
-              <li><a href='https://instagram.com' target='_blank' rel='noreferrer'>Instagram</a></li>
+<li><a href='https://instagram.com' target='_blank' rel='noreferrer'>Instagram</a></li>
               <li><a href='https://twitter.com' target='_blank' rel='noreferrer'>Twitter</a></li>
             </ul>
           </div>
