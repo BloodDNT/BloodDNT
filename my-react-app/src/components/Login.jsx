@@ -14,9 +14,13 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+        },
         body: JSON.stringify({ email, password })
       });
 
@@ -25,7 +29,7 @@ export default function Login() {
       if (res.ok) {
         console.log('user trả về:', data.user);
         localStorage.setItem('token', data.token);
-        login(data.user);
+        login(data.user, data.token);
         alert('Đăng nhập thành công! Chào ' + data.user.fullName);
         navigate('/');
       } else {

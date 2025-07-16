@@ -8,13 +8,14 @@ import UpcomingAppointmentsTable from "./table/UpcomingAppointmentsTable";
 import UserManagement from "./table/UserManagement";
 import BloodRecipientsTable from "./table/BloodRecipientsTable";
 
-
-
-
 import "../styles/dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
   const [activeTable, setActiveTable] = useState(null);
+  const [role, setRole] = useState(null);
 
   const [inventoryData, setInventoryData] = useState([]);
   const [donorsData, setDonorsData] = useState([]);
@@ -23,17 +24,49 @@ function Dashboard() {
   const [users, setUsers] = useState([]);
   const [recipents, setRecipents] = useState([]);
 
-
+  // Load role từ localStorage
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setRole(parsedUser?.role); // 👈 dùng chữ thường
+      } catch (error) {
+        console.error("❌ Lỗi parse user từ localStorage:", error);
+      }
+    }
+  }, []);
+
+  // Redirect nếu không phải Admin hoặc Staff
+  useEffect(() => {
+    if (role && role !== "Admin" && role !== "Staff") {
+      navigate("/", { replace: true });
+    }
+  }, [role, navigate]);
+
+  // Gọi API khi đã xác định role
+  useEffect(() => {
+    if (!role) return;
+
     const fetchData = async () => {
       try {
-        const [inventoryRes, donorsRes, successRes, upcomingRes, usersRes, recipientsRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/blood-inventory"),
-          axios.get("http://localhost:5000/api/registered-donors"),
-          axios.get("http://localhost:5000/api/successful-donations"),
-          axios.get("http://localhost:5000/api/upcoming-appointments"),
-          axios.get("http://localhost:5000/api/users"),
-          axios.get("http://localhost:5000/api/blood-recipients")
+        const token = localStorage.getItem("token");
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+
+        const [
+          inventoryRes,
+          donorsRes,
+          successRes,
+          upcomingRes,
+          usersRes,
+          recipientsRes
+        ] = await Promise.all([
+          axios.get("http://localhost:5000/api/blood-inventory", config),
+          axios.get("http://localhost:5000/api/registered-donors", config),
+          axios.get("http://localhost:5000/api/successful-donations", config),
+          axios.get("http://localhost:5000/api/upcoming-appointments", config),
+          axios.get("http://localhost:5000/api/users", config),
+          axios.get("http://localhost:5000/api/blood-recipients", config)
         ]);
 
         setInventoryData(inventoryRes.data);
@@ -46,22 +79,26 @@ function Dashboard() {
         setUsers(nonAdminUsers);
 
       } catch (error) {
-        console.error("❌ Lỗi khi tải dữ liệu:", error);
+        if (error.response?.status === 403) {
+          alert("Bạn không có quyền truy cập vào dữ liệu này!");
+          navigate("/", { replace: true });
+        } else {
+          console.error("❌ Lỗi khi tải dữ liệu:", error);
+        }
       }
     };
 
     fetchData();
-  }, []);
+  }, [role]);
 
-  const handleCardClick = (key) => {  
-    setActiveTable((prev) => (prev === key ? null : key));
+  const handleCardClick = (key) => {
+    setActiveTable(prev => (prev === key ? null : key));
   };
 
   const totalUnits = inventoryData.reduce((sum, row) => sum + (row.total || 0), 0);
   const totalSuccessCount = successfulData.length;
   const totalUpcoming = upcomingData.length;
   const totalUser = users.length;
-
 
   return (
     <div className="dashboard-container">
@@ -115,14 +152,16 @@ function Dashboard() {
             color="#FF9800"
           />
         </div>
-        <div onClick={() => handleCardClick("users")}>
-          <Card
-            icon="🧑‍💼"
-            title="Total Users"
-            value={totalUser.toLocaleString()}
-            color="#9C27B0"
-          />
-        </div>
+        {role === "Admin" && (
+          <div onClick={() => handleCardClick("users")}>
+            <Card
+              icon="🧑‍💼"
+              title="Total Users"
+              value={totalUser.toLocaleString()}
+              color="#9C27B0"
+            />
+          </div>
+        )}
       </div>
 
       {/* Tables */}
@@ -131,8 +170,7 @@ function Dashboard() {
       {activeTable === "successful" && <SuccessfulDonationsTable />}
       {activeTable === "upcoming" && <UpcomingAppointmentsTable />}
       {activeTable === "recipients" && <BloodRecipientsTable data={recipents} />}
-      {activeTable === "users" && <UserManagement />}
-
+      {activeTable === "users" && role === "Admin" && <UserManagement />}
     </div>
   );
 }
