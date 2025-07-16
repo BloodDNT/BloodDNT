@@ -70,14 +70,8 @@ const handleInputChange = (e) => {
         <nav className='menu'>
           <Link to='/bloodguide'>Blood Guide</Link>
           <div className='dropdown'>
-            <Link to='/blood' className='dropbtn'>Blood ▼</Link>
-            <div className='dropdown-content'>
-              <Link to='/blood/type'>Type</Link>
-              <Link to='/blood/red-cells'>Red Cells</Link>
-              <Link to='/blood/plasma'>Plasma</Link>
-              <Link to='/blood/white-cells'>White Cells</Link>
-              <Link to='/blood/knowledge'>Blood Knowledge</Link>
-            </div>
+            <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
+           
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
           <Link to='/my-activities'>List res/req</Link>

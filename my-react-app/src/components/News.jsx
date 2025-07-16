@@ -2,11 +2,14 @@ import React, { useContext, useState } from 'react';
 import './news.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
+import BlogPostForm from './BlogPostForm';
+import BlogList from './BlogList';
 
 export default function NewsEvents() {
  const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [reload, setReload] = useState(false);
 
   const handleLogout = () => {
     logout(); // gọi hàm logout trong context
@@ -26,14 +29,7 @@ export default function NewsEvents() {
         <nav className='menu'>
           <Link to='/bloodguide'>Blood Guide</Link>
           <div className='dropdown'>
-            <Link to='/blood' className='dropbtn'>Blood ▼</Link>
-            <div className='dropdown-content'>
-              <Link to='/blood/type'>Type</Link>
-              <Link to='/blood/red-cells'>Red Cells</Link>
-              <Link to='/blood/plasma'>Plasma</Link>
-              <Link to='/blood/white-cells'>White Cells</Link>
-              <Link to='/blood/knowledge'>Blood Knowledge</Link>
-            </div>
+            <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
           </div>
           <Link to='/register/request-blood'>Register/Request-Blood</Link>
           <Link to='/my-activities'>List res/req</Link>
@@ -73,6 +69,11 @@ export default function NewsEvents() {
             </header>
       {/* Body */}
       <div className='body'>
+          <section className='blog-section'>
+          <h2>Đăng bài chia sẻ cộng đồng</h2>
+          <BlogPostForm onPostSuccess={() => setReload(r => !r)} />
+          <BlogList reload={reload} />
+        </section>
         {/* News Section */}
         <section className='news-section'>
           <h2>Latest News</h2>
