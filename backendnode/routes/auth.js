@@ -195,7 +195,8 @@ router.post('/login', async (req, res) => {
         phoneNumber: user.PhoneNumber,
         address: user.Address,
         dateOfBirth: user.DateOfBirth,
-        gender: user.Gender
+        gender: user.Gender,
+        role: user.Role
       }
     });
 
