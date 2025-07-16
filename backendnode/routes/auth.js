@@ -1,73 +1,30 @@
-// routes/auth.js
-
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const User = require('../models/User');
 const authenticate = require('../middlewares/authenticateToken');
+const sendVerificationEmail = require('../utils/sendVerificationEmail');
 
 // === VALIDATORS === //
-const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const isValidPhoneNumber = phone => !phone || /^[0-9]{10,11}$/.test(phone);
-const isValidCCCD = cccd => !cccd || /^[0-9]{12}$/.test(cccd);
-const isOver18 = dob => {
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isValidPhoneNumber = (phone) => !phone || /^[0-9]{10,11}$/.test(phone);
+const isValidCCCD = (cccd) => !cccd || /^[0-9]{12}$/.test(cccd);
+const isOver18 = (dob) => {
   if (!dob) return true;
   const date = new Date(dob);
   const now = new Date();
   let age = now.getFullYear() - date.getFullYear();
   const m = now.getMonth() - date.getMonth();
   if (m < 0 || (m === 0 && now.getDate() < date.getDate())) age--;
-
-const sendVerificationEmail = require('../utils/sendVerificationEmail');
-const crypto = require('crypto');
-
-
-const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: 'Chưa đăng nhập' });
-  const token = authHeader.split(' ')[1];
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_key');
-    req.user = { IDUser: decoded.userId };
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: 'Token không hợp lệ' });
-  }
-};
-// Hàm kiểm tra định dạng email
-const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-// Hàm kiểm tra định dạng số điện thoại (10-11 số)
-const isValidPhoneNumber = (phoneNumber) => {
-  if (!phoneNumber) return true; // Không bắt buộc
-  const phoneRegex = /^[0-9]{10,11}$/;
-  return phoneRegex.test(phoneNumber);
-};
-
-
-// Hàm kiểm tra độ tuổi (trên 18)
-const isOver18 = (dateOfBirth) => {
-  if (!dateOfBirth) return true; // Không bắt buộc
-  const dob = new Date(dateOfBirth);
-  const today = new Date();
-  const age = today.getFullYear() - dob.getFullYear();
-  const monthDiff = today.getMonth() - dob.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-    return age - 1 >= 18;
-  }
-
   return age >= 18;
 };
 
 // === REGISTER === //
 router.post('/register', async (req, res) => {
   try {
-
     const {
       fullName,
       email,
@@ -77,17 +34,13 @@ router.post('/register', async (req, res) => {
       dateOfBirth,
       gender,
       cccd,
-  
     } = req.body;
 
-    // Kiểm tra các trường bắt buộc
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: 'Vui lòng nhập đầy đủ các trường bắt buộc (Họ tên, Email, Mật khẩu)' });
     }
 
-    // Kiểm tra định dạng email
-    if (!isValidEmail(email)) {
-
+    if (!isValidEmail(email))
       return res.status(400).json({ message: 'Email không đúng định dạng' });
 
     if (!isValidPhoneNumber(phoneNumber))
@@ -106,7 +59,6 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
-
     const newUser = await User.create({
       FullName: fullName,
       Email: email,
@@ -116,41 +68,35 @@ router.post('/register', async (req, res) => {
       DateOfBirth: dateOfBirth,
       Gender: gender,
       CCCD: cccd,
-
-
       Role: 'User',
       IsVerified: false,
       VerificationToken: verificationToken,
     });
 
-    // Gửi email xác minh
     const verifyUrl = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
     try {
       await sendVerificationEmail(email, verifyUrl);
     } catch (err) {
       console.error('Lỗi gửi email xác minh:', err);
-      // Không trả lỗi, vẫn cho đăng ký thành công nhưng báo không gửi được email
     }
 
-    // Tạo JWT
-    const token = jwt.sign({ IDUser: user.IDUser, Role: user.Role }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
-      expiresIn: '1h'
-    });
-
+    const token = jwt.sign(
+      { IDUser: newUser.IDUser, Role: newUser.Role },
+      process.env.JWT_SECRET || 'your_jwt_secret_key',
+      { expiresIn: '1h' }
+    );
 
     res.status(201).json({
       message: 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!',
       token,
       user: {
-
         IDUser: newUser.IDUser,
-
         fullName: newUser.FullName,
         email: newUser.Email,
         phoneNumber: newUser.PhoneNumber,
         address: newUser.Address,
         dateOfBirth: newUser.DateOfBirth,
-        gender: newUser.Gender
+        gender: newUser.Gender,
       }
     });
 
@@ -172,18 +118,19 @@ router.post('/login', async (req, res) => {
     if (!user)
       return res.status(400).json({ message: 'Email không tồn tại' });
 
-
-    // Kiểm tra xác minh email
     if (!user.IsVerified) {
       return res.status(403).json({ message: 'Tài khoản chưa xác minh email. Vui lòng kiểm tra email để xác minh.' });
     }
 
-    // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch)
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
 
-    const token = jwt.sign({ IDUser: user.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', { expiresIn: '12h' });
+    const token = jwt.sign(
+      { IDUser: user.IDUser },
+      process.env.JWT_SECRET || 'your_jwt_secret_key',
+      { expiresIn: '12h' }
+    );
 
     res.json({
       message: 'Đăng nhập thành công',
@@ -254,8 +201,7 @@ router.put('/update', authenticate, async (req, res) => {
   }
 });
 
-
-//xác minh email
+// === VERIFY EMAIL === //
 router.get('/verify-email', async (req, res) => {
   const { token } = req.query;
 
@@ -283,4 +229,3 @@ router.get('/verify-email', async (req, res) => {
 });
 
 module.exports = router;
-module.exports.authenticate = authenticate;
