@@ -9,13 +9,10 @@ import UserManagement from "./table/UserManagement";
 import BloodRecipientsTable from "./table/BloodRecipientsTable";
 
 import "../styles/dashboard.css";
-import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  const navigate = useNavigate();
-
   const [activeTable, setActiveTable] = useState(null);
-  const [role, setRole] = useState(null);
+  const [role, setRole] = useState("User");
 
   const [inventoryData, setInventoryData] = useState([]);
   const [donorsData, setDonorsData] = useState([]);
@@ -24,29 +21,9 @@ function Dashboard() {
   const [users, setUsers] = useState([]);
   const [recipents, setRecipents] = useState([]);
 
-  // Load role từ localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setRole(parsedUser?.role); // 👈 dùng chữ thường
-      } catch (error) {
-        console.error("❌ Lỗi parse user từ localStorage:", error);
-      }
-    }
-  }, []);
-
-  // Redirect nếu không phải Admin hoặc Staff
-  useEffect(() => {
-    if (role && role !== "Admin" && role !== "Staff") {
-      navigate("/", { replace: true });
-    }
-  }, [role, navigate]);
-
-  // Gọi API khi đã xác định role
-  useEffect(() => {
-    if (!role) return;
+    const user = JSON.parse(localStorage.getItem("user"));
+    setRole(user?.role || "User");
 
     const fetchData = async () => {
       try {
@@ -75,24 +52,18 @@ function Dashboard() {
         setUpcomingData(upcomingRes.data);
         setRecipents(recipientsRes.data);
 
-        const nonAdminUsers = usersRes.data.filter(user => user.Role !== "Admin");
+        const nonAdminUsers = usersRes.data.filter(u => u.Role !== "Admin");
         setUsers(nonAdminUsers);
-
       } catch (error) {
-        if (error.response?.status === 403) {
-          alert("Bạn không có quyền truy cập vào dữ liệu này!");
-          navigate("/", { replace: true });
-        } else {
-          console.error("❌ Lỗi khi tải dữ liệu:", error);
-        }
+        console.error("❌ Lỗi khi tải dữ liệu:", error);
       }
     };
 
     fetchData();
-  }, [role]);
+  }, []);
 
   const handleCardClick = (key) => {
-    setActiveTable(prev => (prev === key ? null : key));
+    setActiveTable((prev) => (prev === key ? null : key));
   };
 
   const totalUnits = inventoryData.reduce((sum, row) => sum + (row.total || 0), 0);
@@ -102,7 +73,6 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      {/* Header */}
       <div className="dashboard-header">
         <div>
           <h1>Dashboard</h1>
@@ -110,61 +80,29 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Cards */}
       <div className="card-grid">
         <div onClick={() => handleCardClick("inventory")}>
-          <Card
-            icon="💧"
-            title="Total Blood Units (by Blood Type)"
-            value={totalUnits.toLocaleString()}
-            color="#F44336"
-          />
+          <Card icon="💧" title="Total Blood Units" value={totalUnits.toLocaleString()} color="#F44336" />
         </div>
         <div onClick={() => handleCardClick("registered")}>
-          <Card
-            icon="👥"
-            title="Registered Donors"
-            value={donorsData.length.toLocaleString()}
-            color="#2196F3"
-          />
+          <Card icon="👥" title="Registered Donors" value={donorsData.length.toLocaleString()} color="#2196F3" />
         </div>
         <div onClick={() => handleCardClick("successful")}>
-          <Card
-            icon="✅"
-            title="Successful Donations"
-            value={totalSuccessCount.toLocaleString()}
-            color="#4CAF50"
-          />
+          <Card icon="✅" title="Successful Donations" value={totalSuccessCount.toLocaleString()} color="#4CAF50" />
         </div>
         <div onClick={() => handleCardClick("upcoming")}>
-          <Card
-            icon="📅"
-            title="Upcoming Appointments"
-            value={totalUpcoming.toLocaleString()}
-            color="#4CAF50"
-          />
+          <Card icon="📅" title="Upcoming Appointments" value={totalUpcoming.toLocaleString()} color="#4CAF50" />
         </div>
         <div onClick={() => handleCardClick("recipients")}>
-          <Card
-            icon="🩸"
-            title="Blood Recipients"
-            value={recipents.length.toLocaleString()}
-            color="#FF9800"
-          />
+          <Card icon="🩸" title="Blood Recipients" value={recipents.length.toLocaleString()} color="#FF9800" />
         </div>
         {role === "Admin" && (
           <div onClick={() => handleCardClick("users")}>
-            <Card
-              icon="🧑‍💼"
-              title="Total Users"
-              value={totalUser.toLocaleString()}
-              color="#9C27B0"
-            />
+            <Card icon="🧑‍💼" title="Total Users" value={totalUser.toLocaleString()} color="#9C27B0" />
           </div>
         )}
       </div>
 
-      {/* Tables */}
       {activeTable === "inventory" && <BloodInventoryTable data={inventoryData} />}
       {activeTable === "registered" && <RegisteredDonorsTable data={donorsData} />}
       {activeTable === "successful" && <SuccessfulDonationsTable />}
