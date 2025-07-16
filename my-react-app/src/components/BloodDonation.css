@@ -148,22 +148,27 @@ body, html {
   padding: 40px 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.register-section h2, .request-section h2 {
+.register-section h2,
+.request-section h2 {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 20px;
 }
 
+/* Cập nhật đảm bảo form nằm thẳng dọc dưới h2 */
 .register-form, .request-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  width: 100%;
   max-width: 600px;
-  margin: 0 auto;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -264,6 +269,15 @@ textarea {
 
 .register-item p, .request-item p {
   margin: 5px 0;
+}
+.qr-preview {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.qr-preview img {
+  max-width: 400px;
+  margin-top: 1rem;
 }
 
 /* ==== LOADING ==== */

@@ -1,0 +1,312 @@
+/* Tổng thể layout */
+.layout-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* ---------- HEADER ---------- */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #cc0000;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo img {
+    height: 50px;
+    margin-right: 10px;
+  }
+  
+  .webname {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .menu {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .menu a:hover {
+    text-decoration: underline;
+  }
+  
+  .dropdown {
+    position: relative;
+  }
+  
+  .dropbtn {
+    cursor: pointer;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background-color: white;
+    color: black;
+    min-width: 160px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* ---------- ACCOUNT ---------- */
+  .actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .login-btn,
+  .logout-btn {
+    background-color: white;
+    color: #cc0000;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .user-menu {
+    position: relative;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .user-dropdown {
+    position: absolute;
+    right: 0;
+    background-color: white;
+    color: black;
+    min-width: 180px;
+    top: 30px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    z-index: 10;
+  }
+  
+  .user-dropdown a,
+  .user-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .user-dropdown a:hover,
+  .user-dropdown button:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* ---------- MAIN ---------- */
+  .activity-page {
+    flex: 1;
+    padding: 30px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .activity-page h2 {
+    text-align: center;
+    color: #b30000;
+  }
+  
+  .activity-section {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #fffafa;
+  }
+  
+  .activity-section h3 {
+    color: #990000;
+  }
+  
+  .activity-section ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .activity-section li {
+    margin-bottom: 10px;
+  }
+  
+  .activity-section a {
+    text-decoration: none;
+    color: #b30000;
+    font-weight: bold;
+  }
+  
+  .activity-section a:hover {
+    text-decoration: underline;
+  }
+  
+  /* ---------- FOOTER ---------- */
+  .footer {
+    background-color: #f2f2f2;
+    padding: 30px 20px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    text-align: left;
+  }
+  
+  .footer-block {
+    flex: 1 1 200px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-block h3 {
+    color: #990000;
+    margin-bottom: 10px;
+  }
+  
+  .footer-copy {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  .edit-btn, .cancel-btn {
+    margin-left: 8px;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .view-btn, .edit-btn, .cancel-btn {
+    margin-left: 8px;
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .view-btn {
+    background-color: #17a2b8;
+    color: white;
+  }
+  
+  .edit-btn {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .cancel-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  .donation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .donation-header, .donation-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+  
+  .donation-header {
+    background: #e0e0e0;
+    font-weight: bold;
+  }
+  
+  .action-buttons button {
+    margin-right: 6px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .view-btn {
+    background-color: #17a2b8;
+    color: white;
+  }
+  
+  .edit-btn {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .cancel-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  .filter-group {
+    display: flex;
+    justify-content:flex-start; /* ✅ căn giữa */
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+  
+  .filter-group label {
+    font-weight: bold;
+    margin-right: 4px;
+    align-self: center;
+  }
+  
+  .filter-group select {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.3s;
+  }
+  
+  .filter-group select:hover {
+    border-color: #888;
+  }
+  
+  .filter-group select:focus {
+    outline: none;
+    border-color: #2196f3;
+  }

@@ -35,7 +35,7 @@ max-width: none;
   padding: 8px 12px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  font-size: 15px;
+  font-size: 20px;
   background: #f9fafb;
   transition: border 0.2s;
 }
@@ -43,7 +43,8 @@ max-width: none;
 .profile-form input:disabled,
 .profile-form select:disabled {
   background: #f3f4f6;
-  color: #888;
+  color:#b91c1c;
+  
 }
 
 .profile-actions {
@@ -62,11 +63,12 @@ max-width: none;
   font-size: 15px;
   cursor: pointer;
   transition: background 0.2s;
+  color:#b91c1c;
 }
 
 .edit-btn {
   background: #b91c1c;
-  color: #fff;
+  color:#f9fafb;
 }
 
 .save-btn {

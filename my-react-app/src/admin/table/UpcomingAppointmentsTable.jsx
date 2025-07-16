@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../styles/table.css";
 import axios from "axios";
 
-const ROWS_PER_PAGE = 1;
+const ROWS_PER_PAGE = 5;
 
 const UpcomingAppointmentsTable = () => {
   const [appointments, setAppointments] = useState([]);

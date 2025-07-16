@@ -3,10 +3,19 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "concurrently": "^9.2.0",
     "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "formik": "^2.4.6",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
     "mssql": "^11.0.1",
-    "react-router-dom": "^7.6.1"
+    "qrcode": "^1.5.4",
+    "react-router-dom": "^7.6.1",
+    "sequelize": "^6.37.7",
+    "uuid": "^11.1.0",
+    "yup": "^1.6.1"
   }
 }

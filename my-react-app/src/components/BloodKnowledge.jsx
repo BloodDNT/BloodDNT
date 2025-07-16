@@ -14,7 +14,7 @@ export default function BloodKnowledge() {
   return (
     <>
    
-         <header className='header'>
+        <header className='header'>
                {/* logo */}
                <div className='logo'>
                  <Link to="/">
@@ -26,8 +26,7 @@ export default function BloodKnowledge() {
                <nav className='menu'>
                  <Link to='/bloodguide'>Blood Guide</Link>
                  <div className='dropdown'>
-                   <Link to='/bloodknowledge' className='dropbtn'>Blood </Link>
-                  
+                   <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
                  </div>
                  <Link to='/news'>News & Events</Link>
                  <Link to='/contact'>Contact</Link>
@@ -45,11 +44,14 @@ export default function BloodKnowledge() {
                      onMouseEnter={() => setIsOpen(true)}
                      onMouseLeave={() => setIsOpen(false)}
                    >
-                    <div className="dropbtn user-name">
-         Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-       </div>
+                     <div className="dropbtn user-name">
+                       Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                     </div>
                      {isOpen && (
                        <div className="dropdown-content user-dropdown">
+                         <Link to='/register/request-blood'>Register/Request-Blood</Link>
+                         <Link to='/my-activities'>List res/req</Link>
+                         <Link to='/history'>DonatationHistory</Link>
                          <Link to="/profile">👤 Thông tin cá nhân</Link>
                          <Link to="/notifications">🔔 Thông báo</Link>
                          <button
@@ -63,7 +65,7 @@ export default function BloodKnowledge() {
                    </div>
                  )}
                </div>
-             </header>
+             </header> 
 
       <main className="blood-knowledge-container">
         <h2>Kiến Thức Về Máu</h2>

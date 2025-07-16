@@ -32,12 +32,13 @@ body, html {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  margin-left: 20px; /* đẩy sang phải */
   font-size: 22px;
   font-weight: bold;
   color: black;
-  margin-top: -100px;
-  margin-left: 0;
+  margin-bottom: -70px;
 }
+
 
 .logo {
   height: 100px;
@@ -161,22 +162,6 @@ body, html {
   height: 340px;
   overflow: hidden;
 }
-.background1-image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  transition: opacity 1s ease-in-out;
-}
-
-.fade-in {
-  animation: fadeIn 1s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 
 .background-1 img {
   width: 100%;
@@ -463,11 +448,46 @@ body, html {
   }
   .footer-block {
     min-width: auto;
+    
   }
   .article-card {
     flex: 1 1 100%;
     max-width: 100%;
   }
+  .footer {
+    color: #a4001d;
+  }
+  
+.footer-block h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #000000; /* Đổi màu tiêu đề thành đen */
+}
+
+.footer-block p {
+  font-size: 1rem;
+  color: #000000; /* Đổi màu chữ thành đen */
+}
+
+.footer-block ul li a {
+  font-size: 1rem;
+  color: #000000; /* Đổi màu liên kết thành đen */
+}
+
+.footer-block ul li a:hover {
+  color: #333333; /* Màu hover tối hơn một chút cho liên kết */
+  text-decoration: underline;
+}
+
+.footer-copy {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 40px;
+  color: #000000; /* Đổi màu chữ bản quyền thành đen */
+  opacity: 0.8;
+}
+
 }
 
 @media (max-height: 800px) {
@@ -478,7 +498,7 @@ body, html {
     height: 80px;
   }
   .webname {
-    margin-top: -80px;
+    margin-top: -70px;
     font-size: 18px;
   }
   .body {

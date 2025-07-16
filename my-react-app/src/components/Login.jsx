@@ -7,8 +7,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-   const { login, user, logout } = useContext(UserContext);
-  const [isOpen, setIsOpen] = useState(false);
+  const { login } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,75 +25,29 @@ export default function Login() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        console.log('user trả về:', data.user);
-        localStorage.setItem('token', data.token);
-        login(data.user, data.token);
-        alert('Đăng nhập thành công! Chào ' + data.user.fullName);
+
+      if (res.ok && data.token && data.user) {
+        console.log('✅ User trả về:', data.user);
+        localStorage.setItem('token', data.token);               // Lưu token để dùng cho các request sau
+        localStorage.setItem('user', JSON.stringify(data.user)); // Lưu user để load lại không bị mất
+
+        login(data.user); // Gọi context cập nhật trạng thái đăng nhập
+        alert('✅ Đăng nhập thành công! Chào ' + data.user.fullName);
         navigate('/');
       } else {
-        alert('Lỗi: ' + data.message);
+        alert('❌ Đăng nhập thất bại: ' + (data.message || 'Sai email hoặc mật khẩu'));
       }
     } catch (error) {
-      alert('Lỗi server: ' + error.message);
+      alert('❌ Lỗi server: ' + error.message);
     }
   };
- const handleLogout = () => {
-    logout();
-  };
+
   return (
-     <>
-      <header className='header'>
-        <div className='logo'>
-          <Link to="/">
-            <img src='/LogoPage.jpg' alt='Logo' />
-          </Link>
-          <div className='webname'>Hope Donnor🩸</div>
-        </div>
-        <nav className='menu'>
-          <Link to='/bloodguide'>Blood Guide</Link>
-          <div className='dropdown'>
-            <Link to='/bloodknowledge' className='dropbtn'>Blood ▼</Link>
-          </div>
-          <Link to='/news'>News & Events</Link>
-          <Link to='/contact'>Contact</Link>
-          <Link to='/about'>About Us</Link>
-        </nav>
-        <div className='actions'>
-          {!user ? (
-            <Link to='/login'>
-              <button className='login-btn'>👤 Login</button>
-            </Link>
-          ) : (
-            <div 
-              className="dropdown user-menu"
-              onMouseEnter={() => setIsOpen(true)}
-              onMouseLeave={() => setIsOpen(false)}
-            >
-              <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-              </div>
-              {isOpen && (
-                <div className="dropdown-content user-dropdown">
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
-                  <button
-                    className="logout-btn"
-                    onClick={handleLogout}
-                  >
-                    🚪 Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </header>
     <section className="login-section">
       <div className="login-box">
         <div className='logo-login'>
           <Link to="/">
-            <div className='webname-login'>Hope Donnor🩸</div>
+            <div className='webname-login'>Hope Donor 🩸</div>
           </Link>
         </div>
         <h2 className="login-title">🔐 Đăng nhập</h2>
@@ -121,13 +74,13 @@ export default function Login() {
             required
           />
 
-          <div className="login-extra">  
+          <div className="login-extra">
             <label className="remember-me">
               <input type="checkbox" /> Nhớ mật khẩu
             </label>
             <a href="#" className="forgot-password">Quên mật khẩu?</a>
           </div>
-        
+
           <button type="submit" className="login-button">Đăng nhập</button>
         </form>
 
@@ -138,6 +91,5 @@ export default function Login() {
         </div>
       </div>
     </section>
-    </>
   );
 }

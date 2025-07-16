@@ -1,33 +1,52 @@
-// D:\SUMMER2025\SWP391\BloodDNT\backendnode\models\BloodDonation.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const sequelize = require('../config/database');
+const GroupBlood = require('./GroupBlood');
+const User = require('./User'); 
 
-const BloodDonation = sequelize.define('BloodDonation', {
-  id: {
-    type: DataTypes.BIGINT,
+const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
+  IDRegister: {
+    type: DataTypes.INTEGER,
     autoIncrement: true,
-    primaryKey: true,
+    primaryKey: true
   },
-  donateBloodDate: {
-    type: DataTypes.DATEONLY,
+  IDUser: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  bloodType: {
-    type: DataTypes.STRING,
+  DonateBloodDate: {
+    type: DataTypes.DATE,
     allowNull: false,
   },
-  identificationNumber: {
-    type: DataTypes.STRING,
+  IDBlood: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  note: {
+  IdentificationNumber: {
+    type: DataTypes.STRING(40),
+    allowNull: false,
+  },
+  Note: {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  status: {
-    type: DataTypes.STRING,
+  Status: {
+    type: DataTypes.STRING(20),
     defaultValue: 'Pending',
   },
+  QRCode: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  IsCancelled: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  }
+}, {
+  tableName: 'RegisterDonateBlood',
+  timestamps: false,
 });
 
-module.exports = BloodDonation;
+RegisterDonateBlood.belongsTo(User, { foreignKey: 'IDUser' });
+RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
+
+module.exports = RegisterDonateBlood;
