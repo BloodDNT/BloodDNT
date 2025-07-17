@@ -40,7 +40,9 @@ router.post('/', async (req, res) => {
     });
 
     // Gửi email xác thực
-    const verifyUrl = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
+    const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+    const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
+
     await sendVerificationEmail(Email, verifyUrl);
 
     res.status(201).json({ message: 'Người dùng đã được thêm và đã gửi email xác thực.' });
