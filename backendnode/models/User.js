@@ -61,13 +61,13 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW,
   },
   Latitude: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
-  Longitude: {
-    type: DataTypes.FLOAT,
-    allowNull: true,
-  },
+  type: DataTypes.DECIMAL(10, 8),
+  allowNull: true
+},
+Longitude: {
+  type: DataTypes.DECIMAL(11, 8),
+  allowNull: true
+},
  
 
 

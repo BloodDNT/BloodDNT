@@ -22,6 +22,22 @@ const isOver18 = (dob) => {
   return age >= 18;
 };
 
+const getLatLngFromAddress = async (address) => {
+  const apiKey = process.env.GEOCODE_API_KEY;
+  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (data.results && data.results.length > 0) {
+    return {
+      lat: data.results[0].geometry.lat,
+      lng: data.results[0].geometry.lng,
+    };
+  }
+  return null;
+};
+
 // === REGISTER === //
 router.post('/register', async (req, res) => {
   try {
@@ -58,6 +74,7 @@ router.post('/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
+const location = await getLatLngFromAddress(address);
 
     const newUser = await User.create({
       FullName: fullName,
@@ -71,6 +88,8 @@ router.post('/register', async (req, res) => {
       Role: 'User',
       IsVerified: false,
       VerificationToken: verificationToken,
+      Latitude: location?.lat || null,
+      Longitude: location?.lng || null,
     });
 
     const verifyUrl = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
@@ -81,7 +100,7 @@ router.post('/register', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { IDUser: newUser.IDUser},
+      { IDUser: newUser.IDUser },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '1h' }
     );

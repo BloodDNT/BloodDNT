@@ -93,22 +93,32 @@ router.put("/:id", authenticate, async (req, res) => {
 
 // ✅ DELETE: Xoá bài viết
 router.delete("/:id", authenticate, async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params;S
 
   try {
     const post = await Blog.findByPk(id);
-    if (!post) return res.status(404).json({ message: "Không tìm thấy bài viết" });
 
-    if (post.IDUser !== req.user.IDUser && req.user.Role !== "Admin") {
-      return res.status(403).json({ message: "Không có quyền xoá bài viết này" });
+    if (!post) {
+      return res.status(404).json({ message: "❌ Không tìm thấy bài viết" });
+    }
+
+    console.log("🔍 IDUser bài viết:", post.IDUser, typeof post.IDUser);
+    console.log("🔍 IDUser người dùng:", req.user.IDUser, typeof req.user.IDUser);
+    console.log("🔍 Role người dùng:", req.user.Role);
+
+    if (Number(post.IDUser) !== Number(req.user.IDUser) && req.user.Role !== "Admin") {
+      return res.status(403).json({ message: "⚠️ Không có quyền xoá bài viết này" });
     }
 
     await post.destroy();
-    res.status(200).json({ message: "✅ Xoá bài viết thành công" });
+    return res.status(200).json({ message: "✅ Xoá bài viết thành công" });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi server khi xoá", error: err.message });
+    console.error("❌ Lỗi xoá bài viết:", err);
+    return res.status(500).json({ message: "❌ Lỗi server khi xoá", error: err.message });
   }
 });
+
+module.exports = router;
 
 // ✅ Lấy tất cả bình luận cho 1 bài viết
 router.get("/:id/comments", async (req, res) => {
