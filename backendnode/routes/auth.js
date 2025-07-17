@@ -92,7 +92,8 @@ const location = await getLatLngFromAddress(address);
       Longitude: location?.lng || null,
     });
 
-    const verifyUrl = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
+    const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+    const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
     try {
       await sendVerificationEmail(email, verifyUrl);
     } catch (err) {
