@@ -23,7 +23,7 @@ const BlogManagement = () => {
 
   const fetchBlogs = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/blogs");
+      const res = await axios.get("http://localhost:5000/api/blog");
       setBlogs(res.data);
     } catch (error) {
       console.error("❌ Lỗi khi tải danh sách blog:", error);
@@ -33,7 +33,7 @@ const BlogManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xoá bài viết này?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/blogs/${id}`);
+        await axios.delete(`http://localhost:5000/api/blog/${id}`);
         setBlogs(prev => prev.filter((b) => b.IDPost !== id));
       } catch (error) {
         console.error("❌ Xoá thất bại:", error);
@@ -42,26 +42,35 @@ const BlogManagement = () => {
   };
 
   const handleCreate = async () => {
-    if (!newTitle || !newContent) {
-      alert("Vui lòng nhập tiêu đề và nội dung.");
-      return;
-    }
+  if (!newTitle || !newContent) {
+    alert("Vui lòng nhập tiêu đề và nội dung.");
+    return;
+  }
 
-    try {
-      await axios.post("http://localhost:5000/api/blogs", {
+  
+  try {
+    const token = localStorage.getItem("token");
+    await axios.post(
+      "http://localhost:5000/api/blog",
+      {
         Title: newTitle,
         Content: newContent,
-        IDUser: 1,
-      });
-      await fetchBlogs();
-      setNewTitle("");
-      setNewContent("");
-      setShowForm(false);
-    } catch (error) {
-      alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
-      console.error("❌ Tạo bài viết thất bại:", error);
-    }
-  };
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    await fetchBlogs();
+    setNewTitle("");
+    setNewContent("");
+    setShowForm(false);
+  } catch (error) {
+    alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
+    console.error("❌ Tạo bài viết thất bại:", error);
+  }
+};
 
   const filteredBlogs = blogs.filter((b) =>
     filterRole === "Tất cả" ? true : b.Role === filterRole

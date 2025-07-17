@@ -11,7 +11,7 @@ const BlogComment = require("../models/BlogComment");
 router.get("/", async (req, res) => {
   try {
     const posts = await Blog.findAll({
-      include: [{ model: User, attributes: ["FullName", "Role"] }],
+      include: [{ model: User, as: "Author", attributes: ["FullName", "Role"] }],
       order: [["LastUpdated", "DESC"]],
     });
 
@@ -29,7 +29,7 @@ router.get("/", async (req, res) => {
 
         return {
           ...post.toJSON(),
-          Author: post.User.Role === "Admin" ? "Admin" : post.User.FullName,
+          Author: post.Author ? (post.Author.Role === "Admin" ? "Admin" : post.Author.FullName) : "Không xác định",
           likeCount,
           commentCount,
           previewComments,
@@ -46,24 +46,23 @@ router.get("/", async (req, res) => {
 
 // ✅ POST: Đăng bài viết mới
 router.post("/", authenticate, async (req, res) => {
+  if (req.user.Role !== "Admin") {
+    return res.status(403).json({ message: "Bạn không có quyền đăng bài viết." });
+  }
+  const { Title, Content } = req.body;
+  if (!Title || !Content) {
+    return res.status(400).json({ message: "Thiếu tiêu đề hoặc nội dung" });
+  }
   try {
-    const { title, content, category } = req.body;
-    if (!title || !content) {
-      return res.status(400).json({ message: "Thiếu tiêu đề hoặc nội dung" });
-    }
-
     const post = await Blog.create({
-      Title: title,
-      Content: content,
-      Category: category || null,
-      IDUser: req.user.IDUser,
+      Title,
+      Content,
+      IDUser: req.user.IDUser, // Lấy IDUser từ token đã xác thực
       LastUpdated: new Date(),
     });
-
     res.status(201).json({ message: "Đăng bài thành công", post });
   } catch (err) {
-    console.error("❌ Lỗi thêm bài viết:", err);
-    res.status(500).json({ message: "Lỗi server khi thêm bài viết", error: err.message });
+    res.status(500).json({ message: "Lỗi server khi đăng bài", error: err.message });
   }
 });
 

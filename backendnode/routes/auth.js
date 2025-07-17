@@ -81,7 +81,7 @@ router.post('/register', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { IDUser: newUser.IDUser, Role: newUser.Role },
+      { IDUser: newUser.IDUser},
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '1h' }
     );
@@ -126,8 +126,9 @@ router.post('/login', async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
 
+    // ✅ FIXED: dùng đúng user.Role
     const token = jwt.sign(
-      { IDUser: user.IDUser },
+      { IDUser: user.IDUser, Role: user.Role },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '12h' }
     );
@@ -153,53 +154,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// === UPDATE === //
-router.put('/update', authenticate, async (req, res) => {
-  try {
-    const userId = req.user.IDUser;
-    const { fullName, phoneNumber, address, dateOfBirth, gender } = req.body;
-
-    if (!fullName)
-      return res.status(400).json({ message: 'Họ tên không được để trống' });
-
-    if (!isValidPhoneNumber(phoneNumber))
-      return res.status(400).json({ message: 'Số điện thoại phải chứa 10-11 số' });
-
-    if (!isOver18(dateOfBirth))
-      return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
-
-    if (gender && !['Male', 'Female', 'Other'].includes(gender))
-      return res.status(400).json({ message: 'Giới tính không hợp lệ' });
-
-    await User.update(
-      {
-        FullName: fullName,
-        PhoneNumber: phoneNumber,
-        Address: address,
-        DateOfBirth: dateOfBirth,
-        Gender: gender,
-      },
-      { where: { IDUser: userId } }
-    );
-
-    const updatedUser = await User.findByPk(userId);
-    res.json({
-      message: 'Cập nhật thành công',
-      user: {
-        FullName: updatedUser.FullName,
-        Email: updatedUser.Email,
-        PhoneNumber: updatedUser.PhoneNumber,
-        Address: updatedUser.Address,
-        DateOfBirth: updatedUser.DateOfBirth,
-        Gender: updatedUser.Gender,
-      }
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
-  }
-});
 
 // === VERIFY EMAIL === //
 router.get('/verify-email', async (req, res) => {

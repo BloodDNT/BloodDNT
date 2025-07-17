@@ -9,12 +9,14 @@ const Blog = sequelize.define('Blog', {
   Category: { type: DataTypes.STRING },
   LastUpdated: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
 
-
+  // ✅ Thêm dòng này
+  IDUser: { type: DataTypes.INTEGER, allowNull: false },
 }, {
   tableName: 'Blog',
   timestamps: false
 });
 
-Blog.belongsTo(User, { foreignKey: 'IDUser' });
+// ✅ Thiết lập mối quan hệ
+Blog.belongsTo(User, { foreignKey: 'IDUser', as: 'Author' });
 
 module.exports = Blog;
