@@ -41,7 +41,7 @@ router.post('/register-blood', async (req, res) => {
     }, { transaction: t });
 
     // 2. Tạo mã QR
-    const host = 'http://localhost:5173';
+    const host = 'https://legendary-quokka-030e7a.netlify.app';
     const qrText = `${host}/donation/${newRecord.IDRegister}`;
     const qrCode = await QRCode.toDataURL(qrText);
 
