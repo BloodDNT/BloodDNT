@@ -17,49 +17,21 @@ const isOver18 = (dob) => {
   let age = now.getFullYear() - date.getFullYear();
   const m = now.getMonth() - date.getMonth();
   if (m < 0 || (m === 0 && now.getDate() < date.getDate())) age--;
+  return age >= 18;
+};
 
-const sendVerificationEmail = require('../utils/sendVerificationEmail');
-const crypto = require('crypto');
-
-
+// Middleware xác thực
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ message: 'Chưa đăng nhập' });
   const token = authHeader.split(' ')[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret_key');
-    req.user = { IDUser: decoded.userId };
+    req.user = { IDUser: decoded.IDUser }; // Sửa userId thành IDUser để nhất quán
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Token không hợp lệ' });
   }
-};
-// Hàm kiểm tra định dạng email
-const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-// Hàm kiểm tra định dạng số điện thoại (10-11 số)
-const isValidPhoneNumber = (phoneNumber) => {
-  if (!phoneNumber) return true; // Không bắt buộc
-  const phoneRegex = /^[0-9]{10,11}$/;
-  return phoneRegex.test(phoneNumber);
-};
-
-
-// Hàm kiểm tra độ tuổi (trên 18)
-const isOver18 = (dateOfBirth) => {
-  if (!dateOfBirth) return true; // Không bắt buộc
-  const dob = new Date(dateOfBirth);
-  const today = new Date();
-  const age = today.getFullYear() - dob.getFullYear();
-  const monthDiff = today.getMonth() - dob.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-    return age - 1 >= 18;
-  }
-  return age >= 18;
-  return null;
 };
 
 // Hàm lấy tọa độ từ địa chỉ
@@ -67,7 +39,6 @@ const getLatLngFromAddress = async (address) => {
   if (!address) return null;
   const apiKey = process.env.GEOCODE_API_KEY;
   const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
-
   try {
     const response = await fetch(url);
     const data = await response.json();
@@ -87,33 +58,30 @@ const getLatLngFromAddress = async (address) => {
 // Đăng ký
 router.post('/register', async (req, res) => {
   try {
+    const { fullName, email, password, phoneNumber, address, dateOfBirth, gender, cccd } = req.body;
 
-    const {
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      address,
-      dateOfBirth,
-      gender,
-      cccd,
-    } = req.body;
-
+    // Kiểm tra các trường bắt buộc
     if (!fullName || !email || !password) {
       return res.status(400).json({ message: 'Vui lòng nhập đầy đủ các trường bắt buộc (Họ tên, Email, Mật khẩu)' });
     }
 
     // Kiểm tra định dạng email
     if (!isValidEmail(email)) {
-    if (!isValidEmail(email))
       return res.status(400).json({ message: 'Email không đúng định dạng' });
     }
 
     // Kiểm tra định dạng số điện thoại
     if (!isValidPhoneNumber(phoneNumber)) {
       return res.status(400).json({ message: 'Số điện thoại phải chứa 10-11 số' });
+    }
 
-    if (!isOver18(dateOfBirth))
+    // Kiểm tra định dạng CCCD
+    if (!isValidCCCD(cccd)) {
+      return res.status(400).json({ message: 'CCCD phải chứa 12 số' });
+    }
+
+    // Kiểm tra độ tuổi
+    if (!isOver18(dateOfBirth)) {
       return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
     }
 
@@ -140,7 +108,7 @@ router.post('/register', async (req, res) => {
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const location = await getLatLngFromAddress(address);
 
-
+    // Tạo người dùng mới
     const newUser = await User.create({
       FullName: fullName,
       Email: email,
@@ -179,14 +147,14 @@ router.post('/register', async (req, res) => {
       token,
       user: {
         IDUser: newUser.IDUser,
-
-        fullName: newUser.FullName,
-        email: newUser.Email,
-        phoneNumber: newUser.PhoneNumber,
-        address: newUser.Address,
-        dateOfBirth: newUser.DateOfBirth,
-        gender: newUser.Gender,
-      }
+        FullName: newUser.FullName,
+        Email: newUser.Email,
+        PhoneNumber: newUser.PhoneNumber,
+        Address: newUser.Address,
+        DateOfBirth: newUser.DateOfBirth,
+        Gender: newUser.Gender,
+        Role: newUser.Role,
+      },
     });
   } catch (error) {
     console.error('Lỗi đăng ký:', error);
@@ -199,8 +167,10 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-  if (!email || !password)
-    return res.status(400).json({ message: 'Vui lòng nhập đầy đủ email và mật khẩu' });
+    // Kiểm tra các trường bắt buộc
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Vui lòng nhập đầy đủ email và mật khẩu' });
+    }
 
     // Tìm người dùng
     const user = await User.findOne({ where: { Email: email } });
@@ -209,7 +179,6 @@ router.post('/login', async (req, res) => {
     }
 
     // Kiểm tra xác minh email
-
     if (!user.IsVerified) {
       return res.status(403).json({ message: 'Tài khoản chưa xác minh email. Vui lòng kiểm tra email để xác minh.' });
     }
@@ -218,45 +187,46 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
+    }
 
-    // ✅ FIXED: dùng đúng user.Role
+    // Tạo JWT
     const token = jwt.sign(
       { IDUser: user.IDUser, Role: user.Role },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '12h' }
     );
-    // Tạo JWT
-    const token = jwt.sign({ IDUser: user.IDUser, Role: user.Role }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
-      expiresIn: '1h'
-    });
 
     res.json({
       message: 'Đăng nhập thành công',
       token,
       user: {
-        IDUser: user.IDUser, // ✅ thêm dòng này
-        fullName: user.FullName,
-        email: user.Email,
-        phoneNumber: user.PhoneNumber,
-        address: user.Address,
-        dateOfBirth: user.DateOfBirth,
-        gender: user.Gender,
-        role: user.Role
-        gender: user.Gender
-      }
+        IDUser: user.IDUser,
+        FullName: user.FullName,
+        Email: user.Email,
+        PhoneNumber: user.PhoneNumber,
+        Address: user.Address,
+        DateOfBirth: user.DateOfBirth,
+        Gender: user.Gender,
+        Role: user.Role,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error('Lỗi đăng nhập:', error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
 
-
+// Cập nhật thông tin người dùng
 router.put('/update', authenticate, async (req, res) => {
-    console.log('req.body:', req.body);
   try {
     const userId = req.user.IDUser;
-    const { fullName, phoneNumber, address, dateOfBirth, gender } = req.body;
+    const { fullName, phoneNumber, address, dateOfBirth, gender, cccd } = req.body;
+
+    // Kiểm tra người dùng tồn tại
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
 
     // Kiểm tra các trường hợp cần validate
     if (!fullName) {
@@ -265,13 +235,24 @@ router.put('/update', authenticate, async (req, res) => {
     if (!isValidPhoneNumber(phoneNumber)) {
       return res.status(400).json({ message: 'Số điện thoại phải chứa 10-11 số' });
     }
+    if (!isValidCCCD(cccd)) {
+      return res.status(400).json({ message: 'CCCD phải chứa 12 số' });
+    }
     if (!isOver18(dateOfBirth)) {
       return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
     }
     if (gender && !['Male', 'Female', 'Other'].includes(gender)) {
       return res.status(400).json({ message: 'Giới tính phải là Male, Female hoặc Other' });
     }
-    
+    if (cccd) {
+      const existingCCCD = await User.findOne({ where: { CCCD: cccd, IDUser: { [Op.ne]: userId } } });
+      if (existingCCCD) {
+        return res.status(400).json({ message: 'CCCD đã được sử dụng' });
+      }
+    }
+
+    // Cập nhật tọa độ nếu có địa chỉ mới
+    const location = await getLatLngFromAddress(address);
 
     // Cập nhật thông tin
     await User.update(
@@ -281,31 +262,35 @@ router.put('/update', authenticate, async (req, res) => {
         Address: address,
         DateOfBirth: dateOfBirth,
         Gender: gender,
+        CCCD: cccd,
+        Latitude: location?.lat || null,
+        Longitude: location?.lng || null,
       },
       { where: { IDUser: userId } }
     );
 
+    // Lấy thông tin người dùng sau khi cập nhật
     const updatedUser = await User.findByPk(userId);
     res.json({
-      message: 'Cập nhật thành công',
+      message: 'Cập nhật thông tin thành công',
       user: {
+        IDUser: updatedUser.IDUser,
         FullName: updatedUser.FullName,
         Email: updatedUser.Email,
         PhoneNumber: updatedUser.PhoneNumber,
         Address: updatedUser.Address,
         DateOfBirth: updatedUser.DateOfBirth,
         Gender: updatedUser.Gender,
-      }
+        Role: updatedUser.Role,
+      },
     });
-
   } catch (error) {
-    console.error('Lỗi đăng nhập:', error);
+    console.error('Lỗi cập nhật thông tin:', error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
 
-
-// === VERIFY EMAIL === //
+// Xác minh email
 router.get('/verify-email', async (req, res) => {
   try {
     const { token } = req.query;
