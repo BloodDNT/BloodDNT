@@ -12,12 +12,14 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
     if (!form.donateBloodDate) newErrors.donateBloodDate = 'Ngày hiến máu là bắt buộc';
     if (!form.bloodType) newErrors.bloodType = 'Nhóm máu là bắt buộc';
     if (!form.identificationNumber || !/^[0-9]{9,12}$/.test(form.identificationNumber)) {
-      newErrors.identificationNumber = 'CMND/CCCD phải là số từ 9-12 chữ số';
+      newErrors.identificationNumber = 'CMND/CCCD phải từ 9–12 chữ số';
     }
+    if (!form.bloodPressure) newErrors.bloodPressure = 'Huyết áp bắt buộc';
+    if (!form.weight || isNaN(form.weight)) newErrors.weight = 'Cân nặng bắt buộc và phải là số';
 
-    const selectedYear = new Date(form.donateBloodDate).getFullYear();
+    const year = new Date(form.donateBloodDate).getFullYear();
     const currentYear = new Date().getFullYear();
-    if (selectedYear !== currentYear) {
+    if (year !== currentYear) {
       newErrors.donateBloodDate = `Vui lòng chọn ngày trong năm ${currentYear}`;
     }
 
@@ -42,7 +44,6 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           name='donateBloodDate'
           value={form.donateBloodDate}
           onChange={onChange}
-          required
           min={`${currentYear}-01-01`}
           max={`${currentYear}-12-31`}
         />
@@ -50,9 +51,9 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
       </div>
 
       <div className='form-group'>
-        <select name='bloodType' value={form.bloodType} onChange={onChange} required>
-          <option value='' disabled>Chọn nhóm máu</option>
-          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type) => (
+        <select name='bloodType' value={form.bloodType} onChange={onChange}>
+          <option value=''>Chọn nhóm máu</option>
+          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
@@ -66,9 +67,39 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           value={form.identificationNumber}
           onChange={onChange}
           placeholder='CMND/CCCD'
-          required
         />
         {errors.identificationNumber && <span className='error'>{errors.identificationNumber}</span>}
+      </div>
+
+      <div className='form-group'>
+        <input
+          type='text'
+          name='bloodPressure'
+          value={form.bloodPressure}
+          onChange={onChange}
+          placeholder='Huyết áp (ví dụ: 120/80)'
+        />
+        {errors.bloodPressure && <span className='error'>{errors.bloodPressure}</span>}
+      </div>
+
+      <div className='form-group'>
+        <input
+          type='number'
+          name='weight'
+          value={form.weight}
+          onChange={onChange}
+          placeholder='Cân nặng (kg)'
+        />
+        {errors.weight && <span className='error'>{errors.weight}</span>}
+      </div>
+
+      <div className='form-group'>
+        <textarea
+          name='medicalHistory'
+          value={form.medicalHistory}
+          onChange={onChange}
+          placeholder='Tiền sử bệnh (nếu có)'
+        />
       </div>
 
       <div className='form-group'>
@@ -76,7 +107,7 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
           name='note'
           value={form.note}
           onChange={onChange}
-          placeholder='Ghi chú (không bắt buộc)'
+          placeholder='Ghi chú thêm (nếu có)'
         />
       </div>
 
@@ -87,132 +118,115 @@ const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
 
 const getBloodID = (bloodType) => {
   const map = {
-    'A+': 1, 'A-': 2,
-    'B+': 3, 'B-': 4,
-    'AB+': 5, 'AB-': 6,
-    'O+': 7, 'O-': 8
+    'A+': 1, 'A-': 2, 'B+': 3, 'B-': 4,
+    'AB+': 5, 'AB-': 6, 'O+': 7, 'O-': 8
   };
   return map[bloodType] || 1;
 };
 
 export default function BloodDonationPage() {
-
-  const [registerForm, setRegisterForm] = useState({
+  const [form, setForm] = useState({
     donateBloodDate: '',
     bloodType: '',
     identificationNumber: '',
-    note: ''
+    note: '',
+    bloodPressure: '',
+    weight: '',
+    medicalHistory: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [qrCode, setQrCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { user, logout } = useContext(UserContext);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-  };
+  const handleLogout = () => logout();
 
-  const handleRegisterChange = useCallback((e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
-    setRegisterForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   }, []);
 
-  const handleRegisterSubmit = useCallback(async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     const storedUser = user || JSON.parse(localStorage.getItem('user'));
-    if (!storedUser?.IDUser) {
-      alert("Không tìm thấy ID người dùng, vui lòng đăng nhập lại.");
-      return;
-    }
+    if (!storedUser?.IDUser) return alert('Bạn chưa đăng nhập');
 
     try {
       setIsLoading(true);
-      const response = await axios.post('http://localhost:5000/api/blood-donations/register-blood', {
-
-        IDUser: parseInt(storedUser.IDUser),
-        DonateBloodDate: registerForm.donateBloodDate,
-        IDBlood: getBloodID(registerForm.bloodType),
-        IdentificationNumber: registerForm.identificationNumber,
-        Note: registerForm.note
+      const res = await axios.post('http://localhost:5000/api/blood-donations/register-blood', {
+        IDUser: storedUser.IDUser,
+        DonateBloodDate: form.donateBloodDate,
+        IDBlood: getBloodID(form.bloodType),
+        IdentificationNumber: form.identificationNumber,
+        Note: form.note,
+        // Phần khai báo sức khỏe
+        BloodPressure: form.bloodPressure,
+        Weight: parseFloat(form.weight),
+        MedicalHistory: form.medicalHistory
       });
 
       alert('Đăng ký thành công!');
-      setQrCode(response.data.data.QRCode); // Lưu QR code trả về
-      setRegisterForm({ donateBloodDate: '', bloodType: '', identificationNumber: '', note: '' });
-    } catch (error) {
-      console.error('❌ Lỗi khi gửi form:', error);
-      const msg = error?.response?.data?.error || 'Lỗi khi đăng ký hiến máu';
-      alert(msg);
+      setQrCode(res.data.data.QRCode);
+      setForm({
+        donateBloodDate: '', bloodType: '', identificationNumber: '',
+        note: '', bloodPressure: '', weight: '', medicalHistory: ''
+      });
+    } catch (err) {
+      console.error('❌ Lỗi:', err);
+      alert(err?.response?.data?.error || 'Đăng ký thất bại');
     } finally {
       setIsLoading(false);
     }
-  }, [registerForm, user]);
+  }, [form, user]);
 
   return (
     <>
-       <header className='header'>
-                   {/* logo */}
-                   <div className='logo'>
-                     <Link to="/">
-                       <img src='/LogoPage.jpg' alt='Logo' />
-                     </Link>
-                     <div className='webname'>Hope Donnor🩸</div>
-                   </div>
-                   {/* menu */}
-                   <nav className='menu'>
-                     <Link to='/bloodguide'>Blood Guide</Link>
-                     <div className='dropdown'>
-                       <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
-                     </div>
-                     <Link to='/news'>News & Events</Link>
-                     <Link to='/contact'>Contact</Link>
-                     <Link to='/about'>About Us</Link>
-                   </nav>
-                   {/* login/user menu */}
-                   <div className='actions'>
-                     {!user ? (
-                       <Link to='/login'>
-                         <button className='login-btn'>👤 Login</button>
-                       </Link>
-                     ) : (
-                       <div 
-                         className="dropdown user-menu"
-                         onMouseEnter={() => setIsOpen(true)}
-                         onMouseLeave={() => setIsOpen(false)}
-                       >
-                         <div className="dropbtn user-name">
-                           Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-                         </div>
-                         {isOpen && (
-                           <div className="dropdown-content user-dropdown">
-                             <Link to='/register/request-blood'>Register/Request-Blood</Link>
-                             <Link to='/my-activities'>List res/req</Link>
-                             <Link to='/history'>DonatationHistory</Link>
-                             <Link to="/profile">👤 Thông tin cá nhân</Link>
-                             <Link to="/notifications">🔔 Thông báo</Link>
-                             <button
-                               className="logout-btn"
-                               onClick={handleLogout}
-                             >
-                               🚪 Đăng xuất
-                             </button>
-                           </div>
-                         )}
-                       </div>
-                     )}
-                   </div>
-                 </header> 
+      <header className='header'>
+        <div className='logo'>
+          <Link to="/"><img src='/LogoPage.jpg' alt='Logo' /></Link>
+          <div className='webname'>Hope Donnor🩸</div>
+        </div>
+        <nav className='menu'>
+          <Link to='/bloodguide'>Blood Guide</Link>
+          <Link to='/bloodknowledge'>Blood</Link>
+          <Link to='/news'>News & Events</Link>
+          <Link to='/contact'>Contact</Link>
+          <Link to='/about'>About Us</Link>
+        </nav>
+        <div className='actions'>
+          {!user ? (
+            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
+          ) : (
+            <div className="dropdown user-menu"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}>
+              <div className="dropbtn user-name">
+                Xin chào, {user?.fullName || "User"} <span>▼</span>
+              </div>
+              {isOpen && (
+                <div className="dropdown-content user-dropdown">
+                  <Link to='/register/request-blood'>Đăng ký/Yêu cầu máu</Link>
+                  <Link to='/my-activities'>Hoạt động</Link>
+                  <Link to='/history'>Lịch sử hiến</Link>
+                  <Link to='/profile'>👤 Hồ sơ</Link>
+                  <Link to='/notifications'>🔔 Thông báo</Link>
+                  <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </header>
 
       <main className='body'>
         <section className='register-section'>
-          <h2>Đăng ký hiến máu</h2>
+          <h2>Đăng ký hiến máu & khai báo sức khỏe</h2>
           <RegistrationForm
-            form={registerForm}
-            onChange={handleRegisterChange}
-            onSubmit={handleRegisterSubmit}
+            form={form}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
           />
           {isLoading && <p>Đang xử lý...</p>}
-
           {qrCode && (
             <div className='qr-preview'>
               <h3>Mã QR của bạn</h3>
@@ -226,20 +240,15 @@ export default function BloodDonationPage() {
         <div className='footer-container'>
           <div className='footer-block location'>
             <h3>📍 Địa điểm</h3>
-            <p>Trung tâm Hiến máu, Đại học FPT, Q9, TP.HCM</p>
+            <p>Trung tâm Hiến máu, ĐH FPT, Q9, TP.HCM</p>
           </div>
           <div className='footer-block hotline'>
             <h3>📞 Hotline</h3>
             <p>+84 123 456 789</p>
-            <p>+84 123 456 987</p>
           </div>
           <div className='footer-block social-media'>
-            <h3>🌐 Theo dõi chúng tôi</h3>
-            <ul>
-              <li><a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a></li>
-              <li><a href='https://instagram.com' target='_blank' rel='noreferrer'>Instagram</a></li>
-              <li><a href='https://twitter.com' target='_blank' rel='noreferrer'>Twitter</a></li>
-            </ul>
+            <h3>🌐 Theo dõi</h3>
+            <a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a>
           </div>
         </div>
         <p className='footer-copy'>© 2025 HopeDonor. All rights reserved.</p>

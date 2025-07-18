@@ -1,24 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const QRCode = require('qrcode');
+
 const RegisterDonateBlood = require('../models/BloodDonation');
+const InitialHealthDeclaration = require('../models/InitialHealthDeclaration');
 const User = require('../models/User');
 
-// ✅ API tạo đơn hiến máu và sinh mã QR
+// ✅ API tạo đơn hiến máu + khai báo sức khỏe
 router.post('/register-blood', async (req, res) => {
+  const t = await RegisterDonateBlood.sequelize.transaction(); // dùng transaction
+
   try {
     const {
       IDUser,
       DonateBloodDate,
       IDBlood,
       IdentificationNumber,
-      Note
+      Note,
+      BloodPressure,
+      Weight,
+      MedicalHistory,
+      Eligible
     } = req.body;
 
+    // Validate dữ liệu đầu vào
     if (!IDUser || !DonateBloodDate || !IDBlood || !IdentificationNumber) {
-      return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin.' });
+      return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin bắt buộc.' });
     }
 
+    // 1. Tạo đơn hiến máu
     const newRecord = await RegisterDonateBlood.create({
       IDUser,
       DonateBloodDate,
@@ -28,16 +38,28 @@ router.post('/register-blood', async (req, res) => {
       Status: 'Pending',
       QRCode: '',
       IsCancelled: false
-    });
+    }, { transaction: t });
 
+    // 2. Tạo mã QR
     const host = 'http://localhost:5173';
     const qrText = `${host}/donation/${newRecord.IDRegister}`;
     const qrCode = await QRCode.toDataURL(qrText);
 
-    await newRecord.update({ QRCode: qrCode });
+    await newRecord.update({ QRCode: qrCode }, { transaction: t });
+
+    // 3. Tạo bản ghi khai báo sức khỏe
+    await InitialHealthDeclaration.create({
+      IDRequest: newRecord.IDRegister,
+      BloodPressure,
+      Weight,
+      MedicalHistory,
+      Eligible: Eligible !== undefined ? Eligible : true
+    }, { transaction: t });
+
+    await t.commit();
 
     res.status(201).json({
-      message: 'Đăng ký hiến máu thành công ✅',
+      message: 'Đăng ký hiến máu và khai báo sức khỏe thành công ✅',
       data: {
         QRCode: qrCode,
         donation: newRecord
@@ -45,7 +67,8 @@ router.post('/register-blood', async (req, res) => {
     });
 
   } catch (err) {
-    console.error("❌ Lỗi tại API /register-blood:", err);
+    await t.rollback();
+    console.error("❌ Lỗi khi tạo đơn:", err);
     res.status(500).json({ error: 'Đăng ký thất bại', details: err.message });
   }
 });

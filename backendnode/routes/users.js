@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const sequelize = require('../config/database');
 const bcrypt = require('bcrypt');
-
+const crypto = require('crypto');
+const sendVerificationEmail = require('../utils/sendVerificationEmail');
 
 // Lấy tất cả người dùng
 router.get('/', async (req, res) => {
@@ -20,16 +21,31 @@ router.get('/', async (req, res) => {
 // Thêm người dùng
 router.post('/', async (req, res) => {
   const { FullName, Email, Password, Role } = req.body;
+
   try {
     const hashedPassword = await bcrypt.hash(Password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     await sequelize.query(`
-  INSERT INTO Users (FullName, Email, Password, Role)
-  VALUES (:FullName, :Email, :Password, :Role)
-`, {
-      replacements: { FullName, Email, Password: hashedPassword, Role }
+      INSERT INTO Users (FullName, Email, Password, Role, IsVerified, VerificationToken)
+      VALUES (:FullName, :Email, :Password, :Role, 0, :VerificationToken)
+    `, {
+      replacements: {
+        FullName,
+        Email,
+        Password: hashedPassword,
+        Role,
+        VerificationToken: verificationToken
+      }
     });
-    res.status(201).json({ message: 'Người dùng đã được thêm.' });
+
+    // Gửi email xác thực
+    const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+    const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
+
+    await sendVerificationEmail(Email, verifyUrl);
+
+    res.status(201).json({ message: 'Người dùng đã được thêm và đã gửi email xác thực.' });
   } catch (err) {
     console.error("❌ Lỗi khi thêm người dùng:", err);
     res.status(500).json({ error: 'Lỗi server', message: err.message });

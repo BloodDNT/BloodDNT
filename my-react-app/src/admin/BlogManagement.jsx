@@ -23,45 +23,74 @@ const BlogManagement = () => {
 
   const fetchBlogs = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/blogs");
+      const res = await axios.get("http://localhost:5000/api/blog");
       setBlogs(res.data);
     } catch (error) {
       console.error("❌ Lỗi khi tải danh sách blog:", error);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xoá bài viết này?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/blogs/${id}`);
-        setBlogs(prev => prev.filter((b) => b.IDPost !== id));
-      } catch (error) {
-        console.error("❌ Xoá thất bại:", error);
-      }
-    }
-  };
-
   const handleCreate = async () => {
-    if (!newTitle || !newContent) {
-      alert("Vui lòng nhập tiêu đề và nội dung.");
-      return;
-    }
+  if (!newTitle || !newContent) {
+    alert("Vui lòng nhập tiêu đề và nội dung.");
+    return;
+  }
 
-    try {
-      await axios.post("http://localhost:5000/api/blogs", {
+  const handleDelete = async (id) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("⚠️ Bạn chưa đăng nhập.");
+    return;
+  }
+
+  if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
+
+  try {
+    await axios.delete(`http://localhost:5000/api/blog/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    fetchBlogs(); // Cập nhật lại danh sách
+  } catch (error) {
+    alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
+    console.error("Xoá bài viết thất bại:", error);
+  }
+};
+
+
+  const token = localStorage.getItem("token");
+  console.log("🪪 Token lấy từ localStorage:", token);
+
+  if (!token) {
+    alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+    return;
+  }
+
+  try {
+    await axios.post(
+      "http://localhost:5000/api/blog",
+      {
         Title: newTitle,
         Content: newContent,
-        IDUser: 1,
-      });
-      await fetchBlogs();
-      setNewTitle("");
-      setNewContent("");
-      setShowForm(false);
-    } catch (error) {
-      alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
-      console.error("❌ Tạo bài viết thất bại:", error);
-    }
-  };
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    await fetchBlogs();
+    setNewTitle("");
+    setNewContent("");
+    setShowForm(false);
+  } catch (error) {
+    alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
+    console.error("❌ Tạo bài viết thất bại:", error);
+  }
+};
+
 
   const filteredBlogs = blogs.filter((b) =>
     filterRole === "Tất cả" ? true : b.Role === filterRole
