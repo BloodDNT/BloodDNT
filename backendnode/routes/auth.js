@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const Notification = require('../models/Notification');
 
 const User = require('../models/User');
 const authenticate = require('../middlewares/authenticateToken');
@@ -181,11 +182,22 @@ router.put('/update', authenticate, async (req, res) => {
       },
       { where: { IDUser: userId } }
     );
+    
+    // ✅ Tạo thông báo sau khi cập nhật
+    const Notification = require('../models/Notification'); // nhớ import trên đầu file nếu chưa có
+    await Notification.create({
+      IDUser: userId,
+      Type: 'Thông báo hệ thống',
+      Message: `Bạn đã thay đổi thông tin cá nhân vào lúc ${new Date().toLocaleString('vi-VN')}`,
+      Status: 'Unread',
+      SendDate: new Date()
+    });
 
     const updatedUser = await User.findByPk(userId);
     res.json({
       message: 'Cập nhật thành công',
       user: {
+        IDUser: updatedUser.IDUser,
         FullName: updatedUser.FullName,
         Email: updatedUser.Email,
         PhoneNumber: updatedUser.PhoneNumber,

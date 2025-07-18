@@ -3,20 +3,19 @@ import React, { createContext, useState, useEffect } from 'react';
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    try {
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
+    }
+  });
 
-    const updateUser = (newUser) => {
+  const updateUser = (newUser) => {
     setUser(newUser);
     localStorage.setItem('user', JSON.stringify(newUser));
   };
-
-  // Load user từ localStorage khi app khởi động
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
 
   const login = (user) => {
     setUser(user);

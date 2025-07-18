@@ -3,13 +3,14 @@ const QRCode = require('qrcode');
 const router = express.Router();
 
 const RequestDonateBlood = require('../models/RequestDonateBlood');
+const Notification = require('../models/Notification');
 const User = require('../models/User');
-const authenticateToken = require('../middlewares/authenticateToken'); // ⬅️ Thêm dòng này
+const authenticateToken = require('../middlewares/authenticateToken');
 
-// ✅ Tạo đơn yêu cầu máu + QR code
+// ✅ Tạo đơn yêu cầu máu + QR code + thông báo
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const IDUser = req.user?.IDUser; // ⬅️ Lấy từ JWT
+    const IDUser = req.user?.IDUser;
 
     if (!IDUser) {
       return res.status(401).json({ error: 'Không thể xác định người dùng.' });
@@ -45,6 +46,15 @@ router.post('/', authenticateToken, async (req, res) => {
     const qrImage = await QRCode.toDataURL(qrText);
 
     await newRequest.update({ QRCodeValue: qrImage });
+
+    // ✅ Gửi thông báo sau khi tạo đơn thành công
+    await Notification.create({
+      IDUser,
+      Type: 'Thông báo hệ thống',
+      Message: `Bạn đã tạo yêu cầu nhận máu thành công. Mã đơn: ${newRequest.IDRequest}`,
+      Status: 'Unread',
+      SendDate: new Date()
+    });
 
     res.status(201).json({
       message: 'Tạo yêu cầu thành công ✅',

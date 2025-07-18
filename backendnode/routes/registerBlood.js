@@ -4,6 +4,7 @@ const QRCode = require('qrcode');
 
 const RegisterDonateBlood = require('../models/BloodDonation');
 const InitialHealthDeclaration = require('../models/InitialHealthDeclaration');
+const Notification = require('../models/Notification');
 const User = require('../models/User');
 
 // ✅ API tạo đơn hiến máu + khai báo sức khỏe
@@ -41,7 +42,7 @@ router.post('/register-blood', async (req, res) => {
     }, { transaction: t });
 
     // 2. Tạo mã QR
-    const host = 'https://legendary-quokka-030e7a.netlify.app';
+    const host = 'http://localhost:5173';
     const qrText = `${host}/donation/${newRecord.IDRegister}`;
     const qrCode = await QRCode.toDataURL(qrText);
 
@@ -54,6 +55,16 @@ router.post('/register-blood', async (req, res) => {
       Weight,
       MedicalHistory,
       Eligible: Eligible !== undefined ? Eligible : true
+    }, { transaction: t });
+
+    // 4. Gửi thông báo
+    const formattedDate = new Date(DonateBloodDate).toLocaleDateString('vi-VN');
+    await Notification.create({
+      IDUser,
+  Type: 'Thông báo hệ thống',
+  Message: `Bạn đã đăng ký hiến máu vào ngày ${DonateBloodDate}`,
+  Status: 'Unread',
+  SendDate: new Date()
     }, { transaction: t });
 
     await t.commit();

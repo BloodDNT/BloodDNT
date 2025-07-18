@@ -205,12 +205,20 @@ export default function BloodDonationPage() {
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                  <Link to='/register/request-blood'>Đăng ký/Yêu cầu máu</Link>
-                  <Link to='/my-activities'>Hoạt động</Link>
-                  <Link to='/history'>Lịch sử hiến</Link>
-                  <Link to='/profile'>👤 Hồ sơ</Link>
-                  <Link to='/notifications'>🔔 Thông báo</Link>
-                  <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
+                 <Link to='/register/request-blood'>Register/Request</Link>
+                  <Link to='/my-activities'>List res/req</Link>
+                  <Link to='/history'>DonatationHistory</Link>
+                  <Link to="/profile">👤UserProfile</Link>
+                  {user?.role === 'Admin' && (
+      <Link to="/dashboard">🛠️Path to admin</Link>
+    )}
+                  <Link to="/notifications">🔔Notification</Link>
+                  <button
+                    className="logout-btn"
+                    onClick={handleLogout}
+                  >
+                    🚪Logout
+                  </button>
                 </div>
               )}
             </div>

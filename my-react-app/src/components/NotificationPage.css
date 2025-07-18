@@ -1,28 +1,117 @@
+/* NotificationPage.css */
+
 .notification-page {
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
+  padding: 32px;
+  max-width: 1000px;
+  margin: auto;
+  background-color: #fff8f8;
+  min-height: 80vh;
+}
+
+.notification-page h2 {
+  text-align: center;
+  color: #cc0000;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* Thanh lọc */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+}
+
+.filter-bar label {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.filter-bar select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.filter-bar button {
+  padding: 8px 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-bar button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Danh sách thông báo */
+.notification-list {
+  list-style: none;
+  padding: 0;
+}
+
+.notification-list li {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background-color: #fdfdfd;
+  transition: all 0.2s ease;
+}
+
+.notification-list li.unread {
+  background-color: #fff0f0;
+  border-color: #ffcccc;
+}
+
+.notification-list li.read {
+  background-color: #f6f6f6;
+}
+
+.notification-list li p {
+  margin: 6px 0;
+}
+
+.notification-list .date {
+  font-size: 14px;
+  color: #666;
+}
+
+.notification-list button {
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: none;
+  background-color: #cc0000;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.notification-list button:hover {
+  background-color: #a80000;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .filter-bar {
+    flex-direction: column;
   }
-  .notification-list {
-    list-style: none;
-    padding: 0;
+
+  .filter-bar select,
+  .filter-bar button {
+    width: 100%;
   }
-  .notification-list li {
-    background: #f9f9f9;
-    border-left: 5px solid #007bff;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-  }
-  .notification-list li.unread {
-    font-weight: bold;
-    background-color: #eaf4ff;
-  }
-  .notification-list li.read {
-    opacity: 0.6;
-  }
-  .notification-list .date {
-    font-size: 0.85rem;
-    color: #666;
-  }
-  
+}
