@@ -214,6 +214,7 @@ router.post('/login', async (req, res) => {
       return res.status(403).json({ message: 'Tài khoản chưa xác minh email. Vui lòng kiểm tra email để xác minh.' });
     }
 
+    // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
@@ -233,7 +234,7 @@ router.post('/login', async (req, res) => {
       message: 'Đăng nhập thành công',
       token,
       user: {
-        IDUser: user.IDUser,
+        IDUser: user.IDUser, // ✅ thêm dòng này
         fullName: user.FullName,
         email: user.Email,
         phoneNumber: user.PhoneNumber,
