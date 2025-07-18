@@ -3,9 +3,14 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+<<<<<<< HEAD
 const Notification = require('../models/Notification');
+=======
+const axios = require('axios');
+>>>>>>> f27524238d48e673c7bec76bbde795549a2088b0
 
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const authenticate = require('../middlewares/authenticateToken');
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
 
@@ -23,6 +28,28 @@ const isOver18 = (dob) => {
   return age >= 18;
 };
 
+// === GET LATLNG FROM ADDRESS === //
+const getLatLngFromAddress = async (address) => {
+  const apiKey = process.env.GEOCODE_API_KEY;
+  const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
+
+  try {
+    const response = await axios.get(url);
+    const data = response.data;
+
+    if (data.results && data.results.length > 0) {
+      return {
+        lat: data.results[0].geometry.lat,
+        lng: data.results[0].geometry.lng,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Lỗi khi lấy vị trí:', error);
+    return null;
+  }
+};
+
 // === REGISTER === //
 router.post('/register', async (req, res) => {
   try {
@@ -37,9 +64,8 @@ router.post('/register', async (req, res) => {
       cccd,
     } = req.body;
 
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: 'Vui lòng nhập đầy đủ các trường bắt buộc (Họ tên, Email, Mật khẩu)' });
-    }
+    if (!fullName || !email || !password)
+      return res.status(400).json({ message: 'Vui lòng nhập đầy đủ Họ tên, Email và Mật khẩu' });
 
     if (!isValidEmail(email))
       return res.status(400).json({ message: 'Email không đúng định dạng' });
@@ -51,7 +77,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
 
     if (gender && !['Male', 'Female', 'Other'].includes(gender))
-      return res.status(400).json({ message: 'Giới tính phải là Male, Female hoặc Other' });
+      return res.status(400).json({ message: 'Giới tính không hợp lệ' });
 
     const existingUser = await User.findOne({ where: { Email: email } });
     if (existingUser)
@@ -59,6 +85,7 @@ router.post('/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
+    const location = await getLatLngFromAddress(address);
 
     const newUser = await User.create({
       FullName: fullName,
@@ -72,9 +99,12 @@ router.post('/register', async (req, res) => {
       Role: 'User',
       IsVerified: false,
       VerificationToken: verificationToken,
+      Latitude: location?.lat || null,
+      Longitude: location?.lng || null,
     });
 
-    const verifyUrl = `http://localhost:5000/api/auth/verify-email?token=${verificationToken}`;
+    const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+    const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
     try {
       await sendVerificationEmail(email, verifyUrl);
     } catch (err) {
@@ -82,7 +112,7 @@ router.post('/register', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { IDUser: newUser.IDUser, Role: newUser.Role },
+      { IDUser: newUser.IDUser },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '1h' }
     );
@@ -100,7 +130,6 @@ router.post('/register', async (req, res) => {
         gender: newUser.Gender,
       }
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
@@ -119,16 +148,15 @@ router.post('/login', async (req, res) => {
     if (!user)
       return res.status(400).json({ message: 'Email không tồn tại' });
 
-    if (!user.IsVerified) {
-      return res.status(403).json({ message: 'Tài khoản chưa xác minh email. Vui lòng kiểm tra email để xác minh.' });
-    }
+    if (!user.IsVerified)
+      return res.status(403).json({ message: 'Tài khoản chưa xác minh email. Vui lòng kiểm tra email.' });
 
     const isMatch = await bcrypt.compare(password, user.Password);
     if (!isMatch)
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
 
     const token = jwt.sign(
-      { IDUser: user.IDUser },
+      { IDUser: user.IDUser, Role: user.Role },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '12h' }
     );
@@ -144,17 +172,16 @@ router.post('/login', async (req, res) => {
         address: user.Address,
         dateOfBirth: user.DateOfBirth,
         gender: user.Gender,
-        role: user.Role
+        role: user.Role,
       }
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
 
-// === UPDATE === //
+// === UPDATE USER INFO === //
 router.put('/update', authenticate, async (req, res) => {
   try {
     const userId = req.user.IDUser;
@@ -164,13 +191,15 @@ router.put('/update', authenticate, async (req, res) => {
       return res.status(400).json({ message: 'Họ tên không được để trống' });
 
     if (!isValidPhoneNumber(phoneNumber))
-      return res.status(400).json({ message: 'Số điện thoại phải chứa 10-11 số' });
+      return res.status(400).json({ message: 'Số điện thoại không hợp lệ' });
 
     if (!isOver18(dateOfBirth))
       return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
 
     if (gender && !['Male', 'Female', 'Other'].includes(gender))
       return res.status(400).json({ message: 'Giới tính không hợp lệ' });
+
+    const location = await getLatLngFromAddress(address);
 
     await User.update(
       {
@@ -179,6 +208,8 @@ router.put('/update', authenticate, async (req, res) => {
         Address: address,
         DateOfBirth: dateOfBirth,
         Gender: gender,
+        Latitude: location?.lat || null,
+        Longitude: location?.lng || null,
       },
       { where: { IDUser: userId } }
     );
@@ -193,7 +224,16 @@ router.put('/update', authenticate, async (req, res) => {
       SendDate: new Date()
     });
 
+    await Notification.create({
+      IDUser: userId,
+      Type: 'Thông báo hệ thống',
+      Message: `Bạn đã thay đổi thông tin cá nhân vào lúc ${new Date().toLocaleString('vi-VN')}`,
+      Status: 'Unread',
+      SendDate: new Date()
+    });
+
     const updatedUser = await User.findByPk(userId);
+
     res.json({
       message: 'Cập nhật thành công',
       user: {
@@ -204,9 +244,10 @@ router.put('/update', authenticate, async (req, res) => {
         Address: updatedUser.Address,
         DateOfBirth: updatedUser.DateOfBirth,
         Gender: updatedUser.Gender,
+        Latitude: updatedUser.Latitude,
+        Longitude: updatedUser.Longitude
       }
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
@@ -222,9 +263,8 @@ router.get('/verify-email', async (req, res) => {
   try {
     const user = await User.findOne({ where: { VerificationToken: token } });
 
-    if (!user) {
+    if (!user)
       return res.status(400).send('Mã xác minh không hợp lệ hoặc đã hết hạn');
-    }
 
     user.IsVerified = true;
     user.VerificationToken = null;
