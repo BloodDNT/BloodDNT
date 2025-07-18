@@ -1,4 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
+// Home.jsx
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import './homepage.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
@@ -7,39 +8,64 @@ export default function Home() {
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
-  const bannerImages = [
-    '/background11.png',
-    '/background12.jpg',
-    '/background13.jpg'
-  ];
+  const bannerImages = ['/background11.png', '/background12.jpg', '/background13.jpg'];
   const [currentImage, setCurrentImage] = useState(0);
+
+  const background2Ref = useRef();
+  const exploreRef = useRef();
+  const footerRef = useRef();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage(prev =>
-        prev === bannerImages.length - 1 ? 0 : prev + 1
-      );
-    }, 5000); // đổi ảnh mỗi 5 giây
+      setCurrentImage(prev => (prev === bannerImages.length - 1 ? 0 : prev + 1));
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const options = { threshold: 0.1 };
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, options);
+
+    if (background2Ref.current) observer.observe(background2Ref.current);
+    if (exploreRef.current) observer.observe(exploreRef.current);
+    if (footerRef.current) observer.observe(footerRef.current);
+
+    return () => {
+      if (background2Ref.current) observer.unobserve(background2Ref.current);
+      if (exploreRef.current) observer.unobserve(exploreRef.current);
+      if (footerRef.current) observer.unobserve(footerRef.current);
+    };
+  }, []);
+
   const handleLogout = () => {
-    logout(); // gọi hàm logout trong context
-    navigate('/login'); // chuyển về trang login
+    logout();
+    navigate('/login');
+  };
+
+  const handleReachOut = () => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      navigate('/register/request-blood');
+    }
   };
 
   return (
     <>
       <header className='header'>
-        {/* logo */}
         <div className='logo'>
           <Link to="/">
             <img src='/LogoPage.jpg' alt='Logo' />
           </Link>
           <div className='webname'>Hope Donnor🩸</div>
         </div>
-        {/* menu */}
         <nav className='menu'>
           <Link to='/bloodguide'>Blood Guide</Link>
           <div className='dropdown'>
@@ -49,18 +75,11 @@ export default function Home() {
           <Link to='/contact'>Contact</Link>
           <Link to='/about'>About Us</Link>
         </nav>
-        {/* login/user menu */}
         <div className='actions'>
           {!user ? (
-            <Link to='/login'>
-              <button className='login-btn'>👤 Login</button>
-            </Link>
+            <Link to='/login'><button className='login-btn'>👤 Login</button></Link>
           ) : (
-            <div 
-              className="dropdown user-menu"
-              onMouseEnter={() => setIsOpen(true)}
-              onMouseLeave={() => setIsOpen(false)}
-            >
+            <div className="dropdown user-menu" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
               <div className="dropbtn user-name">
                 Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
               </div>
@@ -71,30 +90,20 @@ export default function Home() {
                   <Link to='/history'>DonatationHistory</Link>
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
                   <Link to="/notifications">🔔 Thông báo</Link>
-                  <button
-                    className="logout-btn"
-                    onClick={handleLogout}
-                  >
-                    🚪 Đăng xuất
-                  </button>
+                  <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
                 </div>
               )}
             </div>
           )}
         </div>
-      </header> 
-      {/* body */}
+      </header>
       <div className='body'>
         <section className='background-1'>
-          <img
-            src={bannerImages[currentImage]}
-            alt='Blood'
-            className='background1-image fade-in'
-          />
+          <img src={bannerImages[currentImage]} alt='Blood' className='background1-image fade-in' />
         </section>
-        <section className='background-2'>
+        <section ref={background2Ref} className='background-2'>
           <div className='background-2-container'>
-            <img src='/background2.jpg' alt='Blood' className='background1-image'/>
+            <img src='/background2.jpg' alt='Blood' className='background1-image' />
             <div className='right-content'>
               <div className='content1'>Building a Safer, More Reliable Blood Supply</div>
               <div className='content2'>
@@ -102,42 +111,24 @@ export default function Home() {
                 GBF partners with local organizations to strengthen their capabilities—through funding, tools, and education—while 
                 promoting voluntary blood donation for long-term impact.
               </div>
-              <Link to="/blood-donation">
-                <button className="btn-donate">Reach out to us</button>
-              </Link>
+              <button className="btn-donate" onClick={handleReachOut}>Liên hệ với chúng tôi</button>
             </div>
           </div>
         </section>
-        <section className='explore-donation'>
+        <section ref={exploreRef} className='explore-donation'>
           <h2>Explore Donation</h2>
           <div className='articles-container'>
-            <article className='article-card'>
-              <img src="post1.jpg" alt="Article 1" />
-              <h3>Who can donate blood</h3>
-              <p>Brief summary or excerpt of the article 1...</p>
-              <a href="link-to-full-article-1" target="_blank" rel="noopener noreferrer">Read more</a>
-            </article>
-            <article className='article-card'>
-              <img src="post2.jpg" alt="Article 2" />
-              <h3>Giving blood for the first time</h3>
-              <p>Brief summary or excerpt of the article 2...</p>
-              <a href="link-to-full-article-2" target="_blank" rel="noopener noreferrer">Read more</a>
-            </article>
-            <article className='article-card'>
-              <img src="post3.jpg" alt="Article 3" />
-              <h3>Save lives. Give plasma.</h3>
-              <p>Brief summary or excerpt of the article 3...</p>
-              <a href="link-to-full-article-3" target="_blank" rel="noopener noreferrer">Read more</a>
-            </article>
-            <article className='article-card'>
-              <img src="post4.jpg" alt="Article 4" />
-              <h3>Why we need more donors of Black heritage</h3>
-              <p>Brief summary or excerpt of the article 4...</p>
-              <a href="link-to-full-article-4" target="_blank" rel="noopener noreferrer">Read more</a>
-            </article>
+            {[1,2,3,4].map(i => (
+              <article key={i} className='article-card'>
+                <img src={`post${i}.jpg`} alt={`Article ${i}`} />
+                <h3>Article Title {i}</h3>
+                <p>Brief summary or excerpt of the article {i}...</p>
+                <a href={`link-to-full-article-${i}`} target="_blank" rel="noopener noreferrer">Read more</a>
+              </article>
+            ))}
           </div>
         </section>
-        <section className='footer'>
+        <section ref={footerRef} className='footer'>
           <div className='footer-container'>
             <div className='footer-block location'>
               <h3>📍 Location</h3>
@@ -151,7 +142,7 @@ export default function Home() {
             <div className='footer-block social-media'>
               <h3>🌐 Follow Us</h3>
               <ul>
-                <li><a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a></li> 
+                <li><a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a></li>
                 <li><a href='https://instagram.com' target='_blank' rel='noreferrer'>Instagram</a></li>
                 <li><a href='https://twitter.com' target='_blank' rel='noreferrer'>Twitter</a></li>
               </ul>

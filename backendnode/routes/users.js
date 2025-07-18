@@ -61,7 +61,7 @@ router.put('/:id', async (req, res) => {
     let query = `
       UPDATE Users SET 
         FullName = :FullName,
-        Email = :Email,
+        Email = :Email
     `;
     const replacements = { id, FullName, Email, Role };
 
@@ -72,7 +72,8 @@ router.put('/:id', async (req, res) => {
     }
 
     query += ` Role = :Role WHERE IDUser = :id`;
-
+console.log("Query:", query);
+console.log("Replacements:", replacements);
     await sequelize.query(query, { replacements });
 
     res.json({ message: 'Người dùng đã được cập nhật.' });
