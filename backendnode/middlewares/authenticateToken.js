@@ -11,7 +11,7 @@ function authenticateToken(req, res, next) {
   
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded; // Gán IDUser vào req.user
+    req.user = decoded; 
     next();
   } catch (err) {
     return res.status(403).json({ error: 'Token không hợp lệ hoặc hết hạn' });

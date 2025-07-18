@@ -1,25 +1,8 @@
-// routes/auth.js
-
 const express = require('express');
 const router = express.Router();
+const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const User = require('../models/User');
-const authenticate = require('../middlewares/authenticateToken');
-
-// === VALIDATORS === //
-const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const isValidPhoneNumber = phone => !phone || /^[0-9]{10,11}$/.test(phone);
-const isValidCCCD = cccd => !cccd || /^[0-9]{12}$/.test(cccd);
-const isOver18 = dob => {
-  if (!dob) return true;
-  const date = new Date(dob);
-  const now = new Date();
-  let age = now.getFullYear() - date.getFullYear();
-  const m = now.getMonth() - date.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < date.getDate())) age--;
-
 const sendVerificationEmail = require('../utils/sendVerificationEmail');
 const crypto = require('crypto');
 
@@ -60,14 +43,12 @@ const isOver18 = (dateOfBirth) => {
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
     return age - 1 >= 18;
   }
-
   return age >= 18;
 };
 
-// === REGISTER === //
+// Đăng ký
 router.post('/register', async (req, res) => {
   try {
-
     const {
       fullName,
       email,
@@ -87,26 +68,38 @@ router.post('/register', async (req, res) => {
 
     // Kiểm tra định dạng email
     if (!isValidEmail(email)) {
-
       return res.status(400).json({ message: 'Email không đúng định dạng' });
+    }
 
-    if (!isValidPhoneNumber(phoneNumber))
+    // Kiểm tra định dạng số điện thoại
+    if (!isValidPhoneNumber(phoneNumber)) {
       return res.status(400).json({ message: 'Số điện thoại phải chứa 10-11 số' });
+    }
 
-    if (!isOver18(dateOfBirth))
+
+    // Kiểm tra độ tuổi
+    if (!isOver18(dateOfBirth)) {
       return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
+    }
 
-    if (gender && !['Male', 'Female', 'Other'].includes(gender))
+    // Kiểm tra giới tính
+    if (gender && !['Male', 'Female', 'Other'].includes(gender)) {
       return res.status(400).json({ message: 'Giới tính phải là Male, Female hoặc Other' });
+    }
 
+    // Kiểm tra email và CCCD đã tồn tại
     const existingUser = await User.findOne({ where: { Email: email } });
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ message: 'Email đã được sử dụng' });
+    }
+  
 
+    // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
 
+    // Tạo người dùng mới
     const newUser = await User.create({
       FullName: fullName,
       Email: email,
@@ -116,8 +109,6 @@ router.post('/register', async (req, res) => {
       DateOfBirth: dateOfBirth,
       Gender: gender,
       CCCD: cccd,
-
-
       Role: 'User',
       IsVerified: false,
       VerificationToken: verificationToken,
@@ -137,14 +128,10 @@ router.post('/register', async (req, res) => {
       expiresIn: '1h'
     });
 
-
     res.status(201).json({
       message: 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!',
       token,
       user: {
-
-        IDUser: newUser.IDUser,
-
         fullName: newUser.FullName,
         email: newUser.Email,
         phoneNumber: newUser.PhoneNumber,
@@ -153,25 +140,25 @@ router.post('/register', async (req, res) => {
         gender: newUser.Gender
       }
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
 
-// === LOGIN === //
+// Đăng nhập
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password)
+  if (!email || !password) {
     return res.status(400).json({ message: 'Vui lòng nhập đầy đủ email và mật khẩu' });
+  }
 
   try {
     const user = await User.findOne({ where: { Email: email } });
-    if (!user)
+    if (!user) {
       return res.status(400).json({ message: 'Email không tồn tại' });
-
+    }
 
     // Kiểm tra xác minh email
     if (!user.IsVerified) {
@@ -180,16 +167,20 @@ router.post('/login', async (req, res) => {
 
     // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.Password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(400).json({ message: 'Mật khẩu không đúng' });
+    }
 
-    const token = jwt.sign({ IDUser: user.IDUser }, process.env.JWT_SECRET || 'your_jwt_secret_key', { expiresIn: '12h' });
+    // Tạo JWT
+    const token = jwt.sign({ IDUser: user.IDUser, Role: user.Role }, process.env.JWT_SECRET || 'your_jwt_secret_key', {
+      expiresIn: '1h'
+    });
 
     res.json({
       message: 'Đăng nhập thành công',
       token,
       user: {
-        IDUser: user.IDUser,
+        IDUser: user.IDUser, // ✅ thêm dòng này
         fullName: user.FullName,
         email: user.Email,
         phoneNumber: user.PhoneNumber,
@@ -198,31 +189,35 @@ router.post('/login', async (req, res) => {
         gender: user.Gender
       }
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
 
-// === UPDATE === //
+
 router.put('/update', authenticate, async (req, res) => {
+    console.log('req.body:', req.body);
   try {
     const userId = req.user.IDUser;
     const { fullName, phoneNumber, address, dateOfBirth, gender } = req.body;
 
-    if (!fullName)
+    // Kiểm tra các trường hợp cần validate
+    if (!fullName) {
       return res.status(400).json({ message: 'Họ tên không được để trống' });
-
-    if (!isValidPhoneNumber(phoneNumber))
+    }
+    if (!isValidPhoneNumber(phoneNumber)) {
       return res.status(400).json({ message: 'Số điện thoại phải chứa 10-11 số' });
-
-    if (!isOver18(dateOfBirth))
+    }
+    if (!isOver18(dateOfBirth)) {
       return res.status(400).json({ message: 'Người dùng phải trên 18 tuổi' });
+    }
+    if (gender && !['Male', 'Female', 'Other'].includes(gender)) {
+      return res.status(400).json({ message: 'Giới tính phải là Male, Female hoặc Other' });
+    }
+    
 
-    if (gender && !['Male', 'Female', 'Other'].includes(gender))
-      return res.status(400).json({ message: 'Giới tính không hợp lệ' });
-
+    // Cập nhật thông tin
     await User.update(
       {
         FullName: fullName,
@@ -246,13 +241,11 @@ router.put('/update', authenticate, async (req, res) => {
         Gender: updatedUser.Gender,
       }
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
-
 
 //xác minh email
 router.get('/verify-email', async (req, res) => {

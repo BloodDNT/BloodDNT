@@ -43,7 +43,7 @@ export default function UserProfile() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/auth/update', {
+const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export default function UserProfile() {
   };
 
   if (!user) {
-    return <div>Đang tải thông tin người dùng...</div>;
+    return <div>Bạn cần đăng nhập để xem thông tin cá nhân.</div>;
   }
   return (
     <>

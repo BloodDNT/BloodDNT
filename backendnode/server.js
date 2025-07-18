@@ -30,8 +30,9 @@ const upcomingAppointmentsRoutes = require('./routes/upcomingAppointments');
 const successfulDonationsRoutes = require('./routes/successfulDonations');
 const bloodRecipientsRoutes = require('./routes/bloodRecipients');
 const userRoutes = require('./routes/users');
-const publicBloodRequestRoutes = require('./routes/publicBloodRequestRoutes');
+const Contact = require('./routes/contact');
 
+const publicBloodRequestRoutes = require('./routes/publicBloodRequestRoutes');
 // Mount Routes
 app.use('/api/auth', authRoutes);
 app.use("/api/blog", blogRoutes);
@@ -47,7 +48,7 @@ app.use('/api/successful-donations', successfulDonationsRoutes);
 app.use('/api/blood-recipients', bloodRecipientsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/public-blood-requests', publicBloodRequestRoutes);
-
+app.use('/api/contact', Contact);
 // Start server
 const PORT = process.env.PORT || 5000;
 sequelize.sync()

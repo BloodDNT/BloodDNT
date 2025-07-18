@@ -1,19 +1,224 @@
-.blood-knowledge-container {
-    width: 100%; /* Thêm dòng này */
+:root {
+  --primary: #d32f2f;
+  --primary-dark: #b71c1c;
+  --text: #333;
+  --radius: 16px;
+  --font: Arial, sans-serif;
+}
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: var(--font);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.body {
+  flex: 1;
+  padding-top: 100px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.header {
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo img {
+  height: 45px;
+  border-radius: 5px;
+}
+
+.webname {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.menu {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.menu a {
+  font-size: 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.menu a:hover {
+  color: var(--primary);
+}
+
+.menu a.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropbtn {
+  font-size: 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  min-width: 160px;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 15px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.dropdown-content a:hover {
+  background-color: #f9f9f9;
+  color: var(--primary);
+}
+
+.actions .login-btn,
+.logout-btn {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.actions .login-btn:hover,
+.logout-btn:hover {
+  background-color: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.user-menu {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-name {
+  font-size: 16px;
+  color: var(--text);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.user-name:hover {
+  background-color: #f9f9f9;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 5px); /* Thêm khoảng cách giữa user-name và dropdown */
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  min-width: 200px;
+  z-index: 1;
+  padding: 8px 0;
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  display: block;
+  padding: 12px 15px;
+  color: var(--text);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 15px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+  background-color: #f9f9f9;
+  color: var(--primary);
+}
+
+/* Blood Knowledge Container */
+.blood-knowledge-container {
+  max-width: 1200px;
   margin: 40px auto 32px auto;
   background: #fff;
-  border-radius: 16px;
+  border-radius: var(--radius);
   padding: 36px 32px 32px 32px;
-  box-shadow: 0 4px 24px #e5737333;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.blood-knowledge-container.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .blood-knowledge-container h2 {
   text-align: center;
-  color: #b71c1c;
+  color: var(--primary);
   margin-bottom: 32px;
-  font-size: 2.2rem;
+  font-size: 34px;
+  font-weight: 700;
   letter-spacing: 1px;
 }
 
@@ -21,65 +226,218 @@
   margin-bottom: 36px;
   padding-bottom: 18px;
   border-bottom: 1px solid #f2bcbc;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
-.blood-section ul {
-  margin: 0 0 0 18px;
-  padding: 0;
-  font-size: 1.05rem;
-  font-weight: 500; /* Thêm dòng này để chữ đậm hơn */
+
+.blood-section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
-.blood-caption {
-  text-align: center;
-  font-size: 1rem;
-  color: #b71c1c;
-  margin-top: 4px;
-  font-style: italic;
-}
+
 .blood-section:last-child {
   border-bottom: none;
 }
 
 .blood-section h3 {
-  color: #d32f2f;
+  color: var(--primary);
   margin-bottom: 12px;
-  font-size: 1.3rem;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .blood-section ul {
   margin: 0 0 0 18px;
   padding: 0;
-  font-size: 1.05rem;
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
 }
 
 .blood-section li {
-  margin-bottom: 6px;
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.blood-section li::before {
+  content: "•";
+  color: var(--primary);
+  position: absolute;
+  left: 0;
+  font-size: 20px;
 }
 
 .blood-section p {
-  font-size: 1.08rem;
-  color: #444;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.7;
   margin-top: 8px;
 }
 
 .blood-img {
-   width: 700px;          
-  max-width: 100%;         
-  height: 500px;  
+  width: 100%;
+  max-width: 700px;
+  height: auto;
   display: block;
-  margin: 18px auto 24px auto;  
+  margin: 18px auto 24px auto;
   object-fit: contain;
   border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.blood-caption {
+  text-align: center;
+  font-size: 16px;
+  color: var(--primary);
+  margin-top: 4px;
+  font-style: italic;
+}
 
-@media (max-width: 600px) {
+/* External Link */
+.external-link-anchor {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+.external-link-anchor:hover {
+  color: var(--primary-dark);
+}
+
+/* Footer */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 50px 20px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.footer.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-block {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-block h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.footer-block p,
+.footer-block ul li a {
+  font-size: 16px;
+  color: #ccc;
+  text-decoration: none;
+  line-height: 1.6;
+}
+
+.footer-block ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-block ul li {
+  margin-bottom: 10px;
+}
+
+.footer-block ul li a:hover {
+  color: var(--primary);
+}
+
+.footer-copy {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .body {
+    padding-top: 150px; /* Tăng padding-top cho mobile vì header cao hơn */
+  }
+
+  .menu {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .actions {
+    margin-top: 10px;
+  }
+
   .blood-knowledge-container {
     padding: 16px 4vw;
   }
+
   .blood-img {
-    width: 90px;
+    max-width: 100%;
+    height: auto;
   }
+
   .blood-section h3 {
-    font-size: 1.1rem;
+    font-size: 20px;
+  }
+
+  .blood-section p,
+  .blood-section ul {
+    font-size: 14px;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .user-name {
+    padding: 6px 10px;
+  }
+
+  .user-dropdown {
+    top: calc(100% + 2px); /* Giảm khoảng cách trên mobile */
+  }
+}
+
+@media (max-width: 600px) {
+  .blood-knowledge-container h2 {
+    font-size: 28px;
+  }
+
+  .blood-section h3 {
+    font-size: 18px;
+  }
+
+  .blood-img {
+    max-width: 100%;
+  }
+
+  .external-link-anchor {
+    font-size: 1rem;
   }
 }
