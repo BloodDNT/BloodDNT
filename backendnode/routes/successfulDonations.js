@@ -5,13 +5,17 @@ const sequelize = require('../config/database');
 router.get('/', async (req, res) => {
   try {
     const [results] = await sequelize.query(`
-      SELECT 
-        u.FullName,
-        d.DonateBloodDate,
-        d.Volume AS Pack
-      FROM DonationHistory d
-      JOIN Users u ON d.IDUser = u.IDUser
-
+     SELECT 
+    u.FullName,
+    d.DonateBloodDate,
+    d.Volume AS Pack
+FROM DonationHistory d
+JOIN Users u ON d.IDUser = u.IDUser
+JOIN RegisterDonateBlood r 
+    ON d.IDUser = r.IDUser
+WHERE r.Status = 'Completed'
+  AND ABS(DATEDIFF(DAY, d.DonateBloodDate, r.DonateBloodDate)) <= 10
+ORDER BY d.DonateBloodDate;
     `);
 
     if (!results || results.length === 0) {
