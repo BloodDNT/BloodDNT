@@ -30,67 +30,65 @@ const BlogManagement = () => {
     }
   };
 
-  const handleCreate = async () => {
-  if (!newTitle || !newContent) {
-    alert("Vui lòng nhập tiêu đề và nội dung.");
-    return;
-  }
-
   const handleDelete = async (id) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  if (!token) {
-    alert("⚠️ Bạn chưa đăng nhập.");
-    return;
-  }
+    if (!token) {
+      alert("⚠️ Bạn chưa đăng nhập.");
+      return;
+    }
 
-  if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
+    if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
 
-  try {
-    await axios.delete(`http://localhost:5000/api/blog/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    fetchBlogs(); // Cập nhật lại danh sách
-  } catch (error) {
-    alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
-    console.error("Xoá bài viết thất bại:", error);
-  }
-};
-
-
-  const token = localStorage.getItem("token");
-  console.log("🪪 Token lấy từ localStorage:", token);
-
-  if (!token) {
-    alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
-    return;
-  }
-
-  try {
-    await axios.post(
-      "http://localhost:5000/api/blog",
-      {
-        Title: newTitle,
-        Content: newContent,
-      },
-      {
+    try {
+      await axios.delete(`http://localhost:5000/api/blog/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
-    );
-    await fetchBlogs();
-    setNewTitle("");
-    setNewContent("");
-    setShowForm(false);
-  } catch (error) {
-    alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
-    console.error("❌ Tạo bài viết thất bại:", error);
-  }
-};
+      });
+      fetchBlogs(); // Cập nhật lại danh sách
+    } catch (error) {
+      alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
+      console.error("Xoá bài viết thất bại:", error);
+    }
+  };
 
+  const handleCreate = async () => {
+    if (!newTitle || !newContent) {
+      alert("Vui lòng nhập tiêu đề và nội dung.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    console.log("🪪 Token lấy từ localStorage:", token);
+
+    if (!token) {
+      alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+      return;
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:5000/api/blog",
+        {
+          Title: newTitle,
+          Content: newContent,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      await fetchBlogs();
+      setNewTitle("");
+      setNewContent("");
+      setShowForm(false);
+    } catch (error) {
+      alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
+      console.error("❌ Tạo bài viết thất bại:", error);
+    }
+  };
 
   const filteredBlogs = blogs.filter((b) =>
     filterRole === "Tất cả" ? true : b.Role === filterRole
@@ -111,7 +109,7 @@ const BlogManagement = () => {
 
       <button
         onClick={() => setShowForm(!showForm)}
-        style={{  
+        style={{
           marginBottom: "16px",
           padding: "8px 16px",
           backgroundColor: "#28a745",
@@ -125,7 +123,15 @@ const BlogManagement = () => {
       </button>
 
       {showForm && (
-        <div style={{ marginBottom: "20px", padding: "16px", border: "1px solid #ccc", borderRadius: "8px", background: "#f9f9f9" }}>
+        <div
+          style={{
+            marginBottom: "20px",
+            padding: "16px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            background: "#f9f9f9",
+          }}
+        >
           <h4>🆕 Thêm bài viết mới</h4>
           <input
             type="text"
@@ -147,7 +153,7 @@ const BlogManagement = () => {
               background: "#007bff",
               color: "#fff",
               border: "none",
-              borderRadius: "4px"
+              borderRadius: "4px",
             }}
           >
             Đăng bài

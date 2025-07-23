@@ -91,9 +91,9 @@ router.put("/:id", authenticate, async (req, res) => {
   }
 });
 
-// ✅ DELETE: Xoá bài viết
-router.delete("/:id", authenticate, async (req, res) => {
-  const { id } = req.params;S
+  // ✅ DELETE: Xoá bài viết
+  router.delete("/:id", authenticate, async (req, res) => {
+    const { id } = req.params;
 
   try {
     const post = await Blog.findByPk(id);
