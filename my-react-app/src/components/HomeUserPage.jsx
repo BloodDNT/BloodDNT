@@ -3,6 +3,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import './homepage.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
+import Swal from 'sweetalert2';
 
 export default function Home() {
   const { user, logout } = useContext(UserContext);
@@ -56,6 +57,13 @@ export default function Home() {
       navigate('/register/request-blood');
     }
   };
+  const handleCheck = () => {
+    if (!user) {
+      navigate('/login');
+    } else {
+      navigate('/blood-compatibility');
+    }
+  };
 
   return (
     <>
@@ -85,11 +93,14 @@ export default function Home() {
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                  <Link to='/register/request-blood'>Register/Request-Blood</Link>
-                  <Link to='/my-activities'>List res/req</Link>
-                  <Link to='/history'>DonatationHistory</Link>
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
+                       <Link to='/register/request-blood'>Register/Request</Link>
+                                   <Link to='/my-activities'>List res/req</Link>
+                                   <Link to='/history'>DonatationHistory</Link>
+                                   <Link to="/profile">👤UserProfile</Link>
+                                   {user?.role === 'Admin' && (
+                       <Link to="/dashboard">🛠️Path to admin</Link>
+                     )}
+                                   <Link to="/notifications">🔔Notification</Link>
                   <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
                 </div>
               )}
@@ -98,9 +109,13 @@ export default function Home() {
         </div>
       </header>
       <div className='body'>
-        <section className='background-1'>
-          <img src={bannerImages[currentImage]} alt='Blood' className='background1-image fade-in' />
-        </section>
+       <section className='background-1'>
+  <img src={bannerImages[currentImage]} alt='Blood' className='background1-image fade-in' />
+  <div className='cta-overlay'>
+    <h1 className="cta-title">Hiến máu - Cứu người</h1>
+    <button className="btn-cta" onClick={handleReachOut}>❤️ Liên hệ với chúng tôi</button>
+  </div>
+</section>
         <section ref={background2Ref} className='background-2'>
           <div className='background-2-container'>
             <img src='/background2.jpg' alt='Blood' className='background1-image' />
@@ -111,7 +126,8 @@ export default function Home() {
                 GBF partners with local organizations to strengthen their capabilities—through funding, tools, and education—while 
                 promoting voluntary blood donation for long-term impact.
               </div>
-              <button className="btn-donate" onClick={handleReachOut}>Liên hệ với chúng tôi</button>
+              <button className="btn-check" onClick={handleCheck}>Kiểm tra tương thích</button>
+
             </div>
           </div>
         </section>

@@ -27,6 +27,8 @@ import DonationDetail from './components/DonationDetail';
 import EditRegisterDonate from './components/EditRegisterDonate';
 import NotificationPage from './components/NotificationPage';
 import EditRequestBlood from './components/EditRequestBlood';
+import BloodCompatibility from './components/BloodCompatibility';
+import News1 from './components/News1'
 export default function App() {
   return (
     <UserProvider>
@@ -54,6 +56,8 @@ export default function App() {
         <Route path="/request/:id" element={<RequestDetail />} />
         <Route path="/donation/:id" element={<DonationDetail />} />
         <Route path="/request/edit/:id" element={<EditRequestBlood />} />
+        <Route path="/blood-compatibility" element={<BloodCompatibility />} />
+        <Route path="/news-news1" element={<News1/>}/>
         {/* Admin routes */}
         <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 import "../styles/table.css";
 
-const ROWS_PER_PAGE = 1;
+const ROWS_PER_PAGE = 5;
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
@@ -36,28 +36,7 @@ const BlogManagement = () => {
     return;
   }
 
-  const handleDelete = async (id) => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    alert("⚠️ Bạn chưa đăng nhập.");
-    return;
-  }
-
-  if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
-
-  try {
-    await axios.delete(`http://localhost:5000/api/blog/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    fetchBlogs(); // Cập nhật lại danh sách
-  } catch (error) {
-    alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
-    console.error("Xoá bài viết thất bại:", error);
-  }
-};
+  
 
 
   const token = localStorage.getItem("token");
@@ -90,7 +69,28 @@ const BlogManagement = () => {
     console.error("❌ Tạo bài viết thất bại:", error);
   }
 };
+const handleDelete = async (id) => {
+  const token = localStorage.getItem("token");
 
+  if (!token) {
+    alert("⚠️ Bạn chưa đăng nhập.");
+    return;
+  }
+
+  if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
+
+  try {
+    await axios.delete(`http://localhost:5000/api/blog/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    fetchBlogs(); // Cập nhật lại danh sách
+  } catch (error) {
+    alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
+    console.error("Xoá bài viết thất bại:", error);
+  }
+};
 
   const filteredBlogs = blogs.filter((b) =>
     filterRole === "Tất cả" ? true : b.Role === filterRole

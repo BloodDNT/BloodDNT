@@ -154,11 +154,14 @@ export default function BloodGuide() {
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                  <Link to="/register/request-blood">Register/Request-Blood</Link>
-                  <Link to="/my-activities">List res/req</Link>
-                  <Link to="/history">DonatationHistory</Link>
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
+                       <Link to='/register/request-blood'>Register/Request</Link>
+                                   <Link to='/my-activities'>List res/req</Link>
+                                   <Link to='/history'>DonatationHistory</Link>
+                                   <Link to="/profile">👤UserProfile</Link>
+                                   {user?.role === 'Admin' && (
+                       <Link to="/dashboard">🛠️Path to admin</Link>
+                     )}
+                                   <Link to="/notifications">🔔Notification</Link>
                   <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
                 </div>
               )}

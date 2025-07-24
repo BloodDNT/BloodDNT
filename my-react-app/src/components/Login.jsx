@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import './Login-register.css';
 import React, { useState, useContext } from "react";
 import { UserContext } from '../context/UserContext.jsx';
-
+import Swal from 'sweetalert2';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,13 +43,13 @@ export default function Login() {
 
       login(userWithRole, receivedToken);
 
-      alert('Đăng nhập thành công! Chào ' + (userWithRole.fullName || userWithRole.FullName || userWithRole.name));
+     Swal.fire('Đăng nhập thành công! Chào ' + (userWithRole.fullName || userWithRole.FullName || userWithRole.name));
       navigate('/');
     } else {
-      alert('Lỗi: ' + data.message);
+     Swal.fire('Lỗi: ' + data.message);
     }
   } catch (error) {
-    alert('Lỗi server: ' + error.message);
+   Swal.fire('Lỗi server: ' + error.message);
   }
 };
 

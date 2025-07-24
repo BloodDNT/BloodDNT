@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Login-register.css';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -39,7 +40,7 @@ export default function Register() {
   e.preventDefault();
 
   if (form.password !== form.confirmPassword) {
-    alert('Mật khẩu không khớp!');
+    Swal.fire('Mật khẩu không khớp!');
     return;
   }
 
@@ -61,13 +62,13 @@ export default function Register() {
     const data = await res.json();
 
     if (res.ok) {
-      alert('Đăng ký thành công! Hãy đăng nhập.');
+      Swal.fire('Đăng ký thành công! Hãy đăng nhập.');
       navigate('/login');
     } else {
-      alert('Lỗi: ' + data.message);
+      Swal.fire('Lỗi: ' + data.message);
     }
   } catch (error) {
-    alert('Lỗi: ' + error.message);
+   Swal.fire('Lỗi: ' + error.message);
   }
 };
 

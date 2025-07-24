@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
 import './about.css';
-
+ 
 export default function AboutUs() {
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
@@ -80,11 +80,14 @@ export default function AboutUs() {
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                  <Link to="/register/request-blood">Register/Request-Blood</Link>
-                  <Link to="/my-activities">List res/req</Link>
-                  <Link to="/history">Donation History</Link>
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
+                      <Link to='/register/request-blood'>Register/Request</Link>
+                                  <Link to='/my-activities'>List res/req</Link>
+                                  <Link to='/history'>DonatationHistory</Link>
+                                  <Link to="/profile">👤UserProfile</Link>
+                                  {user?.role === 'Admin' && (
+                      <Link to="/dashboard">🛠️Path to admin</Link>
+                    )}
+                                  <Link to="/notifications">🔔Notification</Link>
                   <button className="logout-btn" onClick={handleLogout}>
                     🚪 Đăng xuất
                   </button>

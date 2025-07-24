@@ -11,7 +11,7 @@ export default function BlogPostForm({ onPostSuccess }) {
   };
 
   const handleSubmit = async e => {
-    e.preventDefault();
+    e.preventDefault();//stop reload
     const token = localStorage.getItem('token');
     const res = await fetch("http://localhost:5000/api/blog", {
       method: "POST",

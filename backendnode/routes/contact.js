@@ -12,7 +12,6 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    // Create new contact entry
     const newContact = await Contact.create({
       Name: name,
       Email: email,
