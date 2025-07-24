@@ -55,34 +55,28 @@ router.post('/', async (req, res) => {
 // Cập nhật người dùng
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { FullName, Email, Password, Role } = req.body;
+  const { fullName, phoneNumber, address, dateOfBirth, gender } = req.body;
 
   try {
-    let query = `
+    const query = `
       UPDATE Users SET 
-        FullName = :FullName,
-        Email = :Email
+        FullName = :fullName,
+        PhoneNumber = :phoneNumber,
+        Address = :address,
+        DateOfBirth = :dateOfBirth,
+        Gender = :gender
+      WHERE IDUser = :id
     `;
-    const replacements = { id, FullName, Email, Role };
+    const replacements = { id, fullName, phoneNumber, address, dateOfBirth, gender };
 
-    if (Password) {
-      const hashedPassword = await bcrypt.hash(Password, 10);
-      query += ` Password = :Password,`;
-      replacements.Password = hashedPassword;
-    }
-
-    query += ` Role = :Role WHERE IDUser = :id`;
-console.log("Query:", query);
-console.log("Replacements:", replacements);
     await sequelize.query(query, { replacements });
 
-    res.json({ message: 'Người dùng đã được cập nhật.' });
+    res.json({ message: 'Người dùng đã được cập nhật.', user: { IDUser: id, fullName, phoneNumber, address, dateOfBirth, gender } });
   } catch (err) {
     console.error("❌ Lỗi khi cập nhật người dùng:", err);
     res.status(500).json({ error: 'Lỗi server', message: err.message });
   }
 });
-
 // Xoá người dùng
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;

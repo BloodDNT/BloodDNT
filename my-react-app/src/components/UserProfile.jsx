@@ -8,21 +8,19 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  console.log('user:', user);
 
   const [form, setForm] = useState({
-  fullName: user?.fullName || user?.FullName || '',
-  email: user?.email || user?.Email || '',
-  phoneNumber: user?.phoneNumber || user?.PhoneNumber || '',
-  address: user?.address || user?.Address || '',
-  dateOfBirth: user?.dateOfBirth || user?.DateOfBirth || '',
-  gender: user?.gender || user?.Gender || '',
-});
- useEffect(() => {
+    fullName: user?.fullName || user?.FullName || '',
+    phoneNumber: user?.phoneNumber || user?.PhoneNumber || '',
+    address: user?.address || user?.Address || '',
+    dateOfBirth: user?.dateOfBirth || user?.DateOfBirth || '',
+    gender: user?.gender || user?.Gender || '',
+  });
+
+  useEffect(() => {
     if (user) {
       setForm({
         fullName: user.fullName || user.FullName || '',
-        email: user.email || user.Email || '',
         phoneNumber: user.phoneNumber || user.PhoneNumber || '',
         address: user.address || user.Address || '',
         dateOfBirth: user.dateOfBirth || user.DateOfBirth || '',
@@ -31,30 +29,27 @@ export default function UserProfile() {
     }
   }, [user]);
 
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSave = async (e) => {
-     if (!editMode) return;
+    if (!editMode) return;
     e.preventDefault();
-      console.log('Đã nhấn Lưu');
-
     try {
       const token = localStorage.getItem('token');
-const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
+      const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(form),
         credentials: 'include',
       });
       if (response.ok) {
         const updatedUser = await response.json();
-        updateUser(updatedUser.user); // chú ý lấy đúng trường user từ response
+        updateUser(updatedUser.user);
         setEditMode(false);
         alert('Cập nhật thành công!');
       } else {
@@ -75,67 +70,61 @@ const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
   if (!user) {
     return <div>Bạn cần đăng nhập để xem thông tin cá nhân.</div>;
   }
+
   return (
     <>
       {/* Header */}
-     <header className='header'>
-                   {/* logo */}
-                   <div className='logo'>
-                     <Link to="/">
-                       <img src='/LogoPage.jpg' alt='Logo' />
-                     </Link>
-                     <div className='webname'>Hope Donnor🩸</div>
-                   </div>
-                   {/* menu */}
-                   <nav className='menu'>
-                     <Link to='/bloodguide'>Blood Guide</Link>
-                     <div className='dropdown'>
-                       <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
-                     </div>
-                     <Link to='/news'>News & Events</Link>
-                     <Link to='/contact'>Contact</Link>
-                     <Link to='/about'>About Us</Link>
-                   </nav>
-                   {/* login/user menu */}
-                   <div className='actions'>
-                     {!user ? (
-                       <Link to='/login'>
-                         <button className='login-btn'>👤 Login</button>
-                       </Link>
-                     ) : (
-                       <div 
-                         className="dropdown user-menu"
-                         onMouseEnter={() => setIsOpen(true)}
-                         onMouseLeave={() => setIsOpen(false)}
-                       >
-                         <div className="dropbtn user-name">
-                           Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-                         </div>
-                         {isOpen && (
-                           <div className="dropdown-content user-dropdown">
-                             <Link to='/register/request-blood'>Register/Request-Blood</Link>
-                             <Link to='/my-activities'>List res/req</Link>
-                             <Link to='/history'>DonatationHistory</Link>
-                             <Link to="/profile">👤 Thông tin cá nhân</Link>
-                             <Link to="/notifications">🔔 Thông báo</Link>
-                             <button
-                               className="logout-btn"
-                               onClick={handleLogout}
-                             >
-                               🚪 Đăng xuất
-                             </button>
-                           </div>
-                         )}
-                       </div>
-                     )}
-                   </div>
-                 </header> 
+      <header className='header'>
+        <div className='logo'>
+          <Link to="/">
+            <img src='/LogoPage.jpg' alt='Logo' />
+          </Link>
+          <div className='webname'>Hope Donnor🩸</div>
+        </div>
+        <nav className='menu'>
+          <Link to='/bloodguide'>Blood Guide</Link>
+          <div className='dropdown'>
+            <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
+          </div>
+          <Link to='/news'>News & Events</Link>
+          <Link to='/contact'>Contact</Link>
+          <Link to='/about'>About Us</Link>
+        </nav>
+        <div className='actions'>
+          {!user ? (
+            <Link to='/login'>
+              <button className='login-btn'>👤 Login</button>
+            </Link>
+          ) : (
+            <div
+              className="dropdown user-menu"
+              onMouseEnter={() => setIsOpen(true)}
+              onMouseLeave={() => setIsOpen(false)}
+            >
+              <div className="dropbtn user-name">
+                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+              </div>
+              {isOpen && (
+                <div className="dropdown-content user-dropdown">
+                  <Link to='/register/request-blood'>Register/Request-Blood</Link>
+                  <Link to='/my-activities'>List res/req</Link>
+                  <Link to='/history'>DonatationHistory</Link>
+                  <Link to="/profile">👤 Thông tin cá nhân</Link>
+                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <button className="logout-btn" onClick={handleLogout}>
+                    🚪 Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </header>
 
       {/* Body */}
       <div className="body">
         <div className="profile-container">
           <h2>Thông tin cá nhân</h2>
-         
           <form className="profile-form" onSubmit={handleSave}>
             <div className="form-group">
               <label>Họ và tên</label>
@@ -145,16 +134,6 @@ const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
                 value={form.fullName}
                 onChange={handleChange}
                 disabled={!editMode}
-              />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                disabled
               />
             </div>
             <div className="form-group">
@@ -202,38 +181,37 @@ const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
               </select>
             </div>
             {editMode && (
-      <div className="profile-actions">
-        <button type="submit" className="save-btn">Lưu</button>
-        <button
-          type="button"
-          className="cancel-btn"
-          onClick={() => {
-            setEditMode(false);
-            setForm({
-              fullName: user.fullName || user.FullName || '',
-              email: user.email || user.Email || '',
-              phoneNumber: user.phoneNumber || user.PhoneNumber || '',
-              address: user.address || user.Address || '',
-              dateOfBirth: user.dateOfBirth || user.DateOfBirth || '',
-              gender: user.gender || user.Gender || '',
-            });
-          }}
-        >
-          Hủy
-        </button>
-      </div>
-    )}
+              <div className="profile-actions">
+                <button type="submit" className="save-btn">Lưu</button>
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={() => {
+                    setEditMode(false);
+                    setForm({
+                      fullName: user.fullName || user.FullName || '',
+                      phoneNumber: user.phoneNumber || user.PhoneNumber || '',
+                      address: user.address || user.Address || '',
+                      dateOfBirth: user.dateOfBirth || user.DateOfBirth || '',
+                      gender: user.gender || user.Gender || '',
+                    });
+                  }}
+                >
+                  Hủy
+                </button>
+              </div>
+            )}
           </form>
-           {!editMode && (
-    <button
-      type="button"
-      className="edit-btn"
-      style={{ marginBottom: 16 }}
-      onClick={() => setEditMode(true)}
-    >
-      Chỉnh sửa
-    </button>
-  )}
+          {!editMode && (
+            <button
+              type="button"
+              className="edit-btn"
+              style={{ marginBottom: 16 }}
+              onClick={() => setEditMode(true)}
+            >
+              Chỉnh sửa
+            </button>
+          )}
         </div>
       </div>
 
