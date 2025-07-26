@@ -207,20 +207,25 @@ router.put('/update', authenticate, async (req, res) => {
     if (gender && !['Male', 'Female', 'Other'].includes(gender))
       return res.status(400).json({ message: 'Giới tính không hợp lệ' });
 
-    const location = await getLatLngFromAddress(address);
+    let updateData = {
+      FullName: fullName,
+      PhoneNumber: phoneNumber,
+      Address: address,
+      DateOfBirth: dateOfBirth,
+      Gender: gender,
+    };
 
-    await User.update(
-      {
-        FullName: fullName,
-        PhoneNumber: phoneNumber,
-        Address: address,
-        DateOfBirth: dateOfBirth,
-        Gender: gender,
-        Latitude: location?.lat || null,
-        Longitude: location?.lng || null,
-      },
-      { where: { IDUser: userId } }
-    );
+    // Nếu người dùng thay đổi địa chỉ, thì cập nhật vị trí
+    if (address) {
+      const location = await getLatLngFromAddress(address);
+      if (!location) {
+        return res.status(400).json({ message: 'Không thể xác định vị trí từ địa chỉ. Vui lòng nhập lại địa chỉ hợp lệ.' });
+      }
+      updateData.Latitude = location.lat;
+      updateData.Longitude = location.lng;
+    }
+
+    await User.update(updateData, { where: { IDUser: userId } });
 
     await Notification.create({
       IDUser: userId,
@@ -235,14 +240,15 @@ router.put('/update', authenticate, async (req, res) => {
     res.json({
       message: 'Cập nhật thành công',
       user: {
-        FullName: updatedUser.FullName,
-        Email: updatedUser.Email,
-        PhoneNumber: updatedUser.PhoneNumber,
-        Address: updatedUser.Address,
-        DateOfBirth: updatedUser.DateOfBirth,
-        Gender: updatedUser.Gender,
-        Latitude: updatedUser.Latitude,
-        Longitude: updatedUser.Longitude
+        IDUser: updatedUser.IDUser,
+        fullName: updatedUser.FullName,
+        email: updatedUser.Email,
+        phoneNumber: updatedUser.PhoneNumber,
+        address: updatedUser.Address,
+        dateOfBirth: updatedUser.DateOfBirth,
+        gender: updatedUser.Gender,
+        latitude: updatedUser.Latitude,
+        longitude: updatedUser.Longitude
       }
     });
   } catch (error) {

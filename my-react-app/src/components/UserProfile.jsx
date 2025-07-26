@@ -1,30 +1,31 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { UserContext } from '../context/UserContext.jsx';
-import './UserProfile.css';
+import React, { useContext, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext.jsx";
+import "./UserProfile.css";
 
 export default function UserProfile() {
   const { user, updateUser, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [addressError, setAddressError] = useState("");
 
   const [form, setForm] = useState({
-    fullName: user?.fullName || user?.FullName || '',
-    phoneNumber: user?.phoneNumber || user?.PhoneNumber || '',
-    address: user?.address || user?.Address || '',
-    dateOfBirth: user?.dateOfBirth || user?.DateOfBirth || '',
-    gender: user?.gender || user?.Gender || '',
+    fullName: user?.fullName || user?.FullName || "",
+    phoneNumber: user?.phoneNumber || user?.PhoneNumber || "",
+    address: user?.address || user?.Address || "",
+    dateOfBirth: user?.dateOfBirth || user?.DateOfBirth || "",
+    gender: user?.gender || user?.Gender || "",
   });
 
   useEffect(() => {
     if (user) {
       setForm({
-        fullName: user.fullName || user.FullName || '',
-        phoneNumber: user.phoneNumber || user.PhoneNumber || '',
-        address: user.address || user.Address || '',
-        dateOfBirth: user.dateOfBirth || user.DateOfBirth || '',
-        gender: user.gender || user.Gender || '',
+        fullName: user.fullName || user.FullName || "",
+        phoneNumber: user.phoneNumber || user.PhoneNumber || "",
+        address: user.address || user.Address || "",
+        dateOfBirth: user.dateOfBirth || user.DateOfBirth || "",
+        gender: user.gender || user.Gender || "",
       });
     }
   }, [user]);
@@ -37,34 +38,40 @@ export default function UserProfile() {
     if (!editMode) return;
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
-        method: 'PUT',
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:5000/api/auth/update`, {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(form),
-        credentials: 'include',
+        credentials: "include",
       });
+
+      const data = await response.json();
+
       if (response.ok) {
-        const updatedUser = await response.json();
-        updateUser(updatedUser.user);
+        updateUser(data.user);
         setEditMode(false);
-        alert('Cập nhật thành công!');
+        alert("Cập nhật thành công!");
       } else {
-        alert('Cập nhật thất bại!');
+        if (data.message?.includes("tọa độ")) {
+          setAddressError(data.message);
+        } else {
+          alert("Lỗi: " + (data.message || "Lỗi server"));
+        }
       }
     } catch (error) {
       console.error(error);
-      alert('Có lỗi xảy ra!');
+      alert("Có lỗi xảy ra!");
     }
   };
 
   const handleLogout = () => {
     logout();
-    localStorage.removeItem('token');
-    navigate('/login');
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   if (!user) {
@@ -74,26 +81,28 @@ export default function UserProfile() {
   return (
     <>
       {/* Header */}
-      <header className='header'>
-        <div className='logo'>
+      <header className="header">
+        <div className="logo">
           <Link to="/">
-            <img src='/LogoPage.jpg' alt='Logo' />
+            <img src="/LogoPage.jpg" alt="Logo" />
           </Link>
-          <div className='webname'>Hope Donnor🩸</div>
+          <div className="webname">Hope Donnor🩸</div>
         </div>
-        <nav className='menu'>
-          <Link to='/bloodguide'>Blood Guide</Link>
-          <div className='dropdown'>
-            <Link to='/bloodknowledge' className='dropbtn'>Blood</Link>
+        <nav className="menu">
+          <Link to="/bloodguide">Blood Guide</Link>
+          <div className="dropdown">
+            <Link to="/bloodknowledge" className="dropbtn">
+              Blood
+            </Link>
           </div>
-          <Link to='/news'>News & Events</Link>
-          <Link to='/contact'>Contact</Link>
-          <Link to='/about'>About Us</Link>
+          <Link to="/news">News & Events</Link>
+          <Link to="/contact">Contact</Link>
+          <Link to="/about">About Us</Link>
         </nav>
-        <div className='actions'>
+        <div className="actions">
           {!user ? (
-            <Link to='/login'>
-              <button className='login-btn'>👤 Login</button>
+            <Link to="/login">
+              <button className="login-btn">👤 Login</button>
             </Link>
           ) : (
             <div
@@ -102,13 +111,17 @@ export default function UserProfile() {
               onMouseLeave={() => setIsOpen(false)}
             >
               <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                Xin chào,{" "}
+                {user?.FullName || user?.fullName || user?.name || "User"}{" "}
+                <span className="ml-2">▼</span>
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                  <Link to='/register/request-blood'>Register/Request-Blood</Link>
-                  <Link to='/my-activities'>List res/req</Link>
-                  <Link to='/history'>DonatationHistory</Link>
+                  <Link to="/register/request-blood">
+                    Register/Request-Blood
+                  </Link>
+                  <Link to="/my-activities">List res/req</Link>
+                  <Link to="/history">DonatationHistory</Link>
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
                   <Link to="/notifications">🔔 Thông báo</Link>
                   <button className="logout-btn" onClick={handleLogout}>
@@ -155,6 +168,11 @@ export default function UserProfile() {
                 onChange={handleChange}
                 disabled={!editMode}
               />
+              {addressError && (
+                <p style={{ color: "red", marginTop: "-10px" }}>
+                  {addressError}
+                </p>
+              )}
             </div>
             <div className="form-group">
               <label>Ngày sinh</label>
@@ -182,18 +200,20 @@ export default function UserProfile() {
             </div>
             {editMode && (
               <div className="profile-actions">
-                <button type="submit" className="save-btn">Lưu</button>
+                <button type="submit" className="save-btn">
+                  Lưu
+                </button>
                 <button
                   type="button"
                   className="cancel-btn"
                   onClick={() => {
                     setEditMode(false);
                     setForm({
-                      fullName: user.fullName || user.FullName || '',
-                      phoneNumber: user.phoneNumber || user.PhoneNumber || '',
-                      address: user.address || user.Address || '',
-                      dateOfBirth: user.dateOfBirth || user.DateOfBirth || '',
-                      gender: user.gender || user.Gender || '',
+                      fullName: user.fullName || user.FullName || "",
+                      phoneNumber: user.phoneNumber || user.PhoneNumber || "",
+                      address: user.address || user.Address || "",
+                      dateOfBirth: user.dateOfBirth || user.DateOfBirth || "",
+                      gender: user.gender || user.Gender || "",
                     });
                   }}
                 >
@@ -216,27 +236,43 @@ export default function UserProfile() {
       </div>
 
       {/* Footer */}
-      <section className='footer'>
-        <div className='footer-container'>
-          <div className='footer-block location'>
+      <section className="footer">
+        <div className="footer-container">
+          <div className="footer-block location">
             <h3>📍 Location</h3>
             <p>Blood Donation Center, FPT University, Q9, TP.HCM</p>
           </div>
-          <div className='footer-block hotline'>
+          <div className="footer-block hotline">
             <h3>📞 Hotline</h3>
             <p>+84 123 456 789</p>
             <p>+84 123 456 987</p>
           </div>
-          <div className='footer-block social-media'>
+          <div className="footer-block social-media">
             <h3>🌐 Follow Us</h3>
             <ul>
-              <li><a href='https://facebook.com' target='_blank' rel='noreferrer'>Facebook</a></li>
-              <li><a href='https://instagram.com' target='_blank' rel='noreferrer'>Instagram</a></li>
-              <li><a href='https://twitter.com' target='_blank' rel='noreferrer'>Twitter</a></li>
+              <li>
+                <a href="https://facebook.com" target="_blank" rel="noreferrer">
+                  Facebook
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Instagram
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com" target="_blank" rel="noreferrer">
+                  Twitter
+                </a>
+              </li>
             </ul>
           </div>
         </div>
-        <p className='footer-copy'>© 2025 HopeDonor. All rights reserved.</p>
+        <p className="footer-copy">© 2025 HopeDonor. All rights reserved.</p>
       </section>
     </>
   );
