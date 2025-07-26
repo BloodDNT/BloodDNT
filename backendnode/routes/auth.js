@@ -60,6 +60,7 @@ router.post('/register', async (req, res) => {
       cccd,
     } = req.body;
 
+    // Kiểm tra các trường bắt buộc
     if (!fullName || !email || !password)
       return res.status(400).json({ message: 'Vui lòng nhập đầy đủ Họ tên, Email và Mật khẩu' });
 
@@ -79,9 +80,16 @@ router.post('/register', async (req, res) => {
     if (existingUser)
       return res.status(400).json({ message: 'Email đã được sử dụng' });
 
+    // Lấy tọa độ từ địa chỉ
+    const location = await getLatLngFromAddress(address);
+    if (!location || !location.lat || !location.lng) {
+      return res.status(400).json({
+        message: 'Không thể xác định tọa độ từ địa chỉ. Vui lòng nhập lại địa chỉ chính xác.',
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    const location = await getLatLngFromAddress(address);
 
     const newUser = await User.create({
       FullName: fullName,
@@ -95,10 +103,11 @@ router.post('/register', async (req, res) => {
       Role: 'User',
       IsVerified: false,
       VerificationToken: verificationToken,
-      Latitude: location?.lat || null,
-      Longitude: location?.lng || null,
+      Latitude: location.lat,
+      Longitude: location.lng,
     });
 
+    // Gửi email xác minh
     const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
     const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
     try {
@@ -107,6 +116,7 @@ router.post('/register', async (req, res) => {
       console.error('Lỗi gửi email xác minh:', err);
     }
 
+    // Tạo JWT Token (tùy chọn)
     const token = jwt.sign(
       { IDUser: newUser.IDUser },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
@@ -124,10 +134,12 @@ router.post('/register', async (req, res) => {
         address: newUser.Address,
         dateOfBirth: newUser.DateOfBirth,
         gender: newUser.Gender,
+        latitude: newUser.Latitude,
+        longitude: newUser.Longitude,
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('Lỗi server:', error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
