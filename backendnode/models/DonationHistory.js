@@ -34,15 +34,8 @@ const DonationHistory = sequelize.define('DonationHistory', {
   Volume: {
     type: DataTypes.INTEGER,
     allowNull: true
-  },
-  Note: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  Status: {
-    type: DataTypes.STRING,
-    allowNull: true
   }
+  // ❌ Đã xoá Note và Status
 }, {
   tableName: 'DonationHistory',
   timestamps: false

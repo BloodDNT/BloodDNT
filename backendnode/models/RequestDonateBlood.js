@@ -39,10 +39,6 @@ const RequestDonateBlood = sequelize.define('RequestDonateBlood', {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  QRCodeValue: {
-    type: DataTypes.STRING(10000), // đủ dài để chứa base64
-    allowNull: true
-  },
 }, {
   tableName: 'RequestDonateBlood',
   timestamps: false,

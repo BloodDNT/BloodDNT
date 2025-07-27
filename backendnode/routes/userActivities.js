@@ -1,18 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const RegisterDonateBlood = require('../models/BloodDonation');
-const RequestDonateBlood = require('../models/RequestDonateBlood');
 
-// Lấy đơn hiến máu và đơn yêu cầu của một user
+const RegisterDonateBlood = require('../models/RegisterDonateBlood');
+const RequestDonateBlood = require('../models/RequestDonateBlood');
+const DonationHistory = require('../models/DonationHistory');
+
+// API lấy tất cả đơn của 1 người dùng
 router.get('/:id', async (req, res) => {
   const IDUser = Number(req.params.id);
   try {
     const donations = await RegisterDonateBlood.findAll({ where: { IDUser } });
     const requests = await RequestDonateBlood.findAll({ where: { IDUser } });
+    const history = await DonationHistory.findAll({ where: { IDUser } });
 
     res.json({
       donations,
-      requests
+      requests,
+      history
     });
   } catch (err) {
     console.error('❌ Lỗi khi lấy đơn của người dùng:', err);
@@ -20,4 +24,5 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Xuất module router để dùng ở server.js
 module.exports = router;

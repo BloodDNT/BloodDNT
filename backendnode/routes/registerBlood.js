@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const QRCode = require('qrcode');
 
 const RegisterDonateBlood = require('../models/BloodDonation');
 const InitialHealthDeclaration = require('../models/InitialHealthDeclaration');
+const Notification = require('../models/Notification'); // thêm dòng này
 const User = require('../models/User');
 
 // ✅ API tạo đơn hiến máu + khai báo sức khỏe
 router.post('/register-blood', async (req, res) => {
-  const t = await RegisterDonateBlood.sequelize.transaction(); // dùng transaction
+  const t = await RegisterDonateBlood.sequelize.transaction();
 
   try {
     const {
@@ -23,7 +23,6 @@ router.post('/register-blood', async (req, res) => {
       Eligible
     } = req.body;
 
-    // Validate dữ liệu đầu vào
     if (!IDUser || !DonateBloodDate || !IDBlood || !IdentificationNumber) {
       return res.status(400).json({ error: 'Vui lòng nhập đầy đủ thông tin bắt buộc.' });
     }
@@ -35,19 +34,10 @@ router.post('/register-blood', async (req, res) => {
       IDBlood,
       IdentificationNumber,
       Note,
-      Status: 'Pending',
-      QRCode: '',
-      IsCancelled: false
+      Status: 'Pending'
     }, { transaction: t });
 
-    // 2. Tạo mã QR
-    const host = 'http://localhost:5173';
-    const qrText = `${host}/donation/${newRecord.IDRegister}`;
-    const qrCode = await QRCode.toDataURL(qrText);
-
-    await newRecord.update({ QRCode: qrCode }, { transaction: t });
-
-    // 3. Tạo bản ghi khai báo sức khỏe
+    // 2. Tạo bản ghi khai báo sức khỏe
     await InitialHealthDeclaration.create({
       IDRequest: newRecord.IDRegister,
       BloodPressure,
@@ -56,14 +46,20 @@ router.post('/register-blood', async (req, res) => {
       Eligible: Eligible !== undefined ? Eligible : true
     }, { transaction: t });
 
+    // 3. Tạo thông báo
+    await Notification.create({
+      IDUser,
+      Title: 'Đăng ký hiến máu thành công',
+      Message: `Bạn đã đăng ký hiến máu vào ngày ${new Date(DonateBloodDate).toLocaleDateString()} thành công. Mã đơn: ${newRecord.IDRegister}.`,
+      IsRead: false,
+      CreatedAt: new Date()
+    }, { transaction: t });
+
     await t.commit();
 
     res.status(201).json({
       message: 'Đăng ký hiến máu và khai báo sức khỏe thành công ✅',
-      data: {
-        QRCode: qrCode,
-        donation: newRecord
-      }
+      data: newRecord
     });
 
   } catch (err) {
@@ -106,16 +102,26 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// ✅ API huỷ đơn hiến máu
+// ✅ API huỷ đơn
 router.put('/cancel/:id', async (req, res) => {
   try {
     const { id } = req.params;
+
     const record = await RegisterDonateBlood.findByPk(id);
     if (!record) {
       return res.status(404).json({ error: 'Không tìm thấy đơn để huỷ' });
     }
 
-    await record.update({ IsCancelled: true, Status: 'Canceled' });
+    await record.update({ Status: 'Cancelled' });
+
+    // Thêm thông báo huỷ đơn
+    await Notification.create({
+      IDUser: record.IDUser,
+      Title: 'Huỷ đơn hiến máu',
+      Message: `Đơn hiến máu #${record.IDRegister} đã được huỷ.`,
+      IsRead: false,
+      CreatedAt: new Date()
+    });
 
     res.json({ message: 'Đơn hiến máu đã được huỷ thành công ❌' });
   } catch (err) {

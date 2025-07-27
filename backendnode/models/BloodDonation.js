@@ -32,20 +32,13 @@ const RegisterDonateBlood = sequelize.define('RegisterDonateBlood', {
   Status: {
     type: DataTypes.STRING(20),
     defaultValue: 'Pending',
-  },
-  QRCode: {
-    type: DataTypes.TEXT,
-    allowNull: true
-  },
-  IsCancelled: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
   }
 }, {
   tableName: 'RegisterDonateBlood',
   timestamps: false,
 });
 
+// Quan hệ
 RegisterDonateBlood.belongsTo(User, { foreignKey: 'IDUser' });
 RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
 

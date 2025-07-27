@@ -7,7 +7,6 @@ const GroupBlood = require('./GroupBlood');
 const DonationHistory = require('./DonationHistory');
 const User = require('./User');
 const InitialHealthDeclaration = require('./InitialHealthDeclaration'); // ✅ Thêm dòng này
-
 // Khởi tạo object db
 const db = {};
 
@@ -19,7 +18,8 @@ db.RegisterDonateBlood = RegisterDonateBlood;
 db.GroupBlood = GroupBlood;
 db.DonationHistory = DonationHistory;
 db.User = User;
-db.InitialHealthDeclaration = InitialHealthDeclaration; // ✅ Thêm dòng này
+db.InitialHealthDeclaration = InitialHealthDeclaration; 
+
 
 // Thiết lập mối quan hệ
 RegisterDonateBlood.belongsTo(GroupBlood, { foreignKey: 'IDBlood' });
