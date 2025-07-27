@@ -1,0 +1,79 @@
+.btn-group {
+  display: flex;
+  flex-direction: column; /* ❗ Hiển thị theo chiều dọc */
+  align-items: center;
+  gap: 16px; /* khoảng cách giữa các nút */
+  margin-top: -5px;
+}
+
+
+/* Base style for all buttons */
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 180px;
+  height: 48px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Icon */
+.btn-icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Variants by action */
+.download-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.download-btn:hover {
+  background-color: #388e3c;
+}
+
+.back-btn {
+  background-color: #999;
+  color: white;
+}
+
+.back-btn:hover {
+  background-color: #777;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background-color: #c62828;
+}
+
+.edit-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #1976d2;
+}
+/* DonationDetail.css */
+.popup-box {
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 600px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+}

@@ -1,0 +1,164 @@
+.webname-login {
+ font-size: 22px;
+  font-weight: bold;
+  color: #222;
+  background-color: rgba(255, 255, 255, 0.6); /* Nền trắng nhẹ trong suốt */
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Bóng nhẹ */
+  backdrop-filter: blur(4px); /* Làm mờ nền sau */
+  -webkit-backdrop-filter: blur(4px); /* Hỗ trợ Safari */
+  display: inline-block;
+  margin-top: 90px;
+}
+.login-section {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #fff0f3, #ffe5ec);
+  margin: 0;
+  padding: 0;
+}
+
+.login-box {
+  background-color: white;
+  padding: 60px 80px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 700px;
+  max-width: 90%;
+}
+
+.login-title {
+  text-align: center;
+  color: #c70a2c;
+  margin-bottom: 40px;
+  font-size: 2.2rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-label {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #222;
+  font-weight: 600;
+}
+
+.login-input {
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 24px;
+  font-size: 1rem;
+}
+
+.login-extra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 1rem;
+}
+
+.forgot-password {
+  color: #c70a2c;
+  text-decoration: none;
+}
+.login-box{
+  margin-top: 90px;
+}
+.login-button {
+  padding: 16px;
+  font-size: 1.1rem;
+  background-color: #c70a2c;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #a20721;
+}
+/* Thêm vào Login.css hoặc App.css */
+
+/* Register*/
+.register-section {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #fff0f3, #ffe5ec);
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.register-box {
+  width: 500px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.register-title {
+  text-align: center;
+  color: #c70a2c;
+  margin-bottom: 25px;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.register-form input,
+.register-form select {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.register-form button {
+  padding: 12px;
+  background-color: #c70a2c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.register-form button:hover {
+  background-color: #a20624;
+}
+.register-button {
+  margin-top: 10px;
+  background-color: transparent;
+  color: #e63253;
+  border: 2px solid #e63253;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #e63253;
+  color: white;
+}

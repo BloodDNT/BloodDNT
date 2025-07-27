@@ -1,0 +1,81 @@
+.notification-page {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+  }
+  .notification-list {
+    list-style: none;
+    padding: 0;
+  }
+  .notification-list li {
+    background: #f9f9f9;
+    border-left: 5px solid #007bff;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  .notification-list li.unread {
+    font-weight: bold;
+    background-color: #eaf4ff;
+  }
+  .notification-list li.read {
+    opacity: 0.6;
+  }
+  .notification-list .date {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  .unread-row {
+    background-color: #fff3f3;
+  }
+  
+  .table-custom button {
+    padding: 5px 10px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .table-custom button:hover {
+    background-color: #218838;
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    gap: 15px;
+  }
+  
+  .pagination button {
+    padding: 6px 12px;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .clickable-status {
+    color: #dc3545;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  
+  .clickable-status:hover {
+    color: #a71d2a;
+  }
+  
+  .read-status {
+    color: green;
+    font-weight: bold;
+  }
+  

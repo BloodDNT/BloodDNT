@@ -1,0 +1,395 @@
+:root {
+  --primary: #b91c1c;
+  --primary-dark: #7f1212;
+  --bg-light: #fff0f3;
+  --bg-lighter: #ffe5ec;
+  --text: #333;
+  --radius: 12px;
+  --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: var(--font);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.body {
+  flex: 1;
+  padding-top: 100px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.header {
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo img {
+  height: 45px;
+  border-radius: 5px;
+}
+
+.webname {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.menu {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+
+.menu a {
+  font-size: 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.menu a:hover {
+  color: var(--primary);
+}
+
+.menu a.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropbtn {
+  font-size: 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  min-width: 160px;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 15px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 400;
+}
+
+.dropdown-content a:hover {
+  background-color: #f9f9f9;
+  color: var(--primary);
+}
+
+.actions .login-btn,
+.logout-btn,
+.register-button {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.actions .login-btn:hover,
+.logout-btn:hover,
+.register-button:hover {
+  background-color: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-name {
+  font-size: 16px;
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.user-dropdown {
+  display: block;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  min-width: 200px;
+  z-index: 1;
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  display: block;
+  padding: 12px 15px;
+  color: var(--text);
+  text-decoration: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 15px;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+  background-color: #f9f9f9;
+  color: var(--primary);
+}
+
+/* BloodGuide Section */
+.bloodguide-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.bloodguide-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.title {
+  font-size: 34px;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.guide-item {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.guide-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.guide-item:hover {
+  transform: translateY(-5px);
+}
+
+.guide-icon {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  flex-shrink: 0;
+}
+
+.guide-content {
+  flex: 1;
+}
+
+.guide-content h2 {
+  font-size: 24px;
+  color: var(--primary);
+  margin-bottom: 12px;
+}
+
+.guide-content ul {
+  list-style: disc;
+  padding-left: 20px;
+  color: #444;
+  margin: 0;
+}
+
+.guide-content li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+.register-cta {
+  text-align: center;
+  margin-top: 60px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.register-cta.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.register-button {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  padding: 14px 36px;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  max-width: 320px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.register-button:hover,
+.register-button:focus {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+  outline: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .logo {
+    margin-bottom: 10px;
+  }
+
+  .webname {
+    position: static;
+    transform: none;
+    font-size: 22px;
+  }
+
+  .menu {
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .actions {
+    margin-top: 10px;
+  }
+
+  .bloodguide-section {
+    padding: 30px 15px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .guide-item {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .guide-icon {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+  }
+
+  .guide-content h2 {
+    font-size: 20px;
+  }
+
+  .guide-content ul {
+    padding-left: 0;
+    list-style-position: inside;
+  }
+
+  .guide-content li {
+    font-size: 14px;
+  }
+
+  .register-button {
+    font-size: 16px;
+    padding: 12px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .guide-icon {
+    max-width: 150px;
+  }
+
+  .guide-content h2 {
+    font-size: 18px;
+  }
+
+  .register-button {
+    font-size: 14px;
+  }
+}
