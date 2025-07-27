@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
 import './UserProfile.css';
+import Swal from 'sweetalert2';
 
 export default function UserProfile() {
   const { user, updateUser, logout } = useContext(UserContext);
@@ -56,13 +57,13 @@ const response = await fetch(`http://localhost:5000/api/users/${user.IDUser}`, {
         const updatedUser = await response.json();
         updateUser(updatedUser.user); // chú ý lấy đúng trường user từ response
         setEditMode(false);
-        alert('Cập nhật thành công!');
+        Swal.fire('Cập nhật thành công!');
       } else {
-        alert('Cập nhật thất bại!');
+        Swal.fire('Cập nhật thất bại!');
       }
     } catch (error) {
       console.error(error);
-      alert('Có lỗi xảy ra!');
+      Swal.fire('Có lỗi xảy ra!');
     }
   };
 

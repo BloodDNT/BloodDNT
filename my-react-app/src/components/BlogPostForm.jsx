@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import './blog.css';
+import Swal from 'sweetalert2';
 
 export default function BlogPostForm({ onPostSuccess }) {
   const { user } = useContext(UserContext);
@@ -28,9 +29,9 @@ export default function BlogPostForm({ onPostSuccess }) {
     if (res.ok) {
       setForm({ title: "", content: "", category: "" });
       if (onPostSuccess) onPostSuccess();
-      alert("Đăng bài thành công!");
+      Swal.fire("Đăng bài thành công!");
     } else {
-      alert("Đăng bài thất bại!");
+      Swal.fire("Đăng bài thất bại!");
     }
   };
 

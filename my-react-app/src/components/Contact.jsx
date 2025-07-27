@@ -1,17 +1,21 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { UserContext } from '../context/UserContext';
 import { Link, useNavigate } from 'react-router-dom';
-import './contact.css';
+import { UserContext } from '../context/UserContext';
 import axios from 'axios';
+import './contact.css';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     message: '',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [formStatus, setFormStatus] = useState({
+    loading: false,
+    success: null,
+    error: null,
+  });
   const { user, logout } = useContext(UserContext);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -50,34 +54,33 @@ export default function Contact() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormStatus({ loading: false, success: null, error: null });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
-      setSubmitStatus('error');
+      setFormStatus({ loading: false, success: null, error: 'Vui lòng điền đầy đủ họ tên, email và tin nhắn.' });
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setFormStatus({ loading: false, success: null, error: 'Email không hợp lệ.' });
       return;
     }
 
-    setIsSubmitting(true);
+    setFormStatus({ loading: true, success: null, error: null });
+
     try {
-      const response = await axios.post('http://localhost:5000/api/contact', {
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-      });
-      console.log('Phản hồi từ server:', response.data);
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', message: '' });
+      await axios.post('http://localhost:5000/api/contact', formData);
+      setFormStatus({ loading: false, success: 'Gửi tin nhắn thành công! Chúng tôi sẽ phản hồi sớm.', error: null });
+      setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
-      console.error('Lỗi khi gửi form:', error.response?.data || error.message);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
+      setFormStatus({
+        loading: false,
+        success: null,
+        error: error.response?.data?.message || 'Có lỗi xảy ra khi gửi. Vui lòng thử lại.',
+      });
     }
   };
 
@@ -86,16 +89,14 @@ export default function Contact() {
       <header className="header">
         <div className="logo">
           <Link to="/">
-            <img src="/LogoPage.jpg" alt="Logo" />
+            <img src="/LogoPage.jpg" alt="Hope Donor Logo" loading="lazy" decoding="async" />
           </Link>
-          <div className="webname">Hope Donnor🩸</div>
+          <div className="webname">Hope Donor 🩸</div>
         </div>
         <nav className="menu">
           <Link to="/bloodguide">Blood Guide</Link>
           <div className="dropdown">
-            <Link to="/bloodknowledge" className="dropbtn">
-              Blood
-            </Link>
+            <Link to="/bloodknowledge" className="dropbtn">Blood</Link>
           </div>
           <Link to="/news">News & Events</Link>
           <Link to="/contact">Contact</Link>
@@ -113,70 +114,92 @@ export default function Contact() {
               onMouseLeave={() => setIsOpen(false)}
             >
               <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || 'User'}{' '}
-                <span className="ml-2">▼</span>
+                Xin chào, {(user && (user.FullName || user.fullName || user.name)) || 'User'} <span className="ml-2">▼</span>
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                      <Link to='/register/request-blood'>Register/Request</Link>
-                                  <Link to='/my-activities'>List res/req</Link>
-                                  <Link to='/history'>DonatationHistory</Link>
-                                  <Link to="/profile">👤UserProfile</Link>
-                                  {user?.role === 'Admin' && (
-                      <Link to="/dashboard">🛠️Path to admin</Link>
-                    )}
-                                  <Link to="/notifications">🔔Notification</Link>
-                  <button className="logout-btn" onClick={handleLogout}>
-                    🚪 Đăng xuất
-                  </button>
+                  <Link to="/register/request-blood">Register/Request</Link>
+                  <Link to="/my-activities">List res/req</Link>
+                  <Link to="/history">Donation History</Link>
+                  <Link to="/profile">👤 User Profile</Link>
+                  {user?.role === 'Admin' && (
+                    <Link to="/dashboard">🛠️ Path to admin</Link>
+                  )}
+                  <Link to="/notifications">🔔 Notification</Link>
+                  <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
                 </div>
               )}
             </div>
           )}
         </div>
       </header>
+
       <div className="body">
-        <section className="contact-section" ref={contactSectionRef}>
+        <section className="contact-section scroll-reveal" ref={contactSectionRef}>
           <div className="contact-container">
-            <div className="contact-form">
-              <h2>Liên hệ với chúng tôi</h2>
-              <form onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Họ và tên"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Email của bạn"
-                  required
-                />
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  placeholder="Tin nhắn của bạn"
-                  required
-                />
-                <button type="submit" className="submit-btn" disabled={isSubmitting}>
-                  {isSubmitting ? 'Đang gửi...' : 'Gửi tin nhắn'}
+            <div className="contact-form1">
+              <h2 className="text-2xl font-semibold mb-4">Liên hệ với chúng tôi</h2>
+              <form onSubmit={handleSubmit} className="contact-form-inner">
+                <div className="form-group">
+                  <label htmlFor="name" className="form-label">Họ tên</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Nhập họ tên"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="email" className="form-label">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Nhập email"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="phone" className="form-label">Số điện thoại</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Nhập số điện thoại (tùy chọn)"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="message" className="form-label">Tin nhắn</label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="Nhập tin nhắn của bạn"
+                    rows="5"
+                    required
+                  ></textarea>
+                </div>
+                <button type="submit" className="submit-button" disabled={formStatus.loading}>
+                  {formStatus.loading ? 'Đang gửi...' : 'Gửi tin nhắn'}
                 </button>
-                {submitStatus === 'success' && (
-                  <p className="form-status success">Gửi tin nhắn thành công!</p>
-                )}
-                {submitStatus === 'error' && (
-                  <p className="form-status error">Vui lòng điền đầy đủ thông tin hoặc thử lại sau.</p>
-                )}
+                {formStatus.success && <p className="form-message success">{formStatus.success}</p>}
+                {formStatus.error && <p className="form-message error">{formStatus.error}</p>}
               </form>
             </div>
             <div className="contact-info">
-              <h2>Thông tin liên hệ</h2>
+              <h2 className="text-2xl font-semibold mb-4">Thông tin liên hệ</h2>
               <div className="info-item">
                 <span className="icon">📍</span>
                 <p>Trung tâm Hiến máu, Đại học FPT, Q9, TP.HCM</p>
@@ -196,22 +219,17 @@ export default function Contact() {
               <div className="info-item social">
                 <h3>Theo dõi chúng tôi</h3>
                 <div className="social-links">
-                  <a href="https://facebook.com" target="_blank" rel="noreferrer">
-                    Facebook
-                  </a>
-                  <a href="https://instagram.com" target="_blank" rel="noreferrer">
-                    Instagram
-                  </a>
-                  <a href="https://twitter.com" target="_blank" rel="noreferrer">
-                    Twitter
-                  </a>
+                  <a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a>
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
+                  <a href="https://twitter.com" target="_blank" rel="noreferrer">Twitter</a>
                 </div>
               </div>
             </div>
           </div>
         </section>
-        <section className="map-section" ref={mapSectionRef}>
-          <h2>Vị trí của chúng tôi</h2>
+
+        <section className="map-section scroll-reveal" ref={mapSectionRef}>
+          <h2 className="text-2xl font-semibold mb-4">Vị trí của chúng tôi</h2>
           <div className="map-container">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d823.7858255185719!2d106.80981358904828!3d10.841291799553385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752731176b07b1%3A0xb752b24b379bae5e!2z6IOh5b-X5piO5biCRlBU5aSn5a24!5e0!3m2!1szh-TW!2s!4v1748747124866!5m2!1szh-TW!2s"
@@ -225,7 +243,8 @@ export default function Contact() {
             ></iframe>
           </div>
         </section>
-        <section className="footer" ref={footerRef}>
+
+        <section className="footer scroll-reveal" ref={footerRef}>
           <div className="footer-container">
             <div className="footer-block location">
               <h3>📍 Vị trí</h3>
@@ -240,19 +259,13 @@ export default function Contact() {
               <h3>🌐 Theo dõi chúng tôi</h3>
               <ul>
                 <li>
-                  <a href="https://facebook.com" target="_blank" rel="noreferrer">
-                    Facebook
-                  </a>
+                  <a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a>
                 </li>
                 <li>
-                  <a href="https://instagram.com" target="_blank" rel="noreferrer">
-                    Instagram
-                  </a>
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
                 </li>
                 <li>
-                  <a href="https://twitter.com" target="_blank" rel="noreferrer">
-                    Twitter
-                  </a>
+                  <a href="https://twitter.com" target="_blank" rel="noreferrer">Twitter</a>
                 </li>
               </ul>
             </div>

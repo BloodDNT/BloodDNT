@@ -26,7 +26,7 @@ export default function Login() {
 
     const data = await res.json();
 
-    if (res.ok) {
+    if (res.ok) { 
       const receivedToken = data.token;
       localStorage.setItem('token', receivedToken);
 
@@ -43,7 +43,7 @@ export default function Login() {
 
       login(userWithRole, receivedToken);
 
-     Swal.fire('Đăng nhập thành công! Chào ' + (userWithRole.fullName || userWithRole.FullName || userWithRole.name));
+     Swal.fire('Đăng nhập thành công! Chào ' + (userWithRole.fullName ));
       navigate('/');
     } else {
      Swal.fire('Lỗi: ' + data.message);
@@ -86,12 +86,12 @@ export default function Login() {
               onMouseLeave={() => setIsOpen(false)}
             >
               <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                Xin chào, { user?.fullName || "User"} <span className="ml-2">▼</span>
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <Link to="/notifi cations">🔔 Thông báo</Link>
                   <button
                     className="logout-btn"
                     onClick={handleLogout}

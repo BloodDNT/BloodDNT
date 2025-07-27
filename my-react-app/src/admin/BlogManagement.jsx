@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 import "../styles/table.css";
+import Swal from 'sweetalert2';
 
 const ROWS_PER_PAGE = 5;
 
@@ -32,7 +33,7 @@ const BlogManagement = () => {
 
   const handleCreate = async () => {
   if (!newTitle || !newContent) {
-    alert("Vui lòng nhập tiêu đề và nội dung.");
+    Swal.fire("Vui lòng nhập tiêu đề và nội dung.");
     return;
   }
 
@@ -43,7 +44,7 @@ const BlogManagement = () => {
   console.log("🪪 Token lấy từ localStorage:", token);
 
   if (!token) {
-    alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+Swal.fire("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
     return;
   }
 
@@ -65,7 +66,7 @@ const BlogManagement = () => {
     setNewContent("");
     setShowForm(false);
   } catch (error) {
-    alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
+    Swal.fire("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
     console.error("❌ Tạo bài viết thất bại:", error);
   }
 };
@@ -73,7 +74,7 @@ const handleDelete = async (id) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    alert("⚠️ Bạn chưa đăng nhập.");
+    Swal.fire("⚠️ Bạn chưa đăng nhập.");
     return;
   }
 
@@ -87,7 +88,7 @@ const handleDelete = async (id) => {
     });
     fetchBlogs(); // Cập nhật lại danh sách
   } catch (error) {
-    alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
+    Swal.fire("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
     console.error("Xoá bài viết thất bại:", error);
   }
 };

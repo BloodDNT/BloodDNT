@@ -3,6 +3,8 @@ import './requestBlood.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext.jsx';
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
 
 const getBloodID = (bloodType) => {
   const map = {
@@ -89,7 +91,7 @@ export default function RequestBlood() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Bạn chưa đăng nhập. Vui lòng đăng nhập trước khi gửi yêu cầu.');
+        Swal.fire('Bạn chưa đăng nhập. Vui lòng đăng nhập trước khi gửi yêu cầu.');
         return navigate('/login');
       }
 
@@ -104,12 +106,12 @@ export default function RequestBlood() {
         }
       );
 
-      alert('🩸 Gửi yêu cầu thành công!');
+      Swal.fire('🩸 Gửi yêu cầu thành công!');
       setQrImage(res.data.data?.QRCode);
     } catch (err) {
       console.error('❌ Lỗi khi gửi yêu cầu:', err);
       const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi không xác định';
-      alert(msg);
+      Swal.fire(msg);
     }
   };
 

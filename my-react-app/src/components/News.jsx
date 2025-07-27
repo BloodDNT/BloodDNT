@@ -124,19 +124,19 @@ export default function NewsEvents() {
                 <h3>New Partnership with Local Hospital</h3>
                 <p className="news-date">May 15, 2025</p>
                 <p>We’ve partnered with City Hospital to improve blood supply chains and support emergency needs.</p>
-                <a href="/news/hospital-partnership" className="read-more">
-                  Read More
+                <a href="/news-news6" className="read-more">
+                  Đọc thêm
                 </a>
               </div>
             </article>
             <article className="news-card">
               <img src="/new3.webp" alt="News 3" />
               <div className="news-content">
-                <h3>Volunteer Training Program Launched</h3>
-                <p className="news-date">May 10, 2025</p>
-                <p>Our new training program equips volunteers with skills to promote blood donation awareness.</p>
-                <a href="/news/volunteer-training" className="read-more">
-                  Read More
+                <h3>Lưu ý trước và sau hiến máu</h3>
+                <p className="news-date">13-07-2021</p>
+                <p>  Hiến máu là hành động cao đẹp, giúp mang đến món quà sức khỏe vô giá cho người bệnh. Những lưu ý dưới đây sẽ giúp bạn giữ sức khỏe và yên tâm hơn trong mỗi lần hiến máu.</p>
+                <a href="/news-news5" className="read-more">
+                  Đọc thêm
                 </a>
               </div>
             </article>

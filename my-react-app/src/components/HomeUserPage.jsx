@@ -1,4 +1,3 @@
-// Home.jsx
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import './homepage.css';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,6 +14,38 @@ export default function Home() {
   const background2Ref = useRef();
   const exploreRef = useRef();
   const footerRef = useRef();
+
+  // Danh sách bài viết cho Explore Donation
+  const articles = [
+    {
+      id: 1,
+      title: 'Hơn 600 đơn vị máu – Hành trình Đỏ Tuyên Quang 2025',
+      summary: 'Tuyên Quang tổ chức thành công Hành trình Đỏ 2025, thu hơn 600 đơn vị máu, lan tỏa tinh thần nhân ái.',
+      image: '/news2.jpg',
+      link: '/news-news2',
+    },
+    {
+      id: 2,
+      title: '4 Thực phẩm tốt nhất để tăng lưu lượng máu',
+      summary: 'Khám phá tiêu cayenne, lựu, hành tây, và quế giúp cải thiện tuần hoàn máu hiệu quả.',
+      image: '/news1.jpg',
+      link: '/news-news1',
+    },
+    {
+      id: 3,
+      title: 'Lợi ích của hiến máu tình nguyện',
+      summary: 'Hiến máu không chỉ cứu người mà còn mang lại lợi ích sức khỏe cho người hiến.',
+      image: '/post3.jpg',
+      link: '/news-news3',
+    },
+    {
+      id: 4,
+      title: 'Hành trình Đỏ 2024 – Kết nối yêu thương',
+      summary: 'Hành trình Đỏ 2024 lan tỏa tinh thần nhân ái với hàng ngàn đơn vị máu được tiếp nhận.',
+      image: '/post4.jpg',
+      link: '/news-news4  ',
+    },
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -37,11 +68,13 @@ export default function Home() {
     if (background2Ref.current) observer.observe(background2Ref.current);
     if (exploreRef.current) observer.observe(exploreRef.current);
     if (footerRef.current) observer.observe(footerRef.current);
+    document.querySelectorAll('.article-card').forEach(el => observer.observe(el));
 
     return () => {
       if (background2Ref.current) observer.unobserve(background2Ref.current);
       if (exploreRef.current) observer.unobserve(exploreRef.current);
       if (footerRef.current) observer.unobserve(footerRef.current);
+      document.querySelectorAll('.article-card').forEach(el => observer.unobserve(el));
     };
   }, []);
 
@@ -52,13 +85,16 @@ export default function Home() {
 
   const handleReachOut = () => {
     if (!user) {
+      Swal.fire("Vui lòng đăng nhập để tiếp tục");
       navigate('/login');
     } else {
       navigate('/register/request-blood');
     }
   };
+
   const handleCheck = () => {
     if (!user) {
+      Swal.fire("Vui lòng đăng nhập để tiếp tục");
       navigate('/login');
     } else {
       navigate('/blood-compatibility');
@@ -93,14 +129,14 @@ export default function Home() {
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                       <Link to='/register/request-blood'>Register/Request</Link>
-                                   <Link to='/my-activities'>List res/req</Link>
-                                   <Link to='/history'>DonatationHistory</Link>
-                                   <Link to="/profile">👤UserProfile</Link>
-                                   {user?.role === 'Admin' && (
-                       <Link to="/dashboard">🛠️Path to admin</Link>
-                     )}
-                                   <Link to="/notifications">🔔Notification</Link>
+                  <Link to='/register/request-blood'>Register/Request</Link>
+                  <Link to='/my-activities'>List res/req</Link>
+                  <Link to='/history'>DonatationHistory</Link>
+                  <Link to="/profile">👤UserProfile</Link>
+                  {user?.role === 'Admin' && (
+                    <Link to="/dashboard">🛠️Path to admin</Link>
+                  )}
+                  <Link to="/notifications">🔔Notification</Link>
                   <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
                 </div>
               )}
@@ -109,37 +145,34 @@ export default function Home() {
         </div>
       </header>
       <div className='body'>
-       <section className='background-1'>
-  <img src={bannerImages[currentImage]} alt='Blood' className='background1-image fade-in' />
-  <div className='cta-overlay'>
-    <h1 className="cta-title">Hiến máu - Cứu người</h1>
-    <button className="btn-cta" onClick={handleReachOut}>❤️ Liên hệ với chúng tôi</button>
-  </div>
-</section>
+        <section className='background-1'>
+          <img src={bannerImages[currentImage]} alt='Blood' className='background1-image fade-in' />
+          <div className='cta-overlay'>
+            <h1 className="cta-title">Hiến máu - Cứu người</h1>
+            <button className="btn-cta" onClick={handleReachOut}>❤️ Liên hệ với chúng tôi</button>
+          </div>
+        </section>
         <section ref={background2Ref} className='background-2'>
           <div className='background-2-container'>
             <img src='/background2.jpg' alt='Blood' className='background1-image' />
             <div className='right-content'>
-              <div className='content1'>Building a Safer, More Reliable Blood Supply</div>
+              <div className='content1'>Xây dựng nguồn máu an toàn và đáng tin cậy hơn</div>
               <div className='content2'>
-                Every day, countless lives are at risk in underserved communities because of limited access to safe blood. 
-                GBF partners with local organizations to strengthen their capabilities—through funding, tools, and education—while 
-                promoting voluntary blood donation for long-term impact.
+                Việc đảm bảo nguồn máu an toàn và ổn định là yếu tố then chốt trong việc cứu sống người bệnh và nâng cao chất lượng chăm sóc y tế. Để đạt được điều này, cần sự phối hợp chặt chẽ giữa các tổ chức y tế, cộng đồng và những người hiến máu tình nguyện. Thông qua các chương trình giáo dục, sàng lọc nghiêm ngặt và đầu tư vào hệ thống lưu trữ – phân phối máu, chúng ta có thể xây dựng một hệ thống cung cấp máu bền vững, sẵn sàng đáp ứng kịp thời trong mọi tình huống khẩn cấp. Một nguồn máu đáng tin cậy không chỉ là cứu cánh cho người bệnh mà còn là nền tảng cho một hệ thống y tế nhân đạo và hiện đại.
               </div>
               <button className="btn-check" onClick={handleCheck}>Kiểm tra tương thích</button>
-
             </div>
           </div>
         </section>
         <section ref={exploreRef} className='explore-donation'>
-          <h2>Explore Donation</h2>
+          <h2 className='scroll-reveal'>Bản tin</h2>
           <div className='articles-container'>
-            {[1,2,3,4].map(i => (
-              <article key={i} className='article-card'>
-                <img src={`post${i}.jpg`} alt={`Article ${i}`} />
-                <h3>Article Title {i}</h3>
-                <p>Brief summary or excerpt of the article {i}...</p>
-                <a href={`link-to-full-article-${i}`} target="_blank" rel="noopener noreferrer">Read more</a>
+            {articles.map(article => (
+              <article key={article.id} className='article-card scroll-reveal'>
+                <img src={article.image} alt={article.title} />
+                <h3>{article.title}</h3>
+                <p>{article.summary}</p>
+                <Link to={article.link} className='read-more'>Đọc thêm</Link>
               </article>
             ))}
           </div>

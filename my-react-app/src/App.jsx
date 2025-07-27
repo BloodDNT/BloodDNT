@@ -29,6 +29,12 @@ import NotificationPage from './components/NotificationPage';
 import EditRequestBlood from './components/EditRequestBlood';
 import BloodCompatibility from './components/BloodCompatibility';
 import News1 from './components/News1'
+import News2 from './components/News2'
+import News3 from './components/News3'
+import News4 from './components/News4'
+import News5 from './components/News5'
+import News6 from './components/News6'
+
 export default function App() {
   return (
     <UserProvider>
@@ -58,6 +64,12 @@ export default function App() {
         <Route path="/request/edit/:id" element={<EditRequestBlood />} />
         <Route path="/blood-compatibility" element={<BloodCompatibility />} />
         <Route path="/news-news1" element={<News1/>}/>
+        <Route path="/news-news2" element={<News2/>}/>
+        <Route path="/news-news3" element={<News3/>}/>
+        <Route path="/news-news4" element={<News4/>}/> 
+        <Route path="/news-news5" element={<News5/>}/>
+                <Route path="/news-news6" element={<News6/>}/>
+
         {/* Admin routes */}
         <Route path="/dashboard" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
