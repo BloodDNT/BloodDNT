@@ -1,9 +1,28 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import {
+  Box,
+  Button,
+  Typography,
+  Select,
+  MenuItem,
+  TextField,
+  Paper,
+  IconButton,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableContainer,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { FaTrash } from "react-icons/fa";
-import "../styles/table.css";
 
-const ROWS_PER_PAGE = 1;
+const ROWS_PER_PAGE = 5;
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,13 +31,15 @@ const BlogManagement = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     fetchBlogs();
   }, []);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset về trang 1 khi đổi filter
+    setCurrentPage(1);
   }, [filterRole]);
 
   const fetchBlogs = async () => {
@@ -30,67 +51,61 @@ const BlogManagement = () => {
     }
   };
 
+  const handleDelete = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("⚠️ Bạn chưa đăng nhập.");
+      return;
+    }
+
+    try {
+      await axios.delete(`http://localhost:5000/api/blog/${selectedId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchBlogs();
+      setConfirmOpen(false);
+      setSelectedId(null);
+    } catch (error) {
+      alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const openConfirmDialog = (id) => {
+    setSelectedId(id);
+    setConfirmOpen(true);
+  };
+
   const handleCreate = async () => {
-  if (!newTitle || !newContent) {
-    alert("Vui lòng nhập tiêu đề và nội dung.");
-    return;
-  }
+    if (!newTitle || !newContent) {
+      alert("Vui lòng nhập tiêu đề và nội dung.");
+      return;
+    }
 
-  const handleDelete = async (id) => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+      return;
+    }
 
-  if (!token) {
-    alert("⚠️ Bạn chưa đăng nhập.");
-    return;
-  }
-
-  if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
-
-  try {
-    await axios.delete(`http://localhost:5000/api/blog/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    fetchBlogs(); // Cập nhật lại danh sách
-  } catch (error) {
-    alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
-    console.error("Xoá bài viết thất bại:", error);
-  }
-};
-
-
-  const token = localStorage.getItem("token");
-  console.log("🪪 Token lấy từ localStorage:", token);
-
-  if (!token) {
-    alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
-    return;
-  }
-
-  try {
-    await axios.post(
-      "http://localhost:5000/api/blog",
-      {
-        Title: newTitle,
-        Content: newContent,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      await axios.post(
+        "http://localhost:5000/api/blog",
+        {
+          Title: newTitle,
+          Content: newContent,
         },
-      }
-    );
-    await fetchBlogs();
-    setNewTitle("");
-    setNewContent("");
-    setShowForm(false);
-  } catch (error) {
-    alert("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
-    console.error("❌ Tạo bài viết thất bại:", error);
-  }
-};
-
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      await fetchBlogs();
+      setNewTitle("");
+      setNewContent("");
+      setShowForm(false);
+    } catch (error) {
+      alert("❌ Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
+    }
+  };
 
   const filteredBlogs = blogs.filter((b) =>
     filterRole === "Tất cả" ? true : b.Role === filterRole
@@ -106,139 +121,145 @@ const BlogManagement = () => {
   const handleNext = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
-    <div className="table-container">
-      <h2>📝 Quản lý bài viết Blog</h2>
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        📝 Quản lý bài viết Blog
+      </Typography>
 
-      <button
+      <Button
+        variant="contained"
+        color={showForm ? "secondary" : "success"}
         onClick={() => setShowForm(!showForm)}
-        style={{  
-          marginBottom: "16px",
-          padding: "8px 16px",
-          backgroundColor: "#28a745",
-          color: "#fff",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
+        sx={{ mb: 2 }}
       >
         {showForm ? "🔽 Đóng lại" : "➕ Tạo bài viết"}
-      </button>
+      </Button>
 
       {showForm && (
-        <div style={{ marginBottom: "20px", padding: "16px", border: "1px solid #ccc", borderRadius: "8px", background: "#f9f9f9" }}>
-          <h4>🆕 Thêm bài viết mới</h4>
-          <input
-            type="text"
-            placeholder="Tiêu đề"
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            🆕 Thêm bài viết mới
+          </Typography>
+          <TextField
+            fullWidth
+            label="Tiêu đề"
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            style={{ padding: "8px", width: "100%", marginBottom: "8px" }}
+            sx={{ mb: 2 }}
           />
-          <textarea
-            placeholder="Nội dung"
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Nội dung"
             value={newContent}
             onChange={(e) => setNewContent(e.target.value)}
-            style={{ padding: "8px", width: "100%", height: "120px", marginBottom: "8px" }}
+            sx={{ mb: 2 }}
           />
-          <button
-            onClick={handleCreate}
-            style={{
-              padding: "8px 16px",
-              background: "#007bff",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px"
-            }}
-          >
+          <Button variant="contained" onClick={handleCreate}>
             Đăng bài
-          </button>
-        </div>
+          </Button>
+        </Paper>
       )}
 
-      <div style={{ marginBottom: "16px" }}>
-        <label style={{ marginRight: "8px" }}>Lọc theo người đăng:</label>
-        <select
+      <Box sx={{ mb: 2 }}>
+        <Typography component="label" sx={{ mr: 1 }}>
+          Lọc theo người đăng:
+        </Typography>
+        <Select
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
-          style={{ padding: "6px", borderRadius: "4px" }}
+          size="small"
         >
-          <option value="Tất cả">Tất cả</option>
-          <option value="Admin">Admin</option>
-          <option value="Staff">Staff</option>
-          <option value="User">User</option>
-        </select>
-      </div>
+          <MenuItem value="Tất cả">Tất cả</MenuItem>
+          <MenuItem value="Admin">Admin</MenuItem>
+          <MenuItem value="Staff">Staff</MenuItem>
+          <MenuItem value="User">User</MenuItem>
+        </Select>
+      </Box>
 
-      <table className="custom-table">
-        <thead>
-          <tr>
-            <th>Tiêu đề</th>
-            <th>Ngày đăng</th>
-            <th>Người đăng</th>
-            <th>Nội dung</th>
-            <th>Thích</th>
-            <th>Bình luận</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedBlogs.length === 0 ? (
-            <tr>
-              <td colSpan="7" style={{ textAlign: "center", padding: "16px" }}>
-                Không có bài viết nào.
-              </td>
-            </tr>
-          ) : (
-            paginatedBlogs.map((blog) => (
-              <tr key={blog.IDPost}>
-                <td>{blog.Title}</td>
-                <td>{new Date(blog.LastUpdated || blog.PostedAt).toLocaleDateString("vi-VN")}</td>
-                <td>{blog.Author}</td>
-                <td>{blog.Content.length > 50 ? blog.Content.slice(0, 50) + "..." : blog.Content}</td>
-                <td>{blog.LikeCount || 0}</td>
-                <td>{blog.CommentCount || 0}</td>
-                <td>
-                  <button
-                    onClick={() => handleDelete(blog.IDPost)}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#e74c3c",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <FaTrash title="Xoá" />
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: '#f4f6fa' }}>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Tiêu đề</TableCell>
+           <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Ngày đăng</TableCell>
+        <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Người đăng</TableCell>
+        <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Nội dung</TableCell>
+        <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Thích</TableCell>
+        <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Bình luận</TableCell>
+        <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '1.05rem' }}>Hành động</TableCell>
+      </TableRow>
+          </TableHead>
+          <TableBody>
+  {paginatedBlogs.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={7} align="center">
+        Không có bài viết nào.
+      </TableCell>
+    </TableRow>
+  ) : (
+    paginatedBlogs.map((blog) => (
+      <TableRow key={blog.IDPost}>
+        <TableCell align="center">{blog.Title}</TableCell>
+        <TableCell align="center">
+          {new Date(blog.LastUpdated || blog.PostedAt).toLocaleDateString("vi-VN")}
+        </TableCell>
+        <TableCell align="center">{blog.Author}</TableCell>
+        <TableCell align="center">
+          {blog.Content.length > 50 ? blog.Content.slice(0, 50) + "..." : blog.Content}
+        </TableCell>
+        <TableCell align="center">{blog.LikeCount || 0}</TableCell>
+        <TableCell align="center">{blog.CommentCount || 0}</TableCell>
+        <TableCell align="center">
+          <IconButton color="error" onClick={() => openConfirmDialog(blog.IDPost)}>
+            <FaTrash />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
+
+        </Table>
+      </TableContainer>
 
       {filteredBlogs.length > ROWS_PER_PAGE && (
-        <div
-          className="pagination-controls"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "16px",
-            marginTop: "16px",
-          }}
-        >
-          <button onClick={handlePrev} disabled={currentPage === 1}>
+        <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
+          <Button
+            variant="outlined"
+            disabled={currentPage === 1}
+            onClick={handlePrev}
+          >
             ◀ Trang trước
-          </button>
-          <span>
+          </Button>
+          <Typography>
             Trang {currentPage} / {totalPages}
-          </span>
-          <button onClick={handleNext} disabled={currentPage === totalPages}>
+          </Typography>
+          <Button
+            variant="outlined"
+            disabled={currentPage === totalPages}
+            onClick={handleNext}
+          >
             Trang sau ▶
-          </button>
-        </div>
+          </Button>
+        </Box>
       )}
-    </div>
+
+      {/* 🔒 Hộp thoại xác nhận xoá */}
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+        <DialogTitle>Xác nhận xoá</DialogTitle>
+        <DialogContent>Bạn có chắc chắn muốn xoá bài viết này?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmOpen(false)} color="inherit">
+            Huỷ
+          </Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Xoá
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

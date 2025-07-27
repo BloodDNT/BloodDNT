@@ -13,8 +13,8 @@ const CombinedDonorChart = ({ data }) => (
   verticalAlign="middle"
   align="right"
 />
-      <Bar dataKey="Registered" fill="#8884d8" name="Registered Donors" />
-      <Bar dataKey="Successful" fill="#82ca9d" name="Successful Donations" />
+      <Bar dataKey="Registered" fill="#8884d8" name="Đã đăng ký" />
+      <Bar dataKey="Successful" fill="#82ca9d" name="Quyên góp thành công" />
     </BarChart>
   </ResponsiveContainer>
 );

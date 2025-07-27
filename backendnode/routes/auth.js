@@ -3,11 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-<<<<<<< HEAD
-const Notification = require('../models/Notification');
-=======
 const axios = require('axios');
->>>>>>> f27524238d48e673c7bec76bbde795549a2088b0
 
 const User = require('../models/User');
 const Notification = require('../models/Notification');
@@ -64,6 +60,7 @@ router.post('/register', async (req, res) => {
       cccd,
     } = req.body;
 
+    // Kiểm tra các trường bắt buộc
     if (!fullName || !email || !password)
       return res.status(400).json({ message: 'Vui lòng nhập đầy đủ Họ tên, Email và Mật khẩu' });
 
@@ -83,9 +80,16 @@ router.post('/register', async (req, res) => {
     if (existingUser)
       return res.status(400).json({ message: 'Email đã được sử dụng' });
 
+    // Lấy tọa độ từ địa chỉ
+    const location = await getLatLngFromAddress(address);
+    if (!location || !location.lat || !location.lng) {
+      return res.status(400).json({
+        message: 'Không thể xác định tọa độ từ địa chỉ. Vui lòng nhập lại địa chỉ chính xác.',
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
-    const location = await getLatLngFromAddress(address);
 
     const newUser = await User.create({
       FullName: fullName,
@@ -99,10 +103,11 @@ router.post('/register', async (req, res) => {
       Role: 'User',
       IsVerified: false,
       VerificationToken: verificationToken,
-      Latitude: location?.lat || null,
-      Longitude: location?.lng || null,
+      Latitude: location.lat,
+      Longitude: location.lng,
     });
 
+    // Gửi email xác minh
     const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
     const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
     try {
@@ -111,6 +116,7 @@ router.post('/register', async (req, res) => {
       console.error('Lỗi gửi email xác minh:', err);
     }
 
+    // Tạo JWT Token (tùy chọn)
     const token = jwt.sign(
       { IDUser: newUser.IDUser },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
@@ -128,10 +134,12 @@ router.post('/register', async (req, res) => {
         address: newUser.Address,
         dateOfBirth: newUser.DateOfBirth,
         gender: newUser.Gender,
+        latitude: newUser.Latitude,
+        longitude: newUser.Longitude,
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error('Lỗi server:', error);
     res.status(500).json({ message: 'Lỗi server', error: error.message });
   }
 });
@@ -199,30 +207,25 @@ router.put('/update', authenticate, async (req, res) => {
     if (gender && !['Male', 'Female', 'Other'].includes(gender))
       return res.status(400).json({ message: 'Giới tính không hợp lệ' });
 
-    const location = await getLatLngFromAddress(address);
+    let updateData = {
+      FullName: fullName,
+      PhoneNumber: phoneNumber,
+      Address: address,
+      DateOfBirth: dateOfBirth,
+      Gender: gender,
+    };
 
-    await User.update(
-      {
-        FullName: fullName,
-        PhoneNumber: phoneNumber,
-        Address: address,
-        DateOfBirth: dateOfBirth,
-        Gender: gender,
-        Latitude: location?.lat || null,
-        Longitude: location?.lng || null,
-      },
-      { where: { IDUser: userId } }
-    );
-    
-    // ✅ Tạo thông báo sau khi cập nhật
-    const Notification = require('../models/Notification'); // nhớ import trên đầu file nếu chưa có
-    await Notification.create({
-      IDUser: userId,
-      Type: 'Thông báo hệ thống',
-      Message: `Bạn đã thay đổi thông tin cá nhân vào lúc ${new Date().toLocaleString('vi-VN')}`,
-      Status: 'Unread',
-      SendDate: new Date()
-    });
+    // Nếu người dùng thay đổi địa chỉ, thì cập nhật vị trí
+    if (address) {
+      const location = await getLatLngFromAddress(address);
+      if (!location) {
+        return res.status(400).json({ message: 'Không thể xác định vị trí từ địa chỉ. Vui lòng nhập lại địa chỉ hợp lệ.' });
+      }
+      updateData.Latitude = location.lat;
+      updateData.Longitude = location.lng;
+    }
+
+    await User.update(updateData, { where: { IDUser: userId } });
 
     await Notification.create({
       IDUser: userId,
@@ -238,14 +241,14 @@ router.put('/update', authenticate, async (req, res) => {
       message: 'Cập nhật thành công',
       user: {
         IDUser: updatedUser.IDUser,
-        FullName: updatedUser.FullName,
-        Email: updatedUser.Email,
-        PhoneNumber: updatedUser.PhoneNumber,
-        Address: updatedUser.Address,
-        DateOfBirth: updatedUser.DateOfBirth,
-        Gender: updatedUser.Gender,
-        Latitude: updatedUser.Latitude,
-        Longitude: updatedUser.Longitude
+        fullName: updatedUser.FullName,
+        email: updatedUser.Email,
+        phoneNumber: updatedUser.PhoneNumber,
+        address: updatedUser.Address,
+        dateOfBirth: updatedUser.DateOfBirth,
+        gender: updatedUser.Gender,
+        latitude: updatedUser.Latitude,
+        longitude: updatedUser.Longitude
       }
     });
   } catch (error) {

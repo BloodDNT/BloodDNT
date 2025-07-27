@@ -19,7 +19,11 @@ export default function BlogPostForm({ onPostSuccess }) {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify({
+      Title: form.title,       
+      Content: form.content    
+  
+    })
     });
     if (res.ok) {
       setForm({ title: "", content: "", category: "" });

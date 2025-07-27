@@ -74,14 +74,14 @@ const BloodChartPage = () => {
     display: "flex",
     flexDirection: "column",
   }}>
-    <h2>📊 Blood Inventory Overview</h2>
+    <h2>📊 Tổng quan về kho máu</h2>
     <div style={{ width: "110%", maxWidth: "1000px", alignSelf: "center" }}>
       <BloodPieChart data={pieData} />
     </div>
 
     <hr style={{ margin: "2rem 0" }} />
 
-    <h2>📈 Registered vs Successful Donations</h2>
+    <h2>📈 Đã đăng ký so với quyên góp thành công</h2>
     <div style={{ width: "110%", maxWidth: "1000px", alignSelf: "center" }}>
       <CombinedDonorChart data={donorChartData} />
     </div>
