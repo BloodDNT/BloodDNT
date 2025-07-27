@@ -88,7 +88,6 @@ export default function Home() {
                   <Link to='/register/request-blood'>Register/Request</Link>
                   <Link to='/my-activities'>List res/req</Link>
                   <Link to='/history'>DonatationHistory</Link>
-<<<<<<< HEAD
                   <Link to="/profile">👤UserProfile</Link>
                   {user?.role === 'Admin' && (
       <Link to="/dashboard">🛠️Path to admin</Link>
@@ -100,11 +99,9 @@ export default function Home() {
                   >
                     🚪Logout
                   </button>
-=======
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
                   <Link to="/notifications">🔔 Thông báo</Link>
                   <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
->>>>>>> f27524238d48e673c7bec76bbde795549a2088b0
                 </div>
               )}
             </div>

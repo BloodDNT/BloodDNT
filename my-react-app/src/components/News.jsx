@@ -79,45 +79,6 @@ export default function NewsEvents() {
                 Xin chào, {user?.FullName || user?.fullName || user?.name || "User"}{' '}
                 <span className="ml-2">▼</span>
               </div>
-<<<<<<< HEAD
-              <Link to='/news'>News & Events</Link>
-              <Link to='/contact'>Contact</Link>
-              <Link to='/about'>About Us</Link>
-            </nav>
-            {/* login/user menu */}
-            <div className='actions'>
-              {!user ? (
-                <Link to='/login'>
-                  <button className='login-btn'>👤 Login</button>
-                </Link>
-              ) : (
-                <div 
-                  className="dropdown user-menu"
-                  onMouseEnter={() => setIsOpen(true)}
-                  onMouseLeave={() => setIsOpen(false)}
-                >
-                  <div className="dropbtn user-name">
-                    Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-                  </div>
-                  {isOpen && (
-                    <div className="dropdown-content user-dropdown">
-                     <Link to='/register/request-blood'>Register/Request</Link>
-                  <Link to='/my-activities'>List res/req</Link>
-                  <Link to='/history'>DonatationHistory</Link>
-                  <Link to="/profile">👤UserProfile</Link>
-                  {user?.role === 'Admin' && (
-      <Link to="/dashboard">🛠️Path to admin</Link>
-    )}
-                  <Link to="/notifications">🔔Notification</Link>
-                  <button
-                    className="logout-btn"
-                    onClick={handleLogout}
-                  >
-                    🚪Logout
-                  </button>
-                    </div>
-                  )}
-=======
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
                   <Link to="/register/request-blood">Register/Request-Blood</Link>
@@ -128,7 +89,6 @@ export default function NewsEvents() {
                   <button className="logout-btn" onClick={handleLogout}>
                     🚪 Đăng xuất
                   </button>
->>>>>>> f27524238d48e673c7bec76bbde795549a2088b0
                 </div>
               )}
             </div>

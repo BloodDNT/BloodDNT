@@ -161,50 +161,6 @@ export default function BloodGuide() {
                   <Link to="/notifications">🔔 Thông báo</Link>
                   <button className="logout-btn" onClick={handleLogout}>🚪 Đăng xuất</button>
                 </div>
-<<<<<<< HEAD
-                <Link to='/news'>News & Events</Link>
-                <Link to='/contact'>Contact</Link>
-                <Link to='/about'>About Us</Link>
-              </nav>
-              {/* login/user menu */}
-              <div className='actions'>
-                {!user ? (
-                  <Link to='/login'>
-                    <button className='login-btn'>👤 Login</button>
-                  </Link>
-                ) : (
-                  <div 
-                    className="dropdown user-menu"
-                    onMouseEnter={() => setIsOpen(true)}
-                    onMouseLeave={() => setIsOpen(false)}
-                  >
-                    <div className="dropbtn user-name">
-                      Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
-                    </div>
-                    {isOpen && (
-                      <div className="dropdown-content user-dropdown">
-                       <Link to='/register/request-blood'>Register/Request</Link>
-                  <Link to='/my-activities'>List res/req</Link>
-                  <Link to='/history'>DonatationHistory</Link>
-                  <Link to="/profile">👤UserProfile</Link>
-                  {user?.role === 'Admin' && (
-      <Link to="/dashboard">🛠️Path to admin</Link>
-    )}
-                  <Link to="/notifications">🔔Notification</Link>
-                  <button
-                    className="logout-btn"
-                    onClick={handleLogout}
-                  >
-                    🚪Logout
-                  </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </header> 
-      <section className="bloodguide-section">
-=======
               )}
             </div>
           )}
@@ -212,7 +168,6 @@ export default function BloodGuide() {
       </header>
 
       <section className="bloodguide-section scroll-reveal" ref={bloodGuideSectionRef}>
->>>>>>> f27524238d48e673c7bec76bbde795549a2088b0
         <h1 className="title">🩸 Blood Guide</h1>
         <div className="guide-list">
           {memoizedGuideItems.map((item) => (
