@@ -52,16 +52,20 @@ export default function UserProfile() {
 
       const data = await response.json();
 
-      if (response.ok) {
+     if (response.ok) {
         updateUser(data.user);
         setEditMode(false);
-        Swal.fire('Cập nhật thành công!');
+        Swal.fire("Cập nhật thành công!");
       } else {
-        Swal.fire('Cập nhật thất bại!');
+        if (data.message?.includes("tọa độ")) {
+          setAddressError(data.message);
+        } else {
+          Swal.fire("Lỗi: " + (data.message || "Lỗi server"));
+        }
       }
     } catch (error) {
       console.error(error);
-      Swal.fire('Có lỗi xảy ra!');
+      Swal.fire("Có lỗi xảy ra!");
     }
   };
 
