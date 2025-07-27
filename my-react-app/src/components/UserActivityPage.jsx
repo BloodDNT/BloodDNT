@@ -4,6 +4,7 @@ import { UserContext } from '../context/UserContext';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './UserActivityPage.css';
+import Swal from 'sweetalert2';
 
 export default function UserActivityPage() {
   const { user, logout } = useContext(UserContext);
@@ -38,10 +39,10 @@ export default function UserActivityPage() {
     if (!confirm) return;
     try {
       await axios.put(`http://localhost:5000/api/blood-donations/${id}`, { Status: 'Cancelled' });
-      alert('✅ Đã huỷ đơn!');
+      Swal.fire('✅ Đã huỷ đơn!');
       setDonations((prev) => prev.map((d) => (d.IDRegister === id ? { ...d, Status: 'Cancelled' } : d)));
     } catch (err) {
-      alert('❌ Huỷ đơn thất bại!');
+      Swal.fire('❌ Huỷ đơn thất bại!');
       console.error(err);
     }
   };
@@ -53,7 +54,7 @@ export default function UserActivityPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Bạn chưa đăng nhập!');
+        Swal.fire('Bạn chưa đăng nhập!');
         return navigate('/login');
       }
   
@@ -67,12 +68,12 @@ export default function UserActivityPage() {
         }
       );
   
-      alert('✅ Đã huỷ đơn yêu cầu!');
+      Swal.fire('✅ Đã huỷ đơn yêu cầu!');
       setRequests((prev) =>
         prev.map((r) => (r.IDRequest === id ? { ...r, Status: 'Cancelled' } : r))
       );
     } catch (err) {
-      alert('❌ Huỷ đơn yêu cầu thất bại!');
+      Swal.fire('❌ Huỷ đơn yêu cầu thất bại!');
       console.error(err);
     }
   };

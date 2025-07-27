@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './EditRegisterDonate.css'; // nếu có CSS riêng
+import Swal from 'sweetalert2';
 
 export default function EditRegisterDonate() {
   const { id } = useParams();
@@ -37,10 +38,10 @@ export default function EditRegisterDonate() {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:5000/api/blood-donations/${id}`, formData);
-      alert('✅ Cập nhật thành công!');
+      Swal.fire('✅ Cập nhật thành công!');
       navigate(`/donation/${id}`);
     } catch (err) {
-      alert('❌ Lỗi cập nhật!');
+      Swal.fire('❌ Lỗi cập nhật!');
       console.error(err);
     }
   };

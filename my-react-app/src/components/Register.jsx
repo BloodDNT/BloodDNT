@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Login-register.css';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -25,34 +26,38 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      alert('Mật khẩu không khớp!');
-      return;
+  if (form.password !== form.confirmPassword) {
+    Swal.fire('Mật khẩu không khớp!');
+    return;
+  }
+
+  try {
+    const { latitude, longitude } = await getCoordinatesFromAddress(form.address);
+
+    const dataToSend = {
+      ...form,
+      latitude,
+      longitude
+    };
+
+    const res = await fetch('http://localhost:5000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      Swal.fire('Đăng ký thành công! Hãy đăng nhập.');
+      navigate('/login');
+    } else {
+      Swal.fire('Lỗi: ' + data.message);
     }
-
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('Đăng ký thành công! Hãy kiểm tra email để xác thực.');
-        navigate('/login');
-      } else {
-        if (data.message?.includes('tọa độ')) {
-          setAddressError(data.message);
-        } else {
-          alert('Lỗi: ' + data.message);
-        }
-      }
-    } catch (error) {
-      alert('Lỗi: ' + error.message);
-    }
-  };
+  } catch (error) {
+   Swal.fire('Lỗi: ' + error.message);
+  }
+};
 
   return (
     <section className="register-section">

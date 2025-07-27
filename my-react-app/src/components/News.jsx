@@ -81,11 +81,14 @@ export default function NewsEvents() {
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
-                  <Link to="/register/request-blood">Register/Request-Blood</Link>
-                  <Link to="/my-activities">List res/req</Link>
-                  <Link to="/history">DonatationHistory</Link>
-                  <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
+                      <Link to='/register/request-blood'>Register/Request</Link>
+                                  <Link to='/my-activities'>List res/req</Link>
+                                  <Link to='/history'>DonatationHistory</Link>
+                                  <Link to="/profile">👤UserProfile</Link>
+                                  {user?.role === 'Admin' && (
+                      <Link to="/dashboard">🛠️Path to admin</Link>
+                    )}
+                                  <Link to="/notifications">🔔Notification</Link>
                   <button className="logout-btn" onClick={handleLogout}>
                     🚪 Đăng xuất
                   </button>
@@ -107,33 +110,33 @@ export default function NewsEvents() {
             <article className="news-card">
               <img src="/news1.jpg" alt="News 1" />
               <div className="news-content">
-                <h3>Blood Donation Drive Success</h3>
-                <p className="news-date">May 25, 2025</p>
-                <p>Our recent blood donation drive collected over 200 units of blood, helping save countless lives in the community.</p>
-                <a href="/news/blood-donation-drive" className="read-more">
-                  Read More
+                <h3>Các thực phẩm bổ sung lưu lượng máu</h3>
+                <p className="news-date">22-07-2024</p>
+                <p>Lưu thông máu kém xuất hiện bởi tác động của một số tình trạng như bệnh động mạch ngoại biên (PAD), tiểu đường, béo phì, hút thuốc.</p>
+                <a href="/news-news1" className="read-more">
+                  Đọc thêm
                 </a>
               </div>
             </article>
             <article className="news-card">
-              <img src="/news2.jpg" alt="News 2" />
+              <img src="/new2.jpg" alt="News 2" />
               <div className="news-content">
                 <h3>New Partnership with Local Hospital</h3>
                 <p className="news-date">May 15, 2025</p>
                 <p>We’ve partnered with City Hospital to improve blood supply chains and support emergency needs.</p>
-                <a href="/news/hospital-partnership" className="read-more">
-                  Read More
+                <a href="/news-news6" className="read-more">
+                  Đọc thêm
                 </a>
               </div>
             </article>
             <article className="news-card">
-              <img src="/news3.jpg" alt="News 3" />
+              <img src="/new3.webp" alt="News 3" />
               <div className="news-content">
-                <h3>Volunteer Training Program Launched</h3>
-                <p className="news-date">May 10, 2025</p>
-                <p>Our new training program equips volunteers with skills to promote blood donation awareness.</p>
-                <a href="/news/volunteer-training" className="read-more">
-                  Read More
+                <h3>Lưu ý trước và sau hiến máu</h3>
+                <p className="news-date">13-07-2021</p>
+                <p>  Hiến máu là hành động cao đẹp, giúp mang đến món quà sức khỏe vô giá cho người bệnh. Những lưu ý dưới đây sẽ giúp bạn giữ sức khỏe và yên tâm hơn trong mỗi lần hiến máu.</p>
+                <a href="/news-news5" className="read-more">
+                  Đọc thêm
                 </a>
               </div>
             </article>
@@ -143,7 +146,7 @@ export default function NewsEvents() {
           <h2>Upcoming Events</h2>
           <div className="events-container">
             <article className="event-card">
-              <img src="/event1.jpg" alt="Event 1" />
+              <img src="/fptu.jpg" alt="Event 1" />
               <div className="event-content">
                 <h3>Community Blood Drive</h3>
                 <p className="event-date">June 15, 2025 | 9:00 AM - 3:00 PM</p>
@@ -152,16 +155,7 @@ export default function NewsEvents() {
                 <button className="register-btn">Register Now</button>
               </div>
             </article>
-            <article className="event-card">
-              <img src="/event2.jpg" alt="Event 2" />
-              <div className="event-content">
-                <h3>Blood Donation Awareness Workshop</h3>
-                <p className="event-date">June 20, 2025 | 2:00 PM - 5:00 PM</p>
-                <p className="event-location">Community Center, Q1, TP.HCM</p>
-                <p>Learn about the importance of blood donation and how you can make a difference.</p>
-                <button className="register-btn">Register Now</button>
-              </div>
-            </article>
+        
           </div>
         </section>
         <section className="footer" ref={footerRef}>

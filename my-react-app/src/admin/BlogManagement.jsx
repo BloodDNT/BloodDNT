@@ -1,26 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Typography,
-  Select,
-  MenuItem,
-  TextField,
-  Paper,
-  IconButton,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
 import { FaTrash } from "react-icons/fa";
+import "../styles/table.css";
+import Swal from 'sweetalert2';
 
 const ROWS_PER_PAGE = 5;
 
@@ -51,61 +33,72 @@ const BlogManagement = () => {
     }
   };
 
-  const handleDelete = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("⚠️ Bạn chưa đăng nhập.");
-      return;
-    }
-
-    try {
-      await axios.delete(`http://localhost:5000/api/blog/${selectedId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchBlogs();
-      setConfirmOpen(false);
-      setSelectedId(null);
-    } catch (error) {
-      alert("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
-    }
-  };
-
   const openConfirmDialog = (id) => {
     setSelectedId(id);
     setConfirmOpen(true);
   };
 
   const handleCreate = async () => {
-    if (!newTitle || !newContent) {
-      alert("Vui lòng nhập tiêu đề và nội dung.");
-      return;
-    }
+  if (!newTitle || !newContent) {
+    Swal.fire("Vui lòng nhập tiêu đề và nội dung.");
+    return;
+  }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
-      return;
-    }
+  
 
-    try {
-      await axios.post(
-        "http://localhost:5000/api/blog",
-        {
-          Title: newTitle,
-          Content: newContent,
+
+  const token = localStorage.getItem("token");
+  console.log("🪪 Token lấy từ localStorage:", token);
+
+  if (!token) {
+Swal.fire("⚠️ Không tìm thấy token. Vui lòng đăng nhập lại.");
+    return;
+  }
+
+  try {
+    await axios.post(
+      "http://localhost:5000/api/blog",
+      {
+        Title: newTitle,
+        Content: newContent,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      await fetchBlogs();
-      setNewTitle("");
-      setNewContent("");
-      setShowForm(false);
-    } catch (error) {
-      alert("❌ Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
-    }
-  };
+      }
+    );
+    await fetchBlogs();
+    setNewTitle("");
+    setNewContent("");
+    setShowForm(false);
+  } catch (error) {
+    Swal.fire("Tạo bài viết thất bại: " + (error.response?.data?.message || error.message));
+    console.error("❌ Tạo bài viết thất bại:", error);
+  }
+};
+const handleDelete = async (id) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    Swal.fire("⚠️ Bạn chưa đăng nhập.");
+    return;
+  }
+
+  if (!window.confirm("Bạn chắc chắn muốn xoá bài viết này?")) return;
+
+  try {
+    await axios.delete(`http://localhost:5000/api/blog/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    fetchBlogs(); // Cập nhật lại danh sách
+  } catch (error) {
+    Swal.fire("❌ Xoá thất bại: " + (error.response?.data?.message || error.message));
+    console.error("Xoá bài viết thất bại:", error);
+  }
+};
 
   const filteredBlogs = blogs.filter((b) =>
     filterRole === "Tất cả" ? true : b.Role === filterRole

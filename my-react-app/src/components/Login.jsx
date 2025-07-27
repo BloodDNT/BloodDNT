@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import './Login-register.css';
 import React, { useState, useContext } from "react";
 import { UserContext } from '../context/UserContext.jsx';
-
+import Swal from 'sweetalert2';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +26,7 @@ export default function Login() {
 
     const data = await res.json();
 
-    if (res.ok) {
+    if (res.ok) { 
       const receivedToken = data.token;
       localStorage.setItem('token', receivedToken);
 
@@ -43,13 +43,13 @@ export default function Login() {
 
       login(userWithRole, receivedToken);
 
-      alert('Đăng nhập thành công! Chào ' + (userWithRole.fullName || userWithRole.FullName || userWithRole.name));
+     Swal.fire('Đăng nhập thành công! Chào ' + (userWithRole.fullName ));
       navigate('/');
     } else {
-      alert('Lỗi: ' + data.message);
+     Swal.fire('Lỗi: ' + data.message);
     }
   } catch (error) {
-    alert('Lỗi server: ' + error.message);
+   Swal.fire('Lỗi server: ' + error.message);
   }
 };
 
@@ -86,12 +86,12 @@ export default function Login() {
               onMouseLeave={() => setIsOpen(false)}
             >
               <div className="dropbtn user-name">
-                Xin chào, {user?.FullName || user?.fullName || user?.name || "User"} <span className="ml-2">▼</span>
+                Xin chào, { user?.fullName || "User"} <span className="ml-2">▼</span>
               </div>
               {isOpen && (
                 <div className="dropdown-content user-dropdown">
                   <Link to="/profile">👤 Thông tin cá nhân</Link>
-                  <Link to="/notifications">🔔 Thông báo</Link>
+                  <Link to="/notifi cations">🔔 Thông báo</Link>
                   <button
                     className="logout-btn"
                     onClick={handleLogout}

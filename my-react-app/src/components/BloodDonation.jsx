@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import axios from 'axios';
 import './BloodDonation.css';
+import Swal from 'sweetalert2';
 
 const RegistrationForm = React.memo(({ form, onChange, onSubmit }) => {
   const [errors, setErrors] = useState({});
@@ -149,7 +150,7 @@ export default function BloodDonationPage() {
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     const storedUser = user || JSON.parse(localStorage.getItem('user'));
-    if (!storedUser?.IDUser) return alert('Bạn chưa đăng nhập');
+    if (!storedUser?.IDUser) return Swal.fire('Bạn chưa đăng nhập');
 
     try {
       setIsLoading(true);
@@ -165,7 +166,7 @@ export default function BloodDonationPage() {
         MedicalHistory: form.medicalHistory
       });
 
-      alert('Đăng ký thành công!');
+      Swal.fire('Đăng ký thành công!');
       setQrCode(res.data.data.QRCode);
       setForm({
         donateBloodDate: '', bloodType: '', identificationNumber: '',
@@ -173,7 +174,7 @@ export default function BloodDonationPage() {
       });
     } catch (err) {
       console.error('❌ Lỗi:', err);
-      alert(err?.response?.data?.error || 'Đăng ký thất bại');
+      Swal.fire(err?.response?.data?.error || 'Đăng ký thất bại');
     } finally {
       setIsLoading(false);
     }

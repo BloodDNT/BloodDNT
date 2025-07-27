@@ -234,7 +234,6 @@ router.put('/update', authenticate, async (req, res) => {
       Status: 'Unread',
       SendDate: new Date()
     });
-
     const updatedUser = await User.findByPk(userId);
 
     res.json({

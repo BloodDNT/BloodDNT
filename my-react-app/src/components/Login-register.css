@@ -9,6 +9,7 @@
   backdrop-filter: blur(4px); /* Làm mờ nền sau */
   -webkit-backdrop-filter: blur(4px); /* Hỗ trợ Safari */
   display: inline-block;
+  margin-top: 90px;
 }
 .login-section {
   width: 100vw;

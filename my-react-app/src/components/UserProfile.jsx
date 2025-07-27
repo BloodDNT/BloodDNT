@@ -1,7 +1,8 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../context/UserContext.jsx";
-import "./UserProfile.css";
+import React, { useContext, useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../context/UserContext.jsx';
+import './UserProfile.css';
+import Swal from 'sweetalert2';
 
 export default function UserProfile() {
   const { user, updateUser, logout } = useContext(UserContext);
@@ -54,17 +55,13 @@ export default function UserProfile() {
       if (response.ok) {
         updateUser(data.user);
         setEditMode(false);
-        alert("Cập nhật thành công!");
+        Swal.fire('Cập nhật thành công!');
       } else {
-        if (data.message?.includes("tọa độ")) {
-          setAddressError(data.message);
-        } else {
-          alert("Lỗi: " + (data.message || "Lỗi server"));
-        }
+        Swal.fire('Cập nhật thất bại!');
       }
     } catch (error) {
       console.error(error);
-      alert("Có lỗi xảy ra!");
+      Swal.fire('Có lỗi xảy ra!');
     }
   };
 

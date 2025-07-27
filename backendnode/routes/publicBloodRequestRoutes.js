@@ -4,7 +4,7 @@ const router = express.Router();
 const RequestDonateBlood = require('../models/RequestDonateBlood');
 const User = require('../models/User');
 
-// ✅ Lấy chi tiết đơn yêu cầu máu (không cần đăng nhập)
+// ✅ Lấy chi tiết đơn yêu cầu máu 
 router.get('/detail/:id', async (req, res) => {
   try {
     const id = req.params.id;

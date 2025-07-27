@@ -1,35 +1,35 @@
-import React, { createContext, useState, useEffect } from 'react';
+  import React, { createContext, useState, useEffect} from 'react';
 
-export const UserContext = createContext();
+  export const UserContext = createContext();
 
-export function UserProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    try {
-      return storedUser ? JSON.parse(storedUser) : null;
-    } catch {
-      return null;
-    }
-  });
+  export function UserProvider({ children }) {
+    const [user, setUser] = useState(null);
 
-  const updateUser = (newUser) => {
-    setUser(newUser);
-    localStorage.setItem('user', JSON.stringify(newUser));
-  };
+      const updateUser = (newUser) => {
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+    };
 
-  const login = (user) => {
-    setUser(user);
-    localStorage.setItem('user', JSON.stringify(user));
-  };
+    useEffect(() => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    }, []);
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-  };
+    const login = (user) => {
+      setUser(user);
+      localStorage.setItem('user', JSON.stringify(user));
+    };
 
-  return (
-    <UserContext.Provider value={{ user, login, logout, updateUser }}>
-      {children}
-    </UserContext.Provider>
-  );
-}
+    const logout = () => {
+      setUser(null);
+      localStorage.removeItem('user');
+    };
+
+    return (
+      <UserContext.Provider value={{ user, login, logout, updateUser }}>
+        {children}
+      </UserContext.Provider>
+    );
+  }

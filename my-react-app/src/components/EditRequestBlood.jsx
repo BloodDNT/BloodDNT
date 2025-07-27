@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './EditRequestBlood.css';
+import Swal from 'sweetalert2';
 
 export default function EditRequestBlood() {
   const { id } = useParams();
@@ -18,7 +19,7 @@ export default function EditRequestBlood() {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          alert('Bạn chưa đăng nhập. Vui lòng đăng nhập lại.');
+          Swal.fire('Bạn chưa đăng nhập. Vui lòng đăng nhập lại.');
           navigate('/login');
           return;
         }
@@ -36,7 +37,7 @@ export default function EditRequestBlood() {
         });
       } catch (err) {
         console.error('❌ Lỗi lấy dữ liệu yêu cầu:', err);
-        alert('Không tìm thấy đơn yêu cầu máu!');
+        Swal.fire('Không tìm thấy đơn yêu cầu máu!');
         navigate('/history');
       }
     };
@@ -53,7 +54,7 @@ export default function EditRequestBlood() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Bạn chưa đăng nhập!');
+        Swal.fire('Bạn chưa đăng nhập!');
         navigate('/login');
         return;
       }
@@ -62,10 +63,10 @@ export default function EditRequestBlood() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      alert('✅ Cập nhật đơn yêu cầu thành công!');
+      Swal.fire('✅ Cập nhật đơn yêu cầu thành công!');
       navigate(`/request/${id}`);
     } catch (err) {
-      alert('❌ Lỗi cập nhật đơn yêu cầu!');
+      Swal.fire('❌ Lỗi cập nhật đơn yêu cầu!');
       console.error(err);
     }
   };
