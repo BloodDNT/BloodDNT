@@ -94,8 +94,8 @@ const handleDelete = async (id) => {
 };
 
   const filteredBlogs = blogs.filter((b) =>
-    filterRole === "Tất cả" ? true : b.Role === filterRole
-  );
+  filterRole === "Tất cả" ? true : b.AuthorRole === filterRole
+);
 
   const totalPages = Math.ceil(filteredBlogs.length / ROWS_PER_PAGE);
   const paginatedBlogs = filteredBlogs.slice(
@@ -179,6 +179,7 @@ const handleDelete = async (id) => {
             <th>Nội dung</th>
             <th>Thích</th>
             <th>Bình luận</th>
+            <th>Báo cáo</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -194,10 +195,12 @@ const handleDelete = async (id) => {
               <tr key={blog.IDPost}>
                 <td>{blog.Title}</td>
                 <td>{new Date(blog.LastUpdated || blog.PostedAt).toLocaleDateString("vi-VN")}</td>
-                <td>{blog.Author}</td>
+                <td>{blog.AuthorFullName}</td>
                 <td>{blog.Content.length > 50 ? blog.Content.slice(0, 50) + "..." : blog.Content}</td>
-                <td>{blog.LikeCount || 0}</td>
-                <td>{blog.CommentCount || 0}</td>
+                <td>{blog.likeCount || 0}</td>
+                <td>{blog.commentCount || 0}</td>
+                <td>{blog.reportCount || 0}</td>
+
                 <td>
                   <button
                     onClick={() => handleDelete(blog.IDPost)}

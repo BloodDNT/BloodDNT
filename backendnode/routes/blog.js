@@ -12,31 +12,42 @@ const BlogReport = require("../models/BlogReport");
 router.get("/", async (req, res) => {
   try {
     const posts = await Blog.findAll({
-      include: [{ model: User, as: "Author", attributes: ["FullName", "Role"] }],
+      include: [
+        { model: User, as: "Author", attributes: ["FullName", "Role"] },
+      ],
       order: [["LastUpdated", "DESC"]],
     });
 
-      const postsWithDetails = await Promise.all(
-        posts.map(async (post) => {
-          const likeCount = await BlogLike.count({ where: { IDPost: post.IDPost } });
-          const commentCount = await BlogComment.count({ where: { IDPost: post.IDPost } });
+    const postsWithDetails = await Promise.all(
+      posts.map(async (post) => {
+        const likeCount = await BlogLike.count({
+          where: { IDPost: post.IDPost },
+        });
+        const commentCount = await BlogComment.count({
+          where: { IDPost: post.IDPost },
+        });
+        const reportCount = await BlogReport.count({
+           where: { IDPost: post.IDPost } });
 
-          const previewComments = await BlogComment.findAll({
-            where: { IDPost: post.IDPost },
-            include: [{ model: User, attributes: ["FullName"] }],
-            order: [["CommentedAt", "ASC"]],
-            limit: 3,
-          });
 
-          return {
-            ...post.toJSON(),
-            Author: post.Author ? (post.Author.Role === "Admin" ? "Admin" : post.Author.FullName) : "Không xác định",
-            likeCount,
-            commentCount,
-            previewComments,
-          };
-        })
-      );
+        const previewComments = await BlogComment.findAll({
+          where: { IDPost: post.IDPost },
+          include: [{ model: User, attributes: ["FullName"] }],
+          order: [["CommentedAt", "ASC"]],
+          limit: 3,
+        });
+
+        return {
+          ...post.toJSON(),
+          AuthorFullName: post.Author?.FullName || "Không xác định",
+          AuthorRole: post.Author?.Role || "Không rõ",
+          likeCount,
+          commentCount,
+          reportCount,
+          previewComments,
+        };
+      })
+    );
 
     res.json(postsWithDetails);
   } catch (err) {
@@ -47,7 +58,9 @@ router.get("/", async (req, res) => {
 // ✅ POST: Đăng bài viết
 router.post("/", authenticate, async (req, res) => {
   if (req.user.Role !== "Admin") {
-    return res.status(403).json({ message: "Bạn không có quyền đăng bài viết." });
+    return res
+      .status(403)
+      .json({ message: "Bạn không có quyền đăng bài viết." });
   }
 
   const { Title, Content } = req.body;
@@ -64,7 +77,9 @@ router.post("/", authenticate, async (req, res) => {
     });
     res.status(201).json({ message: "Đăng bài thành công", post });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi server khi đăng bài", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Lỗi server khi đăng bài", error: err.message });
   }
 });
 
@@ -75,17 +90,26 @@ router.put("/:id", authenticate, async (req, res) => {
 
   try {
     const post = await Blog.findByPk(id);
-    if (!post) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+    if (!post)
+      return res.status(404).json({ message: "Không tìm thấy bài viết" });
 
     if (post.IDUser !== req.user.IDUser && req.user.Role !== "Admin") {
-      return res.status(403).json({ message: "Không có quyền sửa bài viết này" });
+      return res
+        .status(403)
+        .json({ message: "Không có quyền sửa bài viết này" });
     }
 
-    await post.update({ Title: title, Content: content, LastUpdated: new Date() });
+    await post.update({
+      Title: title,
+      Content: content,
+      LastUpdated: new Date(),
+    });
 
     res.json({ message: "✅ Cập nhật thành công", post });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi server khi cập nhật", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Lỗi server khi cập nhật", error: err.message });
   }
 });
 
@@ -95,10 +119,16 @@ router.delete("/:id", authenticate, async (req, res) => {
 
   try {
     const post = await Blog.findByPk(id);
-    if (!post) return res.status(404).json({ message: "Không tìm thấy bài viết" });
+    if (!post)
+      return res.status(404).json({ message: "Không tìm thấy bài viết" });
 
-    if (Number(post.IDUser) !== Number(req.user.IDUser) && req.user.Role !== "Admin") {
-      return res.status(403).json({ message: "Không có quyền xoá bài viết này" });
+    if (
+      Number(post.IDUser) !== Number(req.user.IDUser) &&
+      req.user.Role !== "Admin"
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Không có quyền xoá bài viết này" });
     }
 
     await post.destroy();
@@ -108,7 +138,7 @@ router.delete("/:id", authenticate, async (req, res) => {
   }
 });
 
-// ✅ Lấy tất cả bình luận cho 1 bài viết
+// ✅ Lấy tấ t cả bình luận cho 1 bài viết
 router.get("/:id/comments", async (req, res) => {
   try {
     const IDPost = req.params.id;
@@ -132,9 +162,16 @@ router.post("/:id/comment", authenticate, async (req, res) => {
     const IDUser = req.user.IDUser;
     const { content } = req.body;
 
-    if (!content) return res.status(400).json({ message: "Nội dung bình luận không được để trống" });
+    if (!content)
+      return res
+        .status(400)
+        .json({ message: "Nội dung bình luận không được để trống" });
 
-    const comment = await BlogComment.create({ IDPost, IDUser, Content: content });
+    const comment = await BlogComment.create({
+      IDPost,
+      IDUser,
+      Content: content,
+    });
 
     res.json({ message: "Đã bình luận", comment });
   } catch (err) {
@@ -163,27 +200,29 @@ router.post("/:id/like", authenticate, async (req, res) => {
 // ✅ Báo cáo bài viết
 
 router.post("/report", authenticate, async (req, res) => {
-try {
+  try {
     console.log(req.body); // 🟢 Đặt ở đây để xem dữ liệu gửi lên
 
     const { IDPost, IDReporter, Reason } = req.body;
-if (!IDPost || !IDReporter || !Reason) {
-  return res.status(400).json({ error: 'Thiếu thông tin báo cáo' });
-}
+    if (!IDPost || !IDReporter || !Reason) {
+      return res.status(400).json({ error: "Thiếu thông tin báo cáo" });
+    }
     const newReport = await BlogReport.create({
       IDPost,
       IDReporter,
-      Reason
+      Reason,
     });
-console.log('🟢 newReport:', newReport.toJSON());
-const reports = await BlogReport.findAll();
-console.log('Tất cả báo cáo:', reports.map(r => r.toJSON()));
-    res.status(201).json({ message: 'Gửi báo cáo thành công' });
+    console.log("🟢 newReport:", newReport.toJSON());
+    const reports = await BlogReport.findAll();
+    console.log(
+      "Tất cả báo cáo:",
+      reports.map((r) => r.toJSON())
+    );
+    res.status(201).json({ message: "Gửi báo cáo thành công" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Lỗi server', details: error.message });
+    res.status(500).json({ error: "Lỗi server", details: error.message });
   }
 });
-
 
 module.exports = router;
